@@ -34,5 +34,9 @@
       SkiaRenderer;
     </UnoFeatures>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Plugins\Scrubbler.Plugin.ManualScrobbler\Scrubbler.Plugin.ManualScrobbler.csproj" />
+    <ProjectReference Include="..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>

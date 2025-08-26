@@ -1,7 +1,8 @@
-<Application x:Class="Scrubbler.Host.App"
+﻿<Application x:Class="Scrubbler.Host.App"
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-       xmlns:utum="using:Uno.Toolkit.UI.Material">
+       xmlns:utum="using:Uno.Toolkit.UI.Material"
+       xmlns:helper="using:Scrubbler.Host.Helper">
 
   <Application.Resources>
     <ResourceDictionary>
@@ -22,8 +23,10 @@
       </ResourceDictionary.MergedDictionaries>
 
       <!-- Add resources here -->
+      <helper:ViewLocatorTemplateSelector x:Key="ViewLocatorSelector"/>
+      <helper:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
 
-    </ResourceDictionary>
+        </ResourceDictionary>
   </Application.Resources>
 
 </Application>

@@ -1,28 +1,50 @@
+using System.Collections.ObjectModel;
+using Scrubbler.Abstractions;
+using Scrubbler.Plugin.ManualScrobbler;
+
 namespace Scrubbler.Host.Presentation;
 
-public partial class MainViewModel : ObservableObject
+internal partial class MainViewModel : ObservableObject
 {
-    private INavigator _navigator;
+    public ObservableCollection<NavigationItemViewModel> Items { get; } = [];
 
-    [ObservableProperty]
-    private string? name;
-
-    public MainViewModel(
-        IOptions<AppConfig> appInfo,
-        INavigator navigator)
+    public NavigationItemViewModel? SelectedItem
     {
-        _navigator = navigator;
-        Title = "Main";
-        Title += $" - {appInfo?.Value?.Environment}";
-        GoToSecond = new AsyncRelayCommand(GoToSecondView);
+        get => _selectedItem;
+        set
+        {
+            if (SetProperty(ref _selectedItem, value))
+            {
+                // Whenever SelectedItem changes, notify dependent properties
+                OnPropertyChanged(nameof(IsScrobblePanelVisible));
+                OnPropertyChanged(nameof(CurrentViewModel));
+            }
+        }
     }
-    public string? Title { get; }
+    private NavigationItemViewModel? _selectedItem;
 
-    public ICommand GoToSecond { get; }
+    public object? CurrentViewModel => SelectedItem?.Content;
 
-    private async Task GoToSecondView()
+    public bool IsScrobblePanelVisible => SelectedItem is PluginNavigationItemViewModel { Plugin: IScrobblePlugin };
+
+    public MainViewModel()
     {
-        await _navigator.NavigateViewModelAsync<SecondViewModel>(this, data: new Entity(Name!));
-    }
+        // static pages
+        Items.Add(new NavigationItemViewModel("Home", new SymbolIconSource() { Symbol = Symbol.Home }, new HomeViewModel()));
+        Items.Add(new NavigationItemViewModel("Plugin Manager", new SymbolIconSource() { Symbol = Symbol.Admin }, new PluginManagerViewModel()));
 
+        // plugins group
+        var pluginsGroup = new NavigationItemViewModel("Plugins", new SymbolIconSource { Symbol = Symbol.AllApps });
+
+        // plugins
+        var plugins = new List<IPlugin> { new ManualScrobblePlugin() };
+        foreach (var plugin in plugins)
+        {
+            pluginsGroup.Children.Add(new PluginNavigationItemViewModel(plugin));
+        }
+
+        Items.Add(pluginsGroup);
+
+        SelectedItem = Items.FirstOrDefault();
+    }
 }

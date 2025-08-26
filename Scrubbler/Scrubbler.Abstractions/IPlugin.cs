@@ -1,4 +1,4 @@
-using Windows.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Scrubbler.Abstractions;
 
@@ -17,4 +17,5 @@ public interface IPlugin
     string Description { get; }
     PlatformSupport SupportedPlatforms { get; }
     IPluginViewModel GetViewModel();
+    IconSource? Icon {  get; }
 }

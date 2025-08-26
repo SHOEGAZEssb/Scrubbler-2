@@ -2,29 +2,57 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:Scrubbler.Host.Presentation"
-      xmlns:uen="using:Uno.Extensions.Navigation.UI"
-      xmlns:utu="using:Uno.Toolkit.UI"
-      xmlns:um="using:Uno.Material"
-      NavigationCacheMode="Required"
+      xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       Background="{ThemeResource BackgroundBrush}">
-  <ScrollViewer IsTabStop="True">
-    <Grid utu:SafeArea.Insets="VisibleBounds">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition />
-      </Grid.RowDefinitions>
-      <utu:NavigationBar Content="{Binding Title}" />
 
-      <StackPanel Grid.Row="1"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Spacing="16">
-        <TextBox Text="{Binding Name, Mode=TwoWay}"
-            PlaceholderText="Enter your name:" />
-        <Button Content="Go to Second Page"
-            AutomationProperties.AutomationId="SecondPageButton"
-            Command="{Binding GoToSecond}" />
-      </StackPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <muxc:NavigationView
+            MenuItemsSource="{Binding Items}"
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+            IsBackButtonVisible="Collapsed"
+            IsPaneToggleButtonVisible="True"
+            PaneDisplayMode="Left"
+            Grid.Column="0">
+
+            <muxc:NavigationView.MenuItemTemplate>
+                <DataTemplate x:DataType="local:NavigationItemViewModel">
+                    <muxc:NavigationViewItem Content="{x:Bind Title}"
+                                             SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
+                        <muxc:NavigationViewItem.Icon>
+                            <muxc:IconSourceElement IconSource="{x:Bind Icon}" />
+                        </muxc:NavigationViewItem.Icon>
+                        <muxc:NavigationViewItem.MenuItemsSource>
+                            <Binding Path="Children" />
+                        </muxc:NavigationViewItem.MenuItemsSource>
+                    </muxc:NavigationViewItem>
+                </DataTemplate>
+            </muxc:NavigationView.MenuItemTemplate>
+        </muxc:NavigationView>
+
+        <!-- Main content area -->
+        <Grid Grid.Column="1" RowDefinitions="*,Auto">
+
+            <!-- Plugin or Page View -->
+            <ContentPresenter Content="{Binding CurrentViewModel}"
+                              ContentTemplateSelector="{StaticResource ViewLocatorSelector}"
+                              Grid.Row="0"/>
+
+            <!-- Scrobble/Preview panel -->
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="1"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        Padding="12"
+                        Spacing="12"
+                        Visibility="{Binding IsScrobblePanelVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Button Content="Scrobble" Command="{Binding ScrobbleCommand}"/>
+                <Button Content="Preview" Command="{Binding PreviewCommand}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
-  </ScrollViewer>
 </Page>
