@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Host", "Scrubbler.Host\Scrubbler.Host.csproj", "{B5837F93-8584-44CA-AD37-610D233160AC}"
 EndProject
@@ -13,6 +13,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Packages.props = Directory.Packages.props
 		global.json = global.json
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Abstractions", "Scrubbler.Abstractions\Scrubbler.Abstractions.csproj", "{E7FF6E56-A702-4CC6-849E-E7E417FEDC69}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.ManualScrobbler", "Plugins\Scrubbler.Plugin.ManualScrobbler\Scrubbler.Plugin.ManualScrobbler.csproj", "{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +32,20 @@ Global
 		{B5837F93-8584-44CA-AD37-610D233160AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5837F93-8584-44CA-AD37-610D233160AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B5837F93-8584-44CA-AD37-610D233160AC}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E7FF6E56-A702-4CC6-849E-E7E417FEDC69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7FF6E56-A702-4CC6-849E-E7E417FEDC69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7FF6E56-A702-4CC6-849E-E7E417FEDC69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7FF6E56-A702-4CC6-849E-E7E417FEDC69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1} = {797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB28EE7E-5D57-4092-8B8A-1EE7C97A6790}

@@ -7,4 +7,8 @@
   -->
   <ItemGroup>
   </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageVersion Include="Uno.UI" Version="5.6.99" />
+  </ItemGroup>
 </Project>
