@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using Scrubbler.Abstractions;
+using Scrubbler.Host.Presentation.Accounts;
+using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Plugin.ManualScrobbler;
 
 namespace Scrubbler.Host.Presentation;
@@ -31,6 +33,7 @@ internal partial class MainViewModel : ObservableObject
     {
         // static pages
         Items.Add(new NavigationItemViewModel("Home", new SymbolIconSource() { Symbol = Symbol.Home }, new HomeViewModel()));
+        Items.Add(new NavigationItemViewModel("Accounts", new SymbolIconSource() { Symbol = Symbol.Account }, new AccountsViewModel()));
         Items.Add(new NavigationItemViewModel("Plugin Manager", new SymbolIconSource() { Symbol = Symbol.Admin }, new PluginManagerViewModel()));
 
         // plugins group

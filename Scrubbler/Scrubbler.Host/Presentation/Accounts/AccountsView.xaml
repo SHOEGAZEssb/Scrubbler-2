@@ -1,0 +1,45 @@
+﻿<UserControl
+    x:Class="Scrubbler.Host.Presentation.Accounts.AccountsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Scrubbler.Host.Presentation.Accounts"
+    xmlns:controls="using:Uno.Toolkit.UI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <ScrollViewer Padding="12">
+        <ItemsControl ItemsSource="{Binding Accounts}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="local:AccountPluginViewModel">
+                    <controls:Card Margin="0,0,0,12" Padding="12">
+                        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+
+                            <!-- TODO: Replace with plugin-provided icon -->
+                            <FontIcon Glyph="&#xE1D3;" FontSize="32" />
+
+                            <StackPanel>
+                                <TextBlock Text="{x:Bind Name}" 
+                                           Style="{ThemeResource SubtitleTextBlockStyle}" />
+                                <TextBlock Text="{x:Bind AccountId, Mode=OneWay}" 
+                                           Style="{ThemeResource CaptionTextBlockStyle}" 
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="Login"
+                                            Command="{x:Bind AuthenticateCommand}"
+                                            Visibility="{x:Bind IsAuthenticated, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}" />
+                                    <Button Content="Logout"
+                                            Command="{x:Bind LogoutCommand}"
+                                            Visibility="{x:Bind IsAuthenticated, Mode=OneWay}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </controls:Card>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

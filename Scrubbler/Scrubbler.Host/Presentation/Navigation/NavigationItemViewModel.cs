@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace Scrubbler.Host.Presentation;
+namespace Scrubbler.Host.Presentation.Navigation;
 internal partial class NavigationItemViewModel : ObservableObject
 {
     public string Title { get; }

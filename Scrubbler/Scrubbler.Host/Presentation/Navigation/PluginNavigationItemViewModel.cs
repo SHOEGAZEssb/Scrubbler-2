@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Scrubbler.Abstractions;
 
-namespace Scrubbler.Host.Presentation;
+namespace Scrubbler.Host.Presentation.Navigation;
 
 internal sealed class PluginNavigationItemViewModel : NavigationItemViewModel
 {

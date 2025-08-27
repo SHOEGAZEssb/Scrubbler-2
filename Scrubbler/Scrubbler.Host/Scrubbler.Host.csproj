@@ -1,42 +1,46 @@
-<Project Sdk="Uno.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net9.0-desktop</TargetFrameworks>
+﻿<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net9.0-desktop</TargetFrameworks>
 
-    <OutputType>Exe</OutputType>
-    <UnoSingleProject>true</UnoSingleProject>
+        <OutputType>Exe</OutputType>
+        <UnoSingleProject>true</UnoSingleProject>
 
-    <!-- Display name -->
-    <ApplicationTitle>Scrubbler.Host</ApplicationTitle>
-    <!-- App Identifier -->
-    <ApplicationId>Lastfm.Scrubbler.Host</ApplicationId>
-    <!-- Versions -->
-    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <ApplicationVersion>1</ApplicationVersion>
-    <!-- Package Publisher -->
-    <ApplicationPublisher>timst</ApplicationPublisher>
-    <!-- Package Description -->
-    <Description>Scrubbler.Host powered by Uno Platform.</Description>
+        <!-- Metadata -->
+        <ApplicationTitle>Scrubbler.Host</ApplicationTitle>
+        <ApplicationId>Lastfm.Scrubbler.Host</ApplicationId>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationPublisher>timst</ApplicationPublisher>
+        <Description>Scrubbler.Host powered by Uno Platform.</Description>
 
-    <!--
-      UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.
-      https://aka.platform.uno/singleproject-features
-    -->
-    <UnoFeatures>
-      Material;
-      Dsp;
-      Hosting;
-      Toolkit;
-      Logging;
-      Mvvm;
-      Configuration;
-      Navigation;
-      ThemeService;
-      SkiaRenderer;
-    </UnoFeatures>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Plugins\Scrubbler.Plugin.ManualScrobbler\Scrubbler.Plugin.ManualScrobbler.csproj" />
-    <ProjectReference Include="..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
-  </ItemGroup>
+        <UnoFeatures>
+            Material;
+            Dsp;
+            Hosting;
+            Toolkit;
+            Logging;
+            Mvvm;
+            Configuration;
+            Navigation;
+            ThemeService;
+            SkiaRenderer;
+        </UnoFeatures>
+    </PropertyGroup>
 
+    <ItemGroup>
+        <!-- Project references -->
+        <ProjectReference Include="..\Plugins\Scrubbler.Plugin.ManualScrobbler\Scrubbler.Plugin.ManualScrobbler.csproj" />
+        <ProjectReference Include="..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+    </ItemGroup>
+
+    <!-- XAML pages -->
+    <ItemGroup>
+        <!-- App.xaml must be ApplicationDefinition so Main() gets generated -->
+        <ApplicationDefinition Include="App.xaml" />
+
+        <!-- Regular pages / usercontrols -->
+        <Page Include="Presentation\MainPage.xaml" />
+        <Page Include="Presentation\Shell.xaml" />
+        <Page Include="Presentation\Accounts\AccountsView.xaml" />
+    </ItemGroup>
 </Project>
