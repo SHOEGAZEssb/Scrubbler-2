@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Microsoft.Extensions.DependencyInjection;
 using Scrubbler.Abstractions;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Presentation.Navigation;
@@ -29,11 +30,11 @@ internal partial class MainViewModel : ObservableObject
 
     public bool IsScrobblePanelVisible => SelectedItem is PluginNavigationItemViewModel { Plugin: IScrobblePlugin };
 
-    public MainViewModel()
+    public MainViewModel(IServiceProvider services)
     {
         // static pages
         Items.Add(new NavigationItemViewModel("Home", new SymbolIconSource() { Symbol = Symbol.Home }, new HomeViewModel()));
-        Items.Add(new NavigationItemViewModel("Accounts", new SymbolIconSource() { Symbol = Symbol.Account }, new AccountsViewModel()));
+        Items.Add(new NavigationItemViewModel("Accounts", new SymbolIconSource() { Symbol = Symbol.Account }, services.GetRequiredService<AccountsViewModel>()));
         Items.Add(new NavigationItemViewModel("Plugin Manager", new SymbolIconSource() { Symbol = Symbol.Admin }, new PluginManagerViewModel()));
 
         // plugins group

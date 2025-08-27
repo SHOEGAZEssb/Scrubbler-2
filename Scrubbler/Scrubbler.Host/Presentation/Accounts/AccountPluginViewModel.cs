@@ -17,6 +17,9 @@ public partial class AccountPluginViewModel : ObservableObject
     [ObservableProperty]
     private bool _isAuthenticated;
 
+    [ObservableProperty]
+    private bool _isBusy;
+
     public IRelayCommand AuthenticateCommand { get; }
     public IRelayCommand LogoutCommand { get; }
 
@@ -33,14 +36,30 @@ public partial class AccountPluginViewModel : ObservableObject
 
     private async Task AuthenticateAsync()
     {
-        await _plugin.AuthenticateAsync();
-        UpdateState();
+        try
+        {
+            IsBusy = true;
+            await _plugin.AuthenticateAsync();
+            UpdateState();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task LogoutAsync()
     {
-        await _plugin.LogoutAsync();
-        UpdateState();
+        try
+        {
+            IsBusy = true;
+            await _plugin.LogoutAsync();
+            UpdateState();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void UpdateState()

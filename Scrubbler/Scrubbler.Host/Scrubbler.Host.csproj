@@ -29,6 +29,7 @@
 
     <ItemGroup>
         <!-- Project references -->
+        <ProjectReference Include="..\Plugins\Accounts\Scrubbler.Plugin.Accounts.LastFm\Scrubbler.Plugin.Accounts.LastFm.csproj" />
         <ProjectReference Include="..\Plugins\Scrubbler.Plugin.ManualScrobbler\Scrubbler.Plugin.ManualScrobbler.csproj" />
         <ProjectReference Include="..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
     </ItemGroup>

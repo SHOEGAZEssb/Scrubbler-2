@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml.Controls;
 using Scrubbler.Abstractions;
+using Shoegaze.LastFM.Authentication;
 
 namespace Scrubbler.Plugin.Accounts.LastFm;
 
@@ -28,7 +29,14 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     public string? AccountId { get; private set; }
 
+    private ApiKeyStorage _apiKeyStorage;
+
     #endregion Properties
+
+    public LastFmAccountPlugin()
+    {
+        _apiKeyStorage = new ApiKeyStorage("LAST_FM_API_KEY", "LAST_FM_API_KEY", "environment.env");
+    }
 
     public async Task LoadAsync(ISecureStore secureStore)
     {
@@ -47,13 +55,11 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     public async Task AuthenticateAsync()
     {
-        // TODO: Implement OAuth handshake with Last.fm
-        // For now, fake a login
+        var a = new LastfmAuthService("70d5cd49cba6da4be4e985a0ede393df", "2230e17a1196da95cf24dc2060b27218");
+        var sessions = await a.AuthenticateAsync();
 
-        await Task.Delay(500); // simulate network
-
-        AccountId = "timst";          // would come from Last.fm API
-        _sessionKey = "abc123session"; // real session key from Last.fm
+        AccountId = sessions.Username;
+        _sessionKey = sessions.SessionKey;
     }
 
     public Task LogoutAsync()

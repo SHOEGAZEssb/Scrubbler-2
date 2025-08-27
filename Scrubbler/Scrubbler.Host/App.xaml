@@ -25,6 +25,9 @@
       <!-- Add resources here -->
       <helper:ViewLocatorTemplateSelector x:Key="ViewLocatorSelector"/>
       <helper:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+      <helper:BoolToVisibilityConverter x:Key="BoolToVis" />
+      <helper:BoolToVisibilityConverter x:Key="NotBoolToVis" Invert="True" />
+
 
         </ResourceDictionary>
   </Application.Resources>

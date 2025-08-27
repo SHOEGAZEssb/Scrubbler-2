@@ -14,4 +14,10 @@
     <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="environment.env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

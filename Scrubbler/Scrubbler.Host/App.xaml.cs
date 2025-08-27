@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Scrubbler.Abstractions;
+using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host;
@@ -67,6 +68,8 @@ public partial class App : Application
                     // TODO: Register your services
                     //services.AddSingleton<IMyService, MyService>();
                     services.AddSingleton<ISecureStore, FileSecureStore>();
+                    services.AddSingleton<IPluginManager, PluginManager>();
+                    services.AddTransient<AccountsViewModel>();
                 })
                 .UseNavigation(RegisterRoutes)
             );
