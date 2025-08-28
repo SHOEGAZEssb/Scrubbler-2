@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Scrubbler.Abstractions;
+namespace Scrubbler.Abstractions.Plugin;
 
 /// <summary>
 /// Represents an account integration (e.g., Last.fm, Spotify).
@@ -23,6 +17,8 @@ public interface IAccountPlugin : IPersistentPlugin
     /// </summary>
     bool IsAuthenticated { get; }
 
+    bool IsScrobblingEnabled { get; set; }
+
     /// <summary>
     /// Initiates an authentication flow (OAuth, API key, etc.).
     /// May prompt the user for credentials or open a web view.
@@ -33,5 +29,7 @@ public interface IAccountPlugin : IPersistentPlugin
     /// Logs out the account and clears authentication state.
     /// </summary>
     Task LogoutAsync();
+
+    Task ScrobbleAsync(IEnumerable<ScrobbleData> scrobbles);
 }
 

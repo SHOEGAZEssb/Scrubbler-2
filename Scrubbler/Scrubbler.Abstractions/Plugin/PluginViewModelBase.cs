@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Scrubbler.Abstractions.Plugin;
 
 namespace Scrubbler.Abstractions;
 public abstract partial class PluginViewModelBase : ObservableObject, IPluginViewModel

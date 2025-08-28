@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Plugin.Accounts.LastFm;
 
 namespace Scrubbler.Host.Services;

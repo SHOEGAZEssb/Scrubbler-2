@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Accounts;

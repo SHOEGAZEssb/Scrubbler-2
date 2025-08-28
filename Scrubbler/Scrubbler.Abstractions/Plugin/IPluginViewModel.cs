@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Scrubbler.Abstractions;
+namespace Scrubbler.Abstractions.Plugin;
 public interface IPluginViewModel : INotifyPropertyChanged, INotifyPropertyChanging
 {
 }

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Plugin;
 
 namespace Scrubbler.Plugin.ManualScrobbler;
 public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase

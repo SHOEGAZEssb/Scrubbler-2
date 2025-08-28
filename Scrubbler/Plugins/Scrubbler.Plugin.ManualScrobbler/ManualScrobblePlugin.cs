@@ -1,5 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Logging;
+using Scrubbler.Abstractions.Plugin;
 
 namespace Scrubbler.Plugin.ManualScrobbler;
 
@@ -13,7 +15,14 @@ public class ManualScrobblePlugin : IScrobblePlugin
 
     public IconSource? Icon => null;
 
+    public ILogService LogService { get; set; }
+
     private readonly ManualScrobbleViewModel _vm = new();
+
+    public ManualScrobblePlugin()
+    {
+        LogService = new NoopLogger();
+    }
 
     public Task<IEnumerable<ScrobbleData>> GetScrobblesAsync(CancellationToken ct)
     {

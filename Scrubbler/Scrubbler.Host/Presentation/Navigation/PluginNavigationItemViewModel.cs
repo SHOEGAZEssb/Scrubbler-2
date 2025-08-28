@@ -1,4 +1,4 @@
-using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Plugin;
 
 namespace Scrubbler.Host.Presentation.Navigation;
 

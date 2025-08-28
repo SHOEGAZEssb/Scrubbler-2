@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Scrubbler.Abstractions;
+namespace Scrubbler.Abstractions.Plugin;
 
 /// <summary>
 /// A plugin that persists state across application restarts.
@@ -23,5 +17,3 @@ public interface IPersistentPlugin : IPlugin
     /// </summary>
     Task SaveAsync(ISecureStore secureStore);
 }
-
-

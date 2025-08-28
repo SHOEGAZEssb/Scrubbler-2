@@ -19,10 +19,16 @@
                                         <TextBlock Text="{x:Bind Name}"
                                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                                    HorizontalTextAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind AccountId, Mode=OneWay}"
+
+                                        <StackPanel Spacing="8" Orientation="Vertical" Visibility="{x:Bind IsAuthenticated, Mode=OneWay,Converter={StaticResource BoolToVis}}">
+                                            <TextBlock Text="Logged in as:" HorizontalTextAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind AccountId, Mode=OneWay}"
                                                    Style="{ThemeResource CaptionTextBlockStyle}"
                                                    HorizontalTextAlignment="Center"
                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                            <CheckBox Content="Scrobble" HorizontalAlignment="Center" IsEnabled="{x:Bind IsAuthenticated, Mode=OneWay}"
+                                                  IsChecked="{x:Bind IsScrobblingEnabled, Mode=TwoWay}"/>
+                                        </StackPanel>
                                         <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
                                             <Button Content="Login"
                                                     Command="{x:Bind AuthenticateCommand}"

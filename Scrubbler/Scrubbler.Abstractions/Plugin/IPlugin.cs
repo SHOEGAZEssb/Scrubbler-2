@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
+using Scrubbler.Abstractions.Logging;
 
-namespace Scrubbler.Abstractions;
+namespace Scrubbler.Abstractions.Plugin;
 
 [Flags]
 public enum PlatformSupport
@@ -18,4 +19,5 @@ public interface IPlugin
     PlatformSupport SupportedPlatforms { get; }
     IPluginViewModel GetViewModel();
     IconSource? Icon {  get; }
+    ILogService LogService { get; set; }
 }

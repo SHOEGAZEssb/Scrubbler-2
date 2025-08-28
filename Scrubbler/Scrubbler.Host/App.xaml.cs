@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Scrubbler.Abstractions;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Services;
+using Scrubbler.Host.Services.Logging;
 
 namespace Scrubbler.Host;
 public partial class App : Application
@@ -70,6 +71,7 @@ public partial class App : Application
                     services.AddSingleton<ISecureStore, FileSecureStore>();
                     services.AddSingleton<IPluginManager, PluginManager>();
                     services.AddTransient<AccountsViewModel>();
+                    services.AddSingleton<HostLogService>();
                 })
                 .UseNavigation(RegisterRoutes)
             );

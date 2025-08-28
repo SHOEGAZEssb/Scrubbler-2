@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
-using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Presentation.Accounts;
+using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Navigation;
+using Scrubbler.Host.Services.Logging;
 using Scrubbler.Plugin.ManualScrobbler;
 
 namespace Scrubbler.Host.Presentation;
@@ -48,6 +50,8 @@ internal partial class MainViewModel : ObservableObject
         }
 
         Items.Add(pluginsGroup);
+
+        Items.Add(new NavigationItemViewModel("Logs", new SymbolIconSource() { Symbol = Symbol.Document }, new LogViewModel(services.GetRequiredService<HostLogService>())));
 
         SelectedItem = Items.FirstOrDefault();
     }

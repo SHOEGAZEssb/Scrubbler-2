@@ -1,6 +1,5 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Plugin;
 
 
 namespace Scrubbler.Host.Presentation.Accounts;
@@ -19,6 +18,19 @@ public partial class AccountPluginViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isBusy;
+
+    public bool IsScrobblingEnabled
+    {
+        get => _plugin.IsScrobblingEnabled;
+        set
+        {
+            if (_plugin.IsScrobblingEnabled != value)
+            {
+                _plugin.IsScrobblingEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     public IRelayCommand AuthenticateCommand { get; }
     public IRelayCommand LogoutCommand { get; }
