@@ -44,4 +44,9 @@
         <Page Include="Presentation\Shell.xaml" />
         <Page Include="Presentation\Accounts\AccountsView.xaml" />
     </ItemGroup>
+    <ItemGroup>
+      <Page Update="Presentation\Logging\LogView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
 </Project>

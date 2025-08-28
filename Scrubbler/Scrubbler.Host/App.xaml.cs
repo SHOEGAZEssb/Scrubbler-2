@@ -44,13 +44,13 @@ public partial class App : Application
                     // Uno Platform namespace filter groups
                     // Uncomment individual methods to see more detailed logging
                     //// Generic Xaml events
-                    //logBuilder.XamlLogLevel(LogLevel.Debug);
+                    logBuilder.XamlLogLevel(LogLevel.Debug);
                     //// Layout specific messages
-                    //logBuilder.XamlLayoutLogLevel(LogLevel.Debug);
+                    logBuilder.XamlLayoutLogLevel(LogLevel.Debug);
                     //// Storage messages
                     //logBuilder.StorageLogLevel(LogLevel.Debug);
                     //// Binding related messages
-                    //logBuilder.XamlBindingLogLevel(LogLevel.Debug);
+                    logBuilder.XamlBindingLogLevel(LogLevel.Debug);
                     //// Binder memory references tracking
                     //logBuilder.BinderMemoryReferenceLogLevel(LogLevel.Debug);
                     //// DevServer and HotReload related

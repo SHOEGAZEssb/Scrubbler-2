@@ -1,4 +1,4 @@
-namespace Scrubbler.Host.Services.Logging;
+namespace Scrubbler.Host.Models;
 
 public record LogMessage(
     DateTime Timestamp,

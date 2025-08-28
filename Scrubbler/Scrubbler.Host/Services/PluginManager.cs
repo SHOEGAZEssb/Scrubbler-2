@@ -1,16 +1,20 @@
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Host.Services.Logging;
 using Scrubbler.Plugin.Accounts.LastFm;
 
 namespace Scrubbler.Host.Services;
 
-public class PluginManager : IPluginManager
+internal class PluginManager : IPluginManager
 {
     private readonly List<IPlugin> _installed = new();
+    private readonly HostLogService _logService;
 
-    public PluginManager()
+    public PluginManager(HostLogService hostLogService)
     {
+        _logService = hostLogService;
         // TODO: Replace with dynamic discovery later
         _installed.Add(new LastFmAccountPlugin());
+        _installed[0].LogService = new ModuleLogService(_logService, "Last.fm");
         // _installed.Add(new ManualScrobblePlugin());
     }
 

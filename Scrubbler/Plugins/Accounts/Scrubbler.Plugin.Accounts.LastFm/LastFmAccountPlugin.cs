@@ -83,11 +83,13 @@ public class LastFmAccountPlugin : IAccountPlugin
             return;
         }
 
+        LogService.Debug("Starting OAuth flow");
         var a = new LastfmAuthService(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
         var sessions = await a.AuthenticateAsync();
 
         AccountId = sessions.Username;
         _sessionKey = sessions.SessionKey;
+        LogService.Debug($"Finished OAuth flow. Logged in as {AccountId}");
     }
 
     public Task LogoutAsync()
