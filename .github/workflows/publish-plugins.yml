@@ -47,7 +47,7 @@ jobs:
           done
 
       - name: Generate plugins.json
-        run: dotnet run --project PluginMetadataGenerator artifacts/zips artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
+        run: dotnet run --project PluginMetadataGenerator ..artifacts/zips ..artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
         working-directory: Scrubbler
 
       - name: Checkout Scrubbler-Plugins
