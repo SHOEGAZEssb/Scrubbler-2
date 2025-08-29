@@ -13,11 +13,20 @@ internal class InstalledPluginsViewModel : ObservableObject
     public InstalledPluginsViewModel(IPluginManager manager)
     {
         _manager = manager;
+        _manager.PluginInstalled += Manager_PluginInstalled;
+        Refresh();
+    }
+
+    private void Manager_PluginInstalled(object? sender, EventArgs e)
+    {
         Refresh();
     }
 
     public void Refresh()
     {
+        foreach (var plugin in Plugins)
+            plugin.UninstallRequested -= OnUninstallRequested;
+
         Plugins.Clear();
 
         foreach (var plugin in _manager.InstalledPlugins)

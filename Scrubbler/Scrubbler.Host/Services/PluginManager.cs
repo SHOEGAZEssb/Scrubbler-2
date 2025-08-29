@@ -29,6 +29,8 @@ internal class PluginManager : IPluginManager
     private bool _isFetchingPlugins;
 
     public event EventHandler<bool>? IsFetchingPluginsChanged;
+    public event EventHandler? PluginInstalled;
+    public event EventHandler? PluginUninstalled;
 
     public PluginManager(HostLogService hostLogService, ISettingsStore settings)
     {
@@ -44,31 +46,27 @@ internal class PluginManager : IPluginManager
 
     public List<PluginManifestEntry> AvailablePlugins { get; private set; } = [];
 
-    public async Task InstallAsync(PluginManifestEntry plugin)
+    public async Task InstallAsync(PluginManifestEntry manifest)
     {
         var rootDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
         Directory.CreateDirectory(rootDir);
 
-        // subfolder per plugin version to avoid clashes
-        var pluginDir = Path.Combine(rootDir, $"{plugin.Id}");
+        var pluginDir = Path.Combine(rootDir, manifest.Id);
         if (Directory.Exists(pluginDir))
             Directory.Delete(pluginDir, recursive: true);
         Directory.CreateDirectory(pluginDir);
 
-        // download zip
-        var zipPath = Path.Combine(pluginDir, $"{plugin.Id}.zip");
+        var zipPath = Path.Combine(pluginDir, $"{manifest.Id}.zip");
         using var http = new HttpClient();
-        var data = await http.GetByteArrayAsync(plugin.SourceUri);
+        var data = await http.GetByteArrayAsync(manifest.SourceUri);
         await File.WriteAllBytesAsync(zipPath, data);
 
-        // extract zip into the pluginDir
         System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, pluginDir);
-
-        // optionally remove the zip after extraction
         File.Delete(zipPath);
 
-        // load immediately (point DiscoverInstalledPlugins at pluginDir)
-        DiscoverInstalledPlugins();
+        // load only the new plugin
+        LoadPluginsFromDirectory(pluginDir, recursive: false);
+        PluginInstalled?.Invoke(this, EventArgs.Empty);
     }
 
     public async Task UninstallAsync(IPlugin plugin)
@@ -114,21 +112,29 @@ internal class PluginManager : IPluginManager
     private void DiscoverInstalledPlugins()
     {
         var rootDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
-        if (!Directory.Exists(rootDir))
-            Directory.CreateDirectory(rootDir);
+        Directory.CreateDirectory(rootDir);
 
-        foreach (var dll in Directory.EnumerateFiles(rootDir, "Scrubbler.Plugin.*.dll", SearchOption.AllDirectories))
+        LoadPluginsFromDirectory(rootDir, recursive: true);
+    }
+
+    private void LoadPluginsFromDirectory(string directory, bool recursive = true)
+    {
+        if (!Directory.Exists(directory))
+            return;
+
+        var search = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
+        foreach (var dll in Directory.EnumerateFiles(directory, "Scrubbler.Plugin.*.dll", search))
         {
             try
             {
                 var context = new PluginLoadContext(dll);
                 var asm = context.LoadFromAssemblyPath(dll);
 
-                var pluginTypes = asm.GetTypes();
-                var pluginTypes2 = pluginTypes.Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract);
+                var types = SafeGetTypes(asm)
+                    .Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract);
 
-
-                foreach (var pluginType in pluginTypes)
+                foreach (var pluginType in types)
                 {
                     if (Activator.CreateInstance(pluginType) is IPlugin plugin)
                     {
@@ -190,6 +196,26 @@ internal class PluginManager : IPluginManager
         finally
         {
             IsFetchingPlugins = false;
+        }
+    }
+
+    Type[] SafeGetTypes(Assembly asm)
+    {
+        try
+        {
+            return asm.GetTypes();
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            // Log which types failed
+            var msgs = ex.LoaderExceptions
+                .Where(e => e != null)
+                .Select(e => e!.Message);
+
+            _logService.Warn($"Some types in {asm.FullName} could not be loaded: {string.Join("; ", msgs)}");
+
+            // return only successfully loaded types
+            return ex.Types.Where(t => t != null).ToArray()!;
         }
     }
 }

@@ -21,6 +21,8 @@ public interface IPluginManager
     bool IsFetchingPlugins { get; }
 
     event EventHandler<bool>? IsFetchingPluginsChanged;
+    event EventHandler? PluginInstalled;
+    event EventHandler? PluginUninstalled;
 
     /// <summary>
     /// Installs a plugin given its metadata.

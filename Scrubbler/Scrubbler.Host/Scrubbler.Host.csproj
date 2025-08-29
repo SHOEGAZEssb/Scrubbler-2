@@ -45,6 +45,11 @@
         <Page Include="Presentation\Accounts\AccountsView.xaml" />
     </ItemGroup>
     <ItemGroup>
+      <None Update="shared-assemblies.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
       <Page Update="Presentation\Logging\LogView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
