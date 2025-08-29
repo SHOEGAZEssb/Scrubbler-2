@@ -39,7 +39,7 @@ jobs:
           mkdir -p artifacts/zips
           
           # read shared assemblies from file
-          SHARED_ASSEMBLIES=$(cat Scrubbler/Shared/shared-assemblies.txt)
+          SHARED_ASSEMBLIES=$(cat Scrubbler/shared-assemblies.txt)
               
           for dir in artifacts/plugins/*; do
             if [ -d "$dir" ]; then
