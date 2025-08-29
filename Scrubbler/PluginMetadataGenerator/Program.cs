@@ -40,7 +40,7 @@ class Program
 
         var entries = new List<PluginManifestEntry>();
 
-        foreach (var dll in Directory.GetFiles(pluginDir, "*.dll"))
+        foreach (var dll in Directory.GetFiles(pluginDir, "Scrubbler.Plugin.*.dll"))
         {
             try
             {
