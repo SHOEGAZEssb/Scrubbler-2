@@ -28,14 +28,14 @@ jobs:
       - name: Build plugins
         run: |
           mkdir -p artifacts/plugins
-          # build every .csproj under Scrubbler/Plugins (recursive)
-          for proj in $(find Scrubbler/Plugins -name '*.csproj'); do
+          # build every .csproj under Plugins (recursive)
+          for proj in $(find Plugins -name '*.csproj'); do
             echo "Building $proj"
             dotnet build "$proj" -c Release -o artifacts/plugins
           done
 
       - name: Generate plugins.json
-        run: dotnet run --project tools/PluginMetadataGenerator artifacts/plugins artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
+        run: dotnet run --project PluginMetadataGenerator artifacts/plugins artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
 
       - name: Checkout Scrubbler-Plugins
         uses: actions/checkout@v4
