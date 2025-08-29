@@ -47,8 +47,9 @@ jobs:
       - name: Sync plugins + manifest
         run: |
           mkdir -p out/plugins
-          cp artifacts/plugins/*.dll out/plugins/ || echo "No plugin DLLs found"
-          cp artifacts/plugins.json out/ || echo "No manifest found"
+          cp artifacts/plugins/Scrubbler.Plugin.*.dll out/plugins/ || echo "No plugin DLLs found"
+          cp artifacts/plugins.json out/
+
 
       - name: Commit and push
         working-directory: out
