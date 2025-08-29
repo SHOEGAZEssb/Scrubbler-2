@@ -3,6 +3,7 @@ using System.Text.Json;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Settings;
+using Scrubbler.Host.Helper;
 using Scrubbler.Host.Services.Logging;
 
 namespace Scrubbler.Host.Services;
@@ -38,60 +39,127 @@ internal class PluginManager : IPluginManager
         _ = RefreshAvailablePluginsAsync();
     }
 
-    public List<IPlugin> InstalledPlugins { get; private set; } = [];
+    public IEnumerable<IPlugin> InstalledPlugins => _installed.Select(p => p.Plugin);
+    private readonly List<(IPlugin Plugin, PluginLoadContext Context)> _installed = new();
 
     public List<PluginManifestEntry> AvailablePlugins { get; private set; } = [];
 
     public async Task InstallAsync(PluginManifestEntry plugin)
     {
-        var pluginDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
+        var rootDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
+        Directory.CreateDirectory(rootDir);
+
+        // subfolder per plugin version to avoid clashes
+        var pluginDir = Path.Combine(rootDir, $"{plugin.Id}");
+        if (Directory.Exists(pluginDir))
+            Directory.Delete(pluginDir, recursive: true);
         Directory.CreateDirectory(pluginDir);
 
-        var filePath = Path.Combine(pluginDir, $"{plugin.Id}.dll");
+        // download zip
+        var zipPath = Path.Combine(pluginDir, $"{plugin.Id}.zip");
         using var http = new HttpClient();
         var data = await http.GetByteArrayAsync(plugin.SourceUri);
-        await File.WriteAllBytesAsync(filePath, data);
+        await File.WriteAllBytesAsync(zipPath, data);
 
-        // load immediately
+        // extract zip into the pluginDir
+        System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, pluginDir);
+
+        // optionally remove the zip after extraction
+        File.Delete(zipPath);
+
+        // load immediately (point DiscoverInstalledPlugins at pluginDir)
         DiscoverInstalledPlugins();
     }
 
-    public Task UninstallAsync(IPlugin plugin)
+    public async Task UninstallAsync(IPlugin plugin)
     {
-        //InstalledPlugins.Remove(plugin);
-        return Task.CompletedTask;
+        // find tuple
+        var entry = _installed.FirstOrDefault(x => x.Plugin == plugin);
+        if (entry.Plugin == null)
+            return;
+
+        _installed.Remove(entry);
+
+        // unload
+        entry.Context.Unload();
+        _logService.Info($"Unloaded plugin: {plugin.Name}");
+
+        // force GC to reclaim
+        await Task.Run(() =>
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+        });
+
+        try
+        {
+            // find containing directory of the plugin DLL
+            var pluginAssembly = entry.Plugin.GetType().Assembly.Location;
+            var pluginFolder = Path.GetDirectoryName(pluginAssembly);
+            if (!string.IsNullOrEmpty(pluginFolder) && Directory.Exists(pluginFolder))
+            {
+                Directory.Delete(pluginFolder, recursive: true);
+                _logService.Info($"Deleted plugin files from {pluginFolder}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logService.Error($"Failed to remove plugin files: {ex.Message}");
+        }
     }
 
     private void DiscoverInstalledPlugins()
     {
-        var pluginDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
-        if (!Directory.Exists(pluginDir))
-            Directory.CreateDirectory(pluginDir);
+        var rootDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
+        if (!Directory.Exists(rootDir))
+            Directory.CreateDirectory(rootDir);
 
-        foreach (var file in Directory.GetFiles(pluginDir, "*.dll"))
+        var sharedAssemblies = new[]
+        {
+        "Scrubbler.Abstractions",
+        "Scrubbler.Host",
+        "Microsoft.Extensions.Logging.Abstractions",
+        "Microsoft.Extensions.Logging",
+        "Microsoft.Extensions.DependencyInjection.Abstractions",
+        "Microsoft.Extensions.DependencyInjection",
+        "Uno.UI",
+        "Uno.UI.Toolkit",
+        "Uno.Foundation",
+        "Uno.Xaml",
+        "CommunityToolkit.Mvvm"
+    };
+
+        foreach (var dll in Directory.EnumerateFiles(rootDir, "Scrubbler.Plugin.*.dll", SearchOption.AllDirectories))
         {
             try
             {
-                var asm = Assembly.LoadFrom(file);
-                var plugins = asm.GetTypes()
+                var context = new PluginLoadContext(dll, sharedAssemblies);
+                var asm = context.LoadFromAssemblyPath(dll);
+
+                var pluginTypes = asm.GetTypes()
                     .Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract);
 
-                foreach (var pluginType in plugins)
+                foreach (var pluginType in pluginTypes)
                 {
                     if (Activator.CreateInstance(pluginType) is IPlugin plugin)
                     {
                         plugin.LogService = new ModuleLogService(_hostLogService, plugin.Name);
-                        InstalledPlugins.Add(plugin);
+                        _installed.Add((plugin, context));
                         _logService.Info($"Loaded Plugin: {plugin.Name} v{asm.GetName().Version}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logService.Error($"Failed to load plugin from {file}: {ex.Message}");
+                _logService.Error($"Failed to load plugin from {dll}: {ex.Message}");
             }
         }
     }
+
+
 
     public async Task RefreshAvailablePluginsAsync()
     {

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UseWinUI>true</UseWinUI>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="ManualScrobbleView.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Page Include="ManualScrobbleView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -10,7 +10,7 @@ public interface IPluginManager
     /// <summary>
     /// Returns the plugins currently installed and active.
     /// </summary>
-    List<IPlugin> InstalledPlugins { get; }
+    IEnumerable<IPlugin> InstalledPlugins { get; }
 
     /// <summary>
     /// Returns the plugins available for installation (from repositories).

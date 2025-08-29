@@ -20,20 +20,8 @@
         </None>
     </ItemGroup>
 
-    <!-- Tell MSBuild where the host’s plugin folder lives -->
     <PropertyGroup>
-        <!-- Adjust path depending on solution structure -->
-        <HostPluginsDir>$(SolutionDir)Scrubbler.Host\bin\$(Configuration)\net9.0-desktop\Plugins</HostPluginsDir>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
-
-    <Target Name="CopySelfToHostPlugins" AfterTargets="Build">
-        <Message Text="Copying plugin: $(TargetPath) → $(HostPluginsDir)" Importance="high" />
-        <MakeDir Directories="$(HostPluginsDir)" />
-        <Copy
-          SourceFiles="$(TargetPath)"
-          DestinationFolder="$(HostPluginsDir)"
-          SkipUnchangedFiles="true" />
-    </Target>
 
 </Project>

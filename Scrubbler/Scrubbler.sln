@@ -18,13 +18,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Abstractions", "S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.ManualScrobbler", "Plugins\Scrubbler.Plugin.ManualScrobbler\Scrubbler.Plugin.ManualScrobbler.csproj", "{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobblers.ManualScrobbler", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobblers.ManualScrobbler\Scrubbler.Plugin.Scrobblers.ManualScrobbler.csproj", "{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Accounts", "Accounts", "{FD46BF08-594F-4224-BD15-2DB872961D54}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Accounts.LastFm", "Plugins\Accounts\Scrubbler.Plugin.Accounts.LastFm\Scrubbler.Plugin.Accounts.LastFm.csproj", "{C4B8A7B8-FD80-4664-AAB7-0667CD5E8D57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginMetadataGenerator", "PluginMetadataGenerator\PluginMetadataGenerator.csproj", "{0ACF0970-1AC0-4263-A6DD-E6947A84AF16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scrobblers", "Scrobblers", "{4536D109-4649-4376-B775-F791CE753B4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,9 +61,10 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1} = {797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}
+		{A3788BD6-1E0E-4DFC-B14E-40AB06C467A1} = {4536D109-4649-4376-B775-F791CE753B4A}
 		{FD46BF08-594F-4224-BD15-2DB872961D54} = {797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}
 		{C4B8A7B8-FD80-4664-AAB7-0667CD5E8D57} = {FD46BF08-594F-4224-BD15-2DB872961D54}
+		{4536D109-4649-4376-B775-F791CE753B4A} = {797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB28EE7E-5D57-4092-8B8A-1EE7C97A6790}
