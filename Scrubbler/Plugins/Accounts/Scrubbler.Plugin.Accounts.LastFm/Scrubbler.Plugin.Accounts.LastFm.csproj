@@ -24,6 +24,7 @@
     <PropertyGroup>
         <!-- Adjust path depending on solution structure -->
         <HostPluginsDir>$(SolutionDir)Scrubbler.Host\bin\$(Configuration)\net9.0-desktop\Plugins</HostPluginsDir>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
     <Target Name="CopySelfToHostPlugins" AfterTargets="Build">
