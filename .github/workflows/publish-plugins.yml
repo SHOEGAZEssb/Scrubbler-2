@@ -34,32 +34,32 @@ jobs:
           done
         working-directory: Scrubbler
 
-        - name: Package plugins
-          run: |
-            mkdir -p artifacts/zips
-            
-            # list of assemblies provided by the host and not needed in zips
-            SHARED_ASSEMBLIES="\
-              Scrubbler.Abstractions.dll \
-              Scrubbler.Host.dll \
-              Microsoft.Extensions.*.dll \
-              Uno.*.dll \
-              CommunityToolkit.Mvvm.dll"
+      - name: Package plugins
+        run: |
+          mkdir -p artifacts/zips
+          
+          # list of assemblies provided by the host and not needed in zips
+          SHARED_ASSEMBLIES="\
+            Scrubbler.Abstractions.dll \
+            Scrubbler.Host.dll \
+            Microsoft.Extensions.*.dll \
+            Uno.*.dll \
+            CommunityToolkit.Mvvm.dll"
               
-            for dir in artifacts/plugins/*; do
-              if [ -d "$dir" ]; then
-                pluginName=$(basename "$dir")
-                zipFile="artifacts/zips/${pluginName}.zip"
-                echo "Zipping $pluginName -> $zipFile"
-                # build an exclusion list for zip
-                excludes=""
-                for pat in $SHARED_ASSEMBLIES; do
-                  excludes="$excludes -x $pat"
-                done
-                # zip only plugin dll + deps, skip shared
-                (cd "$dir" && zip -r "../../zips/${pluginName}.zip" . $excludes)
-              fi
-            done
+          for dir in artifacts/plugins/*; do
+            if [ -d "$dir" ]; then
+              pluginName=$(basename "$dir")
+              zipFile="artifacts/zips/${pluginName}.zip"
+              echo "Zipping $pluginName -> $zipFile"
+              # build an exclusion list for zip
+              excludes=""
+              for pat in $SHARED_ASSEMBLIES; do
+                excludes="$excludes -x $pat"
+              done
+              # zip only plugin dll + deps, skip shared
+              (cd "$dir" && zip -r "../../zips/${pluginName}.zip" . $excludes)
+            fi
+          done
 
       - name: Generate plugins.json
         run: dotnet run --project PluginMetadataGenerator ../artifacts/zips ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
