@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -28,11 +29,11 @@ class Program
     {
         if (args.Length < 3)
         {
-            Console.Error.WriteLine("Usage: PluginMetadataGenerator <pluginDir> <outputJson> <baseDownloadUrl>");
+            Console.Error.WriteLine("Usage: PluginMetadataGenerator <zipDir> <outputJson> <baseDownloadUrl>");
             Environment.Exit(1);
         }
 
-        var pluginDir = args[0];
+        var zipDir = args[0];
         var outputPath = args[1];
         var baseUrl = args[2].TrimEnd('/');
 
@@ -40,10 +41,26 @@ class Program
 
         var entries = new List<PluginManifestEntry>();
 
-        foreach (var dll in Directory.GetFiles(pluginDir, "Scrubbler.Plugin.*.dll"))
+        foreach (var zipFile in Directory.GetFiles(zipDir, "Scrubbler.Plugin.*.zip"))
         {
+            var tempDir = Path.Combine(Path.GetTempPath(), "scrubbler_plugin_" + Path.GetFileNameWithoutExtension(zipFile));
+            if (Directory.Exists(tempDir))
+                Directory.Delete(tempDir, recursive: true);
+            Directory.CreateDirectory(tempDir);
+
             try
             {
+                // extract zip to temp folder
+                ZipFile.ExtractToDirectory(zipFile, tempDir);
+
+                // find the main plugin DLL inside the zip
+                var dll = Directory.GetFiles(tempDir, "Scrubbler.Plugin.*.dll").FirstOrDefault();
+                if (dll == null)
+                {
+                    Console.WriteLine($"Skipping {zipFile}: no Scrubbler.Plugin.*.dll found inside");
+                    continue;
+                }
+
                 var asm = Assembly.LoadFrom(dll);
 
                 // find all IPlugin implementations
@@ -54,7 +71,7 @@ class Program
                 {
                     if (Activator.CreateInstance(type) is not IPlugin plugin)
                     {
-                        Console.WriteLine($"Skipping {dll}:{type.Name} → could not instantiate");
+                        Console.WriteLine($"Skipping {zipFile}:{type.Name} → could not instantiate");
                         continue;
                     }
 
@@ -63,7 +80,7 @@ class Program
                                      ?? asm.GetName().Version?.ToString()
                                      ?? "0.0.0";
 
-                    // drop build metadata (e.g. +sha) and pre-release info if you want
+                    // trim off build metadata (e.g. +sha)
                     var version = rawVersion.Split('+')[0];
 
                     // resolve type label dynamically
@@ -77,7 +94,7 @@ class Program
                         IconUri: null,
                         PluginType: pluginTypeLabel,
                         SupportedPlatforms: plugin.SupportedPlatforms.ToString().Split(", "),
-                        SourceUri: new Uri($"{baseUrl}/{Path.GetFileName(dll)}")
+                        SourceUri: new Uri($"{baseUrl}/plugins/{Path.GetFileName(zipFile)}")
                     );
 
                     entries.Add(entry);
@@ -86,7 +103,11 @@ class Program
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Failed to inspect {dll}: {ex.Message}");
+                Console.Error.WriteLine($"Failed to inspect {zipFile}: {ex.Message}");
+            }
+            finally
+            {
+                try { Directory.Delete(tempDir, recursive: true); } catch { /* ignore */ }
             }
         }
 

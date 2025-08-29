@@ -8,11 +8,14 @@ internal class AvailablePluginsViewModel : ObservableObject
 {
     public ObservableCollection<PluginMetadataViewModel> Plugins { get; } = new();
 
+    public bool IsFetchingPlugins => _manager.IsFetchingPlugins;
+
     private readonly IPluginManager _manager;
 
     public AvailablePluginsViewModel(IPluginManager manager)
     {
         _manager = manager;
+        _manager.IsFetchingPluginsChanged += Manager_IsFetchingPluginsChanged;
         Refresh();
     }
 
@@ -30,7 +33,13 @@ internal class AvailablePluginsViewModel : ObservableObject
 
     private async void OnInstallRequested(object? sender, PluginManifestEntry meta)
     {
-        //await _manager.InstallAsync(meta);
+        await _manager.InstallAsync(meta);
+        Refresh();
+    }
+
+    private void Manager_IsFetchingPluginsChanged(object? sender, bool e)
+    {
+        OnPropertyChanged(nameof(IsFetchingPlugins));
         Refresh();
     }
 }

@@ -18,6 +18,10 @@ public interface IPluginManager
     /// </summary>
     List<PluginManifestEntry> AvailablePlugins { get; }
 
+    bool IsFetchingPlugins { get; }
+
+    event EventHandler<bool>? IsFetchingPluginsChanged;
+
     /// <summary>
     /// Installs a plugin given its metadata.
     /// </summary>

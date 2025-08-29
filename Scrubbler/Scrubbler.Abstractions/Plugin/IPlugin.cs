@@ -20,6 +20,5 @@ public interface IPlugin
     PlatformSupport SupportedPlatforms { get; }
     IPluginViewModel GetViewModel();
     IconSource? Icon { get; }
-    IPluginMetadata Metadata { get; }
     ILogService LogService { get; set; }
 }

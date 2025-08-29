@@ -17,24 +17,16 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     #region IPlugin
 
-    public string Name => Metadata.Name;
+    public string Name => "Last.fm";
 
-    public string Description => Metadata.Description;
-    public Version Version => Metadata.Version;
+    public string Description => "Scrobble to a last.fm account";
+    public Version Version => typeof(LastFmAccountPlugin).Assembly.GetName().Version!;
 
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
 
     public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.Play };
 
     public ILogService LogService { get; set; }
-
-    public IPluginMetadata Metadata =>
-        new PluginMetadata(
-            Id: "account.lastfm",
-            Name: "Last.fm",
-            typeof(LastFmAccountPlugin).Assembly.GetName().Version!,
-            Description: "Scrobble to a last.fm account",
-            SupportedPlatforms: new[] { "All" });
 
     #endregion IPlugin
 

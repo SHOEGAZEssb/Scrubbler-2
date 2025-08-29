@@ -44,16 +44,16 @@ internal class PluginManager : IPluginManager
 
     public async Task InstallAsync(PluginManifestEntry plugin)
     {
-        //var pluginDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
-        //Directory.CreateDirectory(pluginDir);
+        var pluginDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
+        Directory.CreateDirectory(pluginDir);
 
-        //var filePath = Path.Combine(pluginDir, $"{plugin.Id}-{plugin.Version}.dll");
-        //using var http = new HttpClient();
-        //var data = await http.GetByteArrayAsync(plugin.SourceUri);
-        //await File.WriteAllBytesAsync(filePath, data);
+        var filePath = Path.Combine(pluginDir, $"{plugin.Id}.dll");
+        using var http = new HttpClient();
+        var data = await http.GetByteArrayAsync(plugin.SourceUri);
+        await File.WriteAllBytesAsync(filePath, data);
 
-        //// load immediately
-        //DiscoverInstalledPlugins();
+        // load immediately
+        DiscoverInstalledPlugins();
     }
 
     public Task UninstallAsync(IPlugin plugin)
@@ -95,6 +95,7 @@ internal class PluginManager : IPluginManager
 
     public async Task RefreshAvailablePluginsAsync()
     {
+        AvailablePlugins.Clear();
         IsFetchingPlugins = true;
 
         try
@@ -103,19 +104,19 @@ internal class PluginManager : IPluginManager
                        ?? new List<PluginRepository>
                        {
                        // default fallback if settings.json has nothing
-                       new("Default", "https://raw.githubusercontent.com/your-org/scrubbler-plugins/main/plugins.json")
+                       new("Default", "https://raw.githubusercontent.com/shoegazessb/scrubbler-plugins/main/plugins.json")
                        };
 
             var all = new List<PluginManifestEntry>();
 
+            using var http = new HttpClient();
             foreach (var repo in repos)
             {
                 try
                 {
-                    using var http = new HttpClient();
                     var json = await http.GetStringAsync(repo.Url);
 
-                    var docs = JsonSerializer.Deserialize<List<PluginMetadata>>(json, new JsonSerializerOptions
+                    var docs = JsonSerializer.Deserialize<List<PluginManifestEntry>>(json, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
@@ -132,7 +133,7 @@ internal class PluginManager : IPluginManager
                 }
             }
 
-            //AvailablePlugins = all;
+            AvailablePlugins = all;
         }
         finally
         {

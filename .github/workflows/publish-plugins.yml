@@ -26,15 +26,28 @@ jobs:
       - name: Build plugins
         run: |
           mkdir -p ../artifacts/plugins
-          # build every .csproj under Plugins (recursive)
           for proj in $(find Plugins -name '*.csproj'); do
             echo "Building $proj"
-            dotnet build "$proj" -c Release -o ../artifacts/plugins
+            outdir="../artifacts/plugins/$(basename $proj .csproj)"
+            mkdir -p "$outdir"
+            dotnet build "$proj" -c Release -o "$outdir"
           done
         working-directory: Scrubbler
 
+      - name: Package plugins
+        run: |
+          mkdir -p artifacts/zips
+          for dir in artifacts/plugins/*; do
+            if [ -d "$dir" ]; then
+              pluginName=$(basename "$dir")
+              zipFile="artifacts/zips/${pluginName}.zip"
+              echo "Zipping $pluginName -> $zipFile"
+              (cd "$dir" && zip -r "../../zips/${pluginName}.zip" .)
+            fi
+          done
+
       - name: Generate plugins.json
-        run: dotnet run --project PluginMetadataGenerator ../artifacts/plugins ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
+        run: dotnet run --project PluginMetadataGenerator artifacts/zips artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
         working-directory: Scrubbler
 
       - name: Checkout Scrubbler-Plugins
@@ -47,9 +60,8 @@ jobs:
       - name: Sync plugins + manifest
         run: |
           mkdir -p out/plugins
-          cp artifacts/plugins/Scrubbler.Plugin.*.dll out/plugins/ || echo "No plugin DLLs found"
+          cp artifacts/zips/*.zip out/plugins/ || echo "No plugin zips found"
           cp artifacts/plugins.json out/
-
 
       - name: Commit and push
         working-directory: out

@@ -9,25 +9,16 @@ public class ManualScrobblePlugin : IScrobblePlugin
 {
     #region Properties
 
-    public string Name => Metadata.Name;
+    public string Name => "Manual Scrobbler";
 
-    public string Description => Metadata.Description;
-    public Version Version => Metadata.Version;
+    public string Description => "Enter track details manually and scrobble it";
+    public Version Version => typeof(ManualScrobblePlugin).Assembly.GetName().Version!;
 
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
 
     public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.Manage };
 
     public ILogService LogService { get; set; }
-
-    public IPluginMetadata Metadata =>
-    new PluginMetadata(
-        Id: "scrobbler.manual",
-        Name: "Manual Scrobbler",
-        typeof(ManualScrobblePlugin).Assembly.GetName().Version!,
-        Description: "Enter track details manually and scrobble it",
-        SupportedPlatforms: new[] { "All" }
-    );
 
     private readonly ManualScrobbleViewModel _vm = new();
 
