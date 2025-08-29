@@ -16,8 +16,10 @@ public interface IPlugin
 {
     string Name { get; }
     string Description { get; }
+    Version Version { get; }
     PlatformSupport SupportedPlatforms { get; }
     IPluginViewModel GetViewModel();
-    IconSource? Icon {  get; }
+    IconSource? Icon { get; }
+    IPluginMetadata Metadata { get; }
     ILogService LogService { get; set; }
 }

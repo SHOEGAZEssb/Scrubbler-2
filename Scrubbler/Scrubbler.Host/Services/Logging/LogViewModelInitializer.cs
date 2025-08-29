@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Scrubbler.Host.Presentation.Logging;
 
 namespace Scrubbler.Host.Services.Logging;
-internal class HostLogService : IHostedService
+internal class LogViewModelInitializer : IHostedService
 {
-    public event Action<LogMessage>? MessageLogged;
-
-    internal void Write(LogLevel level, string module, string message, Exception? ex = null)
+    public LogViewModelInitializer(LogViewModel log)
     {
-        var entry = new LogMessage(DateTime.UtcNow, level, module, message, ex);
-        MessageLogged?.Invoke(entry);
+        // just taking the dependency ensures it's constructed
+        _ = log;
     }
 
     public Task StartAsync(CancellationToken ct) => Task.CompletedTask;

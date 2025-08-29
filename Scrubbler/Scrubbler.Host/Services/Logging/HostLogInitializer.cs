@@ -5,16 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Scrubbler.Host.Services.Logging;
-internal class HostLogService : IHostedService
-{
-    public event Action<LogMessage>? MessageLogged;
 
-    internal void Write(LogLevel level, string module, string message, Exception? ex = null)
+internal class HostLogInitializer : IHostedService
+{
+    public HostLogInitializer(HostLogService log)
     {
-        var entry = new LogMessage(DateTime.UtcNow, level, module, message, ex);
-        MessageLogged?.Invoke(entry);
+        // just taking the dependency ensures it's constructed
+        _ = log;
     }
 
     public Task StartAsync(CancellationToken ct) => Task.CompletedTask;
     public Task StopAsync(CancellationToken ct) => Task.CompletedTask;
 }
+

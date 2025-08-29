@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
-using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Settings;
 
-namespace Scrubbler.Host.Services;
+namespace Scrubbler.Host.Services.Settings;
 
 /// <summary>
 /// Very simple file-based secure store.
@@ -57,7 +57,7 @@ public class FileSecureStore : ISecureStore
     private Dictionary<string, string> LoadFromDisk()
     {
         if (!File.Exists(StorePath))
-            return new Dictionary<string, string>();
+            return [];
 
         try
         {
@@ -65,11 +65,11 @@ public class FileSecureStore : ISecureStore
             var bytes = Decrypt(encrypted);
             var json = Encoding.UTF8.GetString(bytes);
             return System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json)
-                   ?? new Dictionary<string, string>();
+                   ?? [];
         }
         catch
         {
-            return new Dictionary<string, string>();
+            return [];
         }
     }
 

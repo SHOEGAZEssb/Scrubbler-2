@@ -10,18 +10,18 @@ public interface IPluginManager
     /// <summary>
     /// Returns the plugins currently installed and active.
     /// </summary>
-    IEnumerable<IPlugin> InstalledPlugins { get; }
+    List<IPlugin> InstalledPlugins { get; }
 
     /// <summary>
     /// Returns the plugins available for installation (from repositories).
     /// May be empty until repositories are queried.
     /// </summary>
-    IEnumerable<IPluginMetadata> AvailablePlugins { get; }
+    List<PluginManifestEntry> AvailablePlugins { get; }
 
     /// <summary>
     /// Installs a plugin given its metadata.
     /// </summary>
-    Task InstallAsync(IPluginMetadata plugin);
+    Task InstallAsync(PluginManifestEntry plugin);
 
     /// <summary>
     /// Uninstalls a plugin.

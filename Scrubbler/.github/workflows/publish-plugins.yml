@@ -1,0 +1,57 @@
+name: Publish Plugins
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Scrubbler-2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore Scrubbler.sln
+
+      - name: Build plugins
+        run: |
+          mkdir -p artifacts/plugins
+          # build every .csproj under Scrubbler/Plugins (recursive)
+          for proj in $(find Scrubbler/Plugins -name '*.csproj'); do
+            echo "Building $proj"
+            dotnet build "$proj" -c Release -o artifacts/plugins
+          done
+
+      - name: Generate plugins.json
+        run: dotnet run --project tools/PluginMetadataGenerator artifacts/plugins artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
+
+      - name: Checkout Scrubbler-Plugins
+        uses: actions/checkout@v4
+        with:
+          repository: SHOEGAZEssb/Scrubbler-Plugins
+          token: ${{ secrets.PLUGIN_REPO_TOKEN }}
+          path: out
+
+      - name: Sync plugins + manifest
+        run: |
+          mkdir -p out/plugins
+          cp artifacts/plugins/*.dll out/plugins/
+          cp artifacts/plugins.json out/
+
+      - name: Commit and push
+        run: |
+          cd out
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Update plugins from $GITHUB_SHA" || echo "No changes to commit"
+          git push

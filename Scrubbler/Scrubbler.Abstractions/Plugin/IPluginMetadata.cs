@@ -1,4 +1,4 @@
-namespace Scrubbler.Host.Models;
+namespace Scrubbler.Abstractions.Plugin;
 
 /// <summary>
 /// Describes a plugin package that can be installed.
@@ -26,17 +26,7 @@ public interface IPluginMetadata
     string Description { get; }
 
     /// <summary>
-    /// Icon for display in UI (e.g. a PNG/SVG URL).
-    /// </summary>
-    Uri? IconUri { get; }
-
-    /// <summary>
     /// List of platforms this plugin supports (Windows, Linux, macOS, WASM).
     /// </summary>
     IReadOnlyList<string> SupportedPlatforms { get; }
-
-    /// <summary>
-    /// Where the plugin can be fetched (repository URL).
-    /// </summary>
-    Uri SourceUri { get; }
 }

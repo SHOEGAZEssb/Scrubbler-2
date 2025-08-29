@@ -9,7 +9,7 @@ using Scrubbler.Host.Services.Logging;
 
 namespace Scrubbler.Host.Presentation.Logging;
 
-internal class LogViewModel : ObservableObject
+internal class LogViewModel : ObservableObject, IHostedService
 {
     public ObservableCollection<LogMessage> Entries { get; } = [];
 
@@ -17,6 +17,9 @@ internal class LogViewModel : ObservableObject
     {
         hostLogService.MessageLogged += Add;
     }
+
+    public Task StartAsync(CancellationToken ct) => Task.CompletedTask;
+    public Task StopAsync(CancellationToken ct) => Task.CompletedTask;
 
     private void Add(LogMessage entry)
     {

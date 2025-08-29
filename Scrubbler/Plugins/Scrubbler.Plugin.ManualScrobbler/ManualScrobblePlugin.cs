@@ -7,17 +7,31 @@ namespace Scrubbler.Plugin.ManualScrobbler;
 
 public class ManualScrobblePlugin : IScrobblePlugin
 {
-    public string Name => "Manual Scrobbler";
+    #region Properties
 
-    public string Description => "Allows you to manually enter scrobble data";
+    public string Name => Metadata.Name;
+
+    public string Description => Metadata.Description;
+    public Version Version => Metadata.Version;
 
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
 
-    public IconSource? Icon => null;
+    public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.Manage };
 
     public ILogService LogService { get; set; }
 
+    public IPluginMetadata Metadata =>
+    new PluginMetadata(
+        Id: "scrobbler.manual",
+        Name: "Manual Scrobbler",
+        typeof(ManualScrobblePlugin).Assembly.GetName().Version!,
+        Description: "Enter track details manually and scrobble it",
+        SupportedPlatforms: new[] { "All" }
+    );
+
     private readonly ManualScrobbleViewModel _vm = new();
+
+    #endregion Properties
 
     public ManualScrobblePlugin()
     {

@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml.Controls;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Settings;
 using Shoegaze.LastFM.Authentication;
 
 namespace Scrubbler.Plugin.Accounts.LastFm;
@@ -16,15 +17,24 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     #region IPlugin
 
-    public string Name => "Last.fm";
+    public string Name => Metadata.Name;
 
-    public string Description => "Scrobble to a last.fm account";
+    public string Description => Metadata.Description;
+    public Version Version => Metadata.Version;
 
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
 
-    public IconSource? Icon => throw new NotImplementedException();
+    public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.Play };
 
     public ILogService LogService { get; set; }
+
+    public IPluginMetadata Metadata =>
+        new PluginMetadata(
+            Id: "account.lastfm",
+            Name: "Last.fm",
+            typeof(LastFmAccountPlugin).Assembly.GetName().Version!,
+            Description: "Scrobble to a last.fm account",
+            SupportedPlatforms: new[] { "All" });
 
     #endregion IPlugin
 

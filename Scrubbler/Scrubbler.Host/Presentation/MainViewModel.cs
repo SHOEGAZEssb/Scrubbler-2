@@ -4,6 +4,8 @@ using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Navigation;
+using Scrubbler.Host.Presentation.Plugins;
+using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
 using Scrubbler.Plugin.ManualScrobbler;
 
@@ -37,21 +39,21 @@ internal partial class MainViewModel : ObservableObject
         // static pages
         Items.Add(new NavigationItemViewModel("Home", new SymbolIconSource() { Symbol = Symbol.Home }, new HomeViewModel()));
         Items.Add(new NavigationItemViewModel("Accounts", new SymbolIconSource() { Symbol = Symbol.Account }, services.GetRequiredService<AccountsViewModel>()));
-        Items.Add(new NavigationItemViewModel("Plugin Manager", new SymbolIconSource() { Symbol = Symbol.Admin }, new PluginManagerViewModel()));
+        Items.Add(new NavigationItemViewModel("Plugin Manager", new SymbolIconSource() { Symbol = Symbol.Admin }, services.GetRequiredService<PluginManagerViewModel>()));
 
         // plugins group
         var pluginsGroup = new NavigationItemViewModel("Plugins", new SymbolIconSource { Symbol = Symbol.AllApps });
 
         // plugins
-        var plugins = new List<IPlugin> { new ManualScrobblePlugin() };
-        foreach (var plugin in plugins)
+        var manager = services.GetRequiredService<IPluginManager>();
+        foreach (var plugin in manager.InstalledPlugins.Where(p => p is IScrobblePlugin))
         {
             pluginsGroup.Children.Add(new PluginNavigationItemViewModel(plugin));
         }
 
         Items.Add(pluginsGroup);
 
-        Items.Add(new NavigationItemViewModel("Logs", new SymbolIconSource() { Symbol = Symbol.Document }, new LogViewModel(services.GetRequiredService<HostLogService>())));
+        Items.Add(new NavigationItemViewModel("Logs", new SymbolIconSource() { Symbol = Symbol.Document }, services.GetRequiredService<LogViewModel>()));
 
         SelectedItem = Items.FirstOrDefault();
     }

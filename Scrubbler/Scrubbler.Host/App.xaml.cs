@@ -1,8 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
-using Scrubbler.Abstractions;
+using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Presentation.Accounts;
+using Scrubbler.Host.Presentation.Logging;
+using Scrubbler.Host.Presentation.Plugins;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
+using Scrubbler.Host.Services.Settings;
+using Windows.Devices.WiFiDirect.Services;
 
 namespace Scrubbler.Host;
 public partial class App : Application
@@ -44,9 +48,9 @@ public partial class App : Application
                     // Uno Platform namespace filter groups
                     // Uncomment individual methods to see more detailed logging
                     //// Generic Xaml events
-                    logBuilder.XamlLogLevel(LogLevel.Debug);
+                    //logBuilder.XamlLogLevel(LogLevel.Debug);
                     //// Layout specific messages
-                    logBuilder.XamlLayoutLogLevel(LogLevel.Debug);
+                    //logBuilder.XamlLayoutLogLevel(LogLevel.Debug);
                     //// Storage messages
                     //logBuilder.StorageLogLevel(LogLevel.Debug);
                     //// Binding related messages
@@ -66,12 +70,16 @@ public partial class App : Application
                 )
                 .ConfigureServices((context, services) =>
                 {
-                    // TODO: Register your services
-                    //services.AddSingleton<IMyService, MyService>();
+                    services.AddSingleton<HostLogService>();
+                    services.AddHostedService<HostLogInitializer>();
+                    services.AddSingleton<LogViewModel>();
+                    services.AddHostedService<LogViewModelInitializer>();
+
                     services.AddSingleton<ISecureStore, FileSecureStore>();
+                    services.AddSingleton<ISettingsStore, JsonSettingsStore>();
                     services.AddSingleton<IPluginManager, PluginManager>();
                     services.AddTransient<AccountsViewModel>();
-                    services.AddSingleton<HostLogService>();
+                    services.AddTransient<PluginManagerViewModel>();
                 })
                 .UseNavigation(RegisterRoutes)
             );

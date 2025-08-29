@@ -1,24 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <UseWinUI>true</UseWinUI>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UseWinUI>true</UseWinUI>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="ManualScrobbleView.xaml" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="ManualScrobbleView.xaml" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Page Include="ManualScrobbleView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
+    <ItemGroup>
+        <Page Include="ManualScrobbleView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+    </ItemGroup>
+
+    <!-- Tell MSBuild where the host’s plugin folder lives -->
+    <PropertyGroup>
+        <!-- Adjust path depending on solution structure -->
+        <HostPluginsDir>$(SolutionDir)Scrubbler.Host\bin\$(Configuration)\net9.0-desktop\Plugins</HostPluginsDir>
+    </PropertyGroup>
+
+    <Target Name="CopySelfToHostPlugins" AfterTargets="Build">
+        <Message Text="Copying plugin: $(TargetPath) → $(HostPluginsDir)" Importance="high" />
+        <MakeDir Directories="$(HostPluginsDir)" />
+        <Copy
+          SourceFiles="$(TargetPath)"
+          DestinationFolder="$(HostPluginsDir)"
+          SkipUnchangedFiles="true" />
+    </Target>
 
 </Project>

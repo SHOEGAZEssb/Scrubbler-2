@@ -1,4 +1,4 @@
-namespace Scrubbler.Abstractions;
+namespace Scrubbler.Abstractions.Settings;
 
 public interface ISecureStore
 {
