@@ -21,7 +21,7 @@ public class LastFmAccountPlugin : IAccountPlugin
     public string Name => "Last.fm";
 
     public string Description => "Scrobble to a last.fm account";
-    public Version Version => new Version(typeof(LastFmAccountPlugin).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion!);
+    public Version Version => typeof(LastFmAccountPlugin).Assembly.GetName().Version!;
 
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
 

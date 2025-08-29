@@ -6,7 +6,7 @@ namespace Scrubbler.Host.Presentation.Plugins;
 
 internal class InstalledPluginsViewModel : ObservableObject
 {
-    public ObservableCollection<InstalledPluginViewModel> Plugins { get; } = new();
+    public ObservableCollection<InstalledPluginViewModel> Plugins { get; } = [];
 
     private readonly IPluginManager _manager;
 

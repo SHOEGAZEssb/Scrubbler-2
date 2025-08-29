@@ -7,7 +7,7 @@ public class JsonSettingsStore : ISettingsStore
 {
     private readonly string _filePath;
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private Dictionary<string, JsonElement> _settings = new();
+    private Dictionary<string, JsonElement> _settings = [];
 
     public JsonSettingsStore(string? filePath = null)
     {
@@ -17,7 +17,7 @@ public class JsonSettingsStore : ISettingsStore
         if (File.Exists(_filePath))
         {
             var json = File.ReadAllText(_filePath);
-            _settings = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json) ?? new();
+            _settings = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json) ?? [];
         }
     }
 

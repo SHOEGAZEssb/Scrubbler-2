@@ -13,7 +13,7 @@ internal static class SharedAssemblyList
         var path = Path.Combine(AppContext.BaseDirectory, "shared-assemblies.txt");
         return File.Exists(path)
             ? File.ReadAllLines(path).Where(l => !string.IsNullOrWhiteSpace(l)).ToList()
-            : new List<string>();
+            : [];
     });
 
     public static bool IsShared(string assemblyName)

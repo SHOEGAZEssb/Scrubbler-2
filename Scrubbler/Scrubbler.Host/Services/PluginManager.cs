@@ -40,7 +40,7 @@ internal class PluginManager : IPluginManager
     }
 
     public IEnumerable<IPlugin> InstalledPlugins => _installed.Select(p => p.Plugin);
-    private readonly List<(IPlugin Plugin, PluginLoadContext Context)> _installed = new();
+    private readonly List<(IPlugin Plugin, PluginLoadContext Context)> _installed = [];
 
     public List<PluginManifestEntry> AvailablePlugins { get; private set; } = [];
 
@@ -124,8 +124,9 @@ internal class PluginManager : IPluginManager
                 var context = new PluginLoadContext(dll);
                 var asm = context.LoadFromAssemblyPath(dll);
 
-                var pluginTypes = asm.GetTypes()
-                    .Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract);
+                var pluginTypes = asm.GetTypes();
+                var pluginTypes2 = pluginTypes.Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract);
+
 
                 foreach (var pluginType in pluginTypes)
                 {
@@ -144,8 +145,6 @@ internal class PluginManager : IPluginManager
         }
     }
 
-
-
     public async Task RefreshAvailablePluginsAsync()
     {
         AvailablePlugins.Clear();
@@ -154,11 +153,11 @@ internal class PluginManager : IPluginManager
         try
         {
             var repos = await _settings.GetAsync<List<PluginRepository>>("PluginRepositories")
-                       ?? new List<PluginRepository>
-                       {
+                       ??
+                       [
                        // default fallback if settings.json has nothing
                        new("Default", "https://raw.githubusercontent.com/shoegazessb/scrubbler-plugins/main/plugins.json")
-                       };
+                       ];
 
             var all = new List<PluginManifestEntry>();
 

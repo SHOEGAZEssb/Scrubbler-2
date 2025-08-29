@@ -6,7 +6,7 @@ namespace Scrubbler.Host.Presentation.Plugins;
 
 internal class AvailablePluginsViewModel : ObservableObject
 {
-    public ObservableCollection<PluginMetadataViewModel> Plugins { get; } = new();
+    public ObservableCollection<PluginMetadataViewModel> Plugins { get; } = [];
 
     public bool IsFetchingPlugins => _manager.IsFetchingPlugins;
 
@@ -25,9 +25,16 @@ internal class AvailablePluginsViewModel : ObservableObject
 
         foreach (var meta in _manager.AvailablePlugins)
         {
-            var vm = new PluginMetadataViewModel(meta);
-            vm.InstallRequested += OnInstallRequested;
-            Plugins.Add(vm);
+            var installed = _manager.InstalledPlugins
+                .Any(p => string.Equals(p.GetType().FullName, meta.Id, StringComparison.OrdinalIgnoreCase));
+
+            if (!installed)
+            {
+                var vm = new PluginMetadataViewModel(meta);
+                vm.InstallRequested += OnInstallRequested;
+                Plugins.Add(vm);
+            }
+            // if installed → skip (updates handled elsewhere)
         }
     }
 
