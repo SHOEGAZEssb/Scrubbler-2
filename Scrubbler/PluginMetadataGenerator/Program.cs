@@ -59,9 +59,12 @@ class Program
                     }
 
                     var id = type.FullName?.ToLowerInvariant() ?? Path.GetFileNameWithoutExtension(dll).ToLowerInvariant();
-                    var version = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-                                  ?? asm.GetName().Version?.ToString()
-                                  ?? "0.0.0";
+                    var rawVersion = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                                     ?? asm.GetName().Version?.ToString()
+                                     ?? "0.0.0";
+
+                    // drop build metadata (e.g. +sha) and pre-release info if you want
+                    var version = rawVersion.Split('+')[0];
 
                     // resolve type label dynamically
                     var pluginTypeLabel = ResolvePluginType(type);
