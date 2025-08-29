@@ -7,9 +7,6 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Scrubbler
 
     steps:
       - name: Checkout Scrubbler-2
@@ -22,39 +19,43 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore
+      - name: Restore solution
         run: dotnet restore Scrubbler.sln
+        working-directory: Scrubbler
 
       - name: Build plugins
         run: |
-          mkdir -p artifacts/plugins
+          mkdir -p ../artifacts/plugins
           # build every .csproj under Plugins (recursive)
           for proj in $(find Plugins -name '*.csproj'); do
             echo "Building $proj"
-            dotnet build "$proj" -c Release -o artifacts/plugins
+            dotnet build "$proj" -c Release -o ../artifacts/plugins
           done
+        working-directory: Scrubbler
 
       - name: Generate plugins.json
-        run: dotnet run --project PluginMetadataGenerator artifacts/plugins artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
+        run: dotnet run --project PluginMetadataGenerator ../artifacts/plugins ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
+        working-directory: Scrubbler
 
       - name: Checkout Scrubbler-Plugins
         uses: actions/checkout@v4
         with:
           repository: SHOEGAZEssb/Scrubbler-Plugins
-          token: ${{ secrets.PLUGIN_REPO_TOKEN }}   # PAT only used for auth
+          token: ${{ secrets.PLUGIN_REPO_TOKEN }}
           path: out
 
       - name: Sync plugins + manifest
         run: |
           mkdir -p out/plugins
-          cp artifacts/plugins/*.dll out/plugins/
-          cp artifacts/plugins.json out/
+          cp artifacts/plugins/*.dll out/plugins/ || echo "No plugin DLLs found"
+          cp artifacts/plugins.json out/ || echo "No manifest found"
 
       - name: Commit and push
         working-directory: out
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B main   # ensure branch exists
           git add .
           git commit -m "Update plugins from $GITHUB_SHA" || echo "No changes to commit"
-          git push
+          git push origin main
