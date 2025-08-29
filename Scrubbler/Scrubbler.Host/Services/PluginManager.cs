@@ -106,7 +106,7 @@ internal class PluginManager : IPluginManager
                        new("Default", "https://raw.githubusercontent.com/your-org/scrubbler-plugins/main/plugins.json")
                        };
 
-            var all = new List<IPluginMetadata>();
+            var all = new List<PluginManifestEntry>();
 
             foreach (var repo in repos)
             {
