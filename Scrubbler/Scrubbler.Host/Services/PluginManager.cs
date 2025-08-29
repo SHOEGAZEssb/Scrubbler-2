@@ -117,26 +117,11 @@ internal class PluginManager : IPluginManager
         if (!Directory.Exists(rootDir))
             Directory.CreateDirectory(rootDir);
 
-        var sharedAssemblies = new[]
-        {
-        "Scrubbler.Abstractions",
-        "Scrubbler.Host",
-        "Microsoft.Extensions.Logging.Abstractions",
-        "Microsoft.Extensions.Logging",
-        "Microsoft.Extensions.DependencyInjection.Abstractions",
-        "Microsoft.Extensions.DependencyInjection",
-        "Uno.UI",
-        "Uno.UI.Toolkit",
-        "Uno.Foundation",
-        "Uno.Xaml",
-        "CommunityToolkit.Mvvm"
-    };
-
         foreach (var dll in Directory.EnumerateFiles(rootDir, "Scrubbler.Plugin.*.dll", SearchOption.AllDirectories))
         {
             try
             {
-                var context = new PluginLoadContext(dll, sharedAssemblies);
+                var context = new PluginLoadContext(dll);
                 var asm = context.LoadFromAssemblyPath(dll);
 
                 var pluginTypes = asm.GetTypes()

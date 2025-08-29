@@ -38,13 +38,8 @@ jobs:
         run: |
           mkdir -p artifacts/zips
           
-          # list of assemblies provided by the host and not needed in zips
-          SHARED_ASSEMBLIES="\
-            Scrubbler.Abstractions.dll \
-            Scrubbler.Host.dll \
-            Microsoft.Extensions.*.dll \
-            Uno.*.dll \
-            CommunityToolkit.Mvvm.dll"
+          # read shared assemblies from file
+          SHARED_ASSEMBLIES=$(cat Scrubbler/Shared/shared-assemblies.txt)
               
           for dir in artifacts/plugins/*; do
             if [ -d "$dir" ]; then
