@@ -27,6 +27,7 @@
         </UnoFeatures>
     </PropertyGroup>
 
+
     <ItemGroup>
         <!-- Project references -->
         <ProjectReference Include="..\Plugins\Accounts\Scrubbler.Plugin.Accounts.LastFm\Scrubbler.Plugin.Accounts.LastFm.csproj" />
@@ -68,5 +69,8 @@
       <Page Update="Presentation\Plugins\AvailablePluginsView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Services\Settings\" />
     </ItemGroup>
 </Project>

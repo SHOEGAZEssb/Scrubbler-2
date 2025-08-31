@@ -5,8 +5,6 @@ using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Plugins;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
-using Scrubbler.Host.Services.Settings;
-using Windows.Devices.WiFiDirect.Services;
 
 namespace Scrubbler.Host;
 public partial class App : Application
@@ -75,7 +73,6 @@ public partial class App : Application
                     services.AddSingleton<LogViewModel>();
                     services.AddHostedService<LogViewModelInitializer>();
 
-                    services.AddSingleton<ISecureStore, FileSecureStore>();
                     services.AddSingleton<ISettingsStore, JsonSettingsStore>();
                     services.AddSingleton<IPluginManager, PluginManager>();
                     services.AddTransient<AccountsViewModel>();

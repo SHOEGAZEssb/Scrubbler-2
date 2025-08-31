@@ -1,12 +1,4 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:8080",
-      "sslPort": 0
-    }
-  },
   "profiles": {
     "Scrubbler.Host (Desktop)": {
       "commandName": "Project",
@@ -17,6 +9,21 @@
       "commandLineArgs": "{ProjectDir}/bin/Debug/net9.0-desktop/Scrubbler.Host.dll",
       "distributionName": "",
       "compatibleTargetFramework": "desktop"
+    },
+    "Local Plugins": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SCRUBBLER_PLUGIN_MODE": "Debug",
+        "SOLUTIONDIR": "{SolutionDir}"
+      }
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:8080",
+      "sslPort": 0
     }
   }
 }

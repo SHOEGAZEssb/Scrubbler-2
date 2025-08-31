@@ -11,11 +11,11 @@ public interface IPersistentPlugin : IPlugin
     /// Load plugin state from secure or non-secure storage.
     /// Called once at startup.
     /// </summary>
-    Task LoadAsync(ISecureStore secureStore);
+    Task LoadAsync();
 
     /// <summary>
     /// Save plugin state to secure or non-secure storage.
     /// Called when application exits or when plugin requests persistence.
     /// </summary>
-    Task SaveAsync(ISecureStore secureStore);
+    Task SaveAsync();
 }

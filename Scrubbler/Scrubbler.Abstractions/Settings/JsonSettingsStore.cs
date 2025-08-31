@@ -1,18 +1,16 @@
 using System.Text.Json;
-using Scrubbler.Abstractions.Settings;
 
-namespace Scrubbler.Host.Services.Settings;
+namespace Scrubbler.Abstractions.Settings;
 
 public class JsonSettingsStore : ISettingsStore
 {
     private readonly string _filePath;
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private Dictionary<string, JsonElement> _settings = [];
+    private readonly Dictionary<string, JsonElement> _settings = [];
 
     public JsonSettingsStore(string? filePath = null)
     {
-        _filePath = filePath ??
-            Path.Combine(AppContext.BaseDirectory, "settings.json");
+        _filePath = filePath ?? Path.Combine(AppContext.BaseDirectory, "settings.json");
 
         if (File.Exists(_filePath))
         {

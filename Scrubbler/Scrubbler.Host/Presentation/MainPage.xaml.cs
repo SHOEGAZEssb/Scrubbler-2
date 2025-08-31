@@ -1,4 +1,4 @@
-﻿namespace Scrubbler.Host.Presentation;
+namespace Scrubbler.Host.Presentation;
 
 public sealed partial class MainPage : Page
 {

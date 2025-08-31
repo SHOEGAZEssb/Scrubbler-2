@@ -32,4 +32,3 @@ public interface IAccountPlugin : IPersistentPlugin
 
     Task ScrobbleAsync(IEnumerable<ScrobbleData> scrobbles);
 }
-

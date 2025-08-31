@@ -29,11 +29,19 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     public ILogService LogService { get; set; }
 
+    private readonly ISecureStore _secureStore;
+    private readonly ISettingsStore _settingsStore;
+    private PluginSettings _settings = new();
+
     #endregion IPlugin
 
     public bool IsAuthenticated => !string.IsNullOrEmpty(_sessionKey);
 
-    public bool IsScrobblingEnabled { get; set; }
+    public bool IsScrobblingEnabled
+    {
+        get => _settings.IsScrobblingEnabled;
+        set => _settings.IsScrobblingEnabled = value;
+    }
 
     private const string AccountIdKey = "LastFmAccountId";
     private const string SessionKeyKey = "LastFmSessionKey";
@@ -43,7 +51,7 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     public string? AccountId { get; private set; }
 
-    private ApiKeyStorage _apiKeyStorage;
+    private readonly ApiKeyStorage _apiKeyStorage;
 
     #endregion Properties
 
@@ -51,31 +59,34 @@ public class LastFmAccountPlugin : IAccountPlugin
     {
         _apiKeyStorage = new ApiKeyStorage("LAST_FM_API_KEY", "LAST_FM_API_SECRET", "environment.env");
         LogService = new NoopLogger();
+
+        var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
+        _secureStore = new FileSecureStore(Path.Combine(pluginDir, "settings.dat"), Name);
+        _settingsStore = new JsonSettingsStore(Path.Combine(pluginDir, "settings.json"));
     }
 
-    public async Task LoadAsync(ISecureStore secureStore)
+    public async Task LoadAsync()
     {
         LogService.Debug("Loading settings...");
 
-        AccountId = await secureStore.GetAsync(AccountIdKey);
-        _sessionKey = await secureStore.GetAsync(SessionKeyKey);
-        var s = await secureStore.GetAsync(IsScrobblingEnabledKey);
-        IsScrobblingEnabled = s != null && bool.Parse(s);
+        AccountId = await _secureStore.GetAsync(AccountIdKey);
+        _sessionKey = await _secureStore.GetAsync(SessionKeyKey);
+        _settings = await _settingsStore.GetOrCreateAsync<PluginSettings>(Name);
     }
 
-    public async Task SaveAsync(ISecureStore secureStore)
+    public async Task SaveAsync()
     {
         if (AccountId == null)
-            await secureStore.RemoveAsync(AccountIdKey);
+            await _secureStore.RemoveAsync(AccountIdKey);
         else
-            await secureStore.SaveAsync(AccountIdKey, AccountId);
+            await _secureStore.SaveAsync(AccountIdKey, AccountId);
 
         if (_sessionKey == null)
-            await secureStore.RemoveAsync(SessionKeyKey);
+            await _secureStore.RemoveAsync(SessionKeyKey);
         else
-            await secureStore.SaveAsync(SessionKeyKey, _sessionKey);
+            await _secureStore.SaveAsync(SessionKeyKey, _sessionKey);
 
-        await secureStore.SaveAsync(IsScrobblingEnabledKey, IsScrobblingEnabled.ToString());
+        await _settingsStore.SetAsync(Name, _settings);
     }
 
     public async Task AuthenticateAsync()

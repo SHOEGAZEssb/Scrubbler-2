@@ -32,12 +32,26 @@ internal class PluginManager : IPluginManager
     public event EventHandler? PluginInstalled;
     public event EventHandler? PluginUninstalled;
 
+    private string _rootDir;
+
     public PluginManager(HostLogService hostLogService, ISettingsStore settings)
     {
         _hostLogService = hostLogService;
         _settings = settings;
         _logService = new ModuleLogService(_hostLogService, "Plugin Manager");
-        DiscoverInstalledPlugins();
+        if (Environment.GetEnvironmentVariable("SCRUBBLER_PLUGIN_MODE") == "Debug")
+            _rootDir = Path.Combine(Environment.GetEnvironmentVariable("SOLUTIONDIR")!, "DebugPlugins");
+        else
+            _rootDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
+
+        Directory.CreateDirectory(_rootDir);
+
+        Application.Current.Suspending += async (s, e) =>
+        {
+            await SaveAllPluginsAsync();
+        };
+
+        _ = DiscoverInstalledPlugins();
         _ = RefreshAvailablePluginsAsync();
     }
 
@@ -48,10 +62,7 @@ internal class PluginManager : IPluginManager
 
     public async Task InstallAsync(PluginManifestEntry manifest)
     {
-        var rootDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
-        Directory.CreateDirectory(rootDir);
-
-        var pluginDir = Path.Combine(rootDir, manifest.Id);
+        var pluginDir = Path.Combine(_rootDir, manifest.Id);
         if (Directory.Exists(pluginDir))
             Directory.Delete(pluginDir, recursive: true);
         Directory.CreateDirectory(pluginDir);
@@ -65,7 +76,7 @@ internal class PluginManager : IPluginManager
         File.Delete(zipPath);
 
         // load only the new plugin
-        LoadPluginsFromDirectory(pluginDir, recursive: false);
+        await LoadPluginsFromDirectory(pluginDir, recursive: false);
         PluginInstalled?.Invoke(this, EventArgs.Empty);
     }
 
@@ -109,15 +120,12 @@ internal class PluginManager : IPluginManager
         }
     }
 
-    private void DiscoverInstalledPlugins()
+    private async Task DiscoverInstalledPlugins()
     {
-        var rootDir = Path.Combine(AppContext.BaseDirectory, "Plugins");
-        Directory.CreateDirectory(rootDir);
-
-        LoadPluginsFromDirectory(rootDir, recursive: true);
+        await LoadPluginsFromDirectory(_rootDir, recursive: true);
     }
 
-    private void LoadPluginsFromDirectory(string directory, bool recursive = true)
+    private async Task LoadPluginsFromDirectory(string directory, bool recursive = true)
     {
         if (!Directory.Exists(directory))
             return;
@@ -140,6 +148,8 @@ internal class PluginManager : IPluginManager
                     {
                         plugin.LogService = new ModuleLogService(_hostLogService, plugin.Name);
                         _installed.Add((plugin, context));
+                        if (plugin is IPersistentPlugin persistentPlugin)
+                            await persistentPlugin.LoadAsync();
                         _logService.Info($"Loaded Plugin: {plugin.Name} v{asm.GetName().Version}");
                     }
                 }
@@ -199,6 +209,22 @@ internal class PluginManager : IPluginManager
         }
     }
 
+    public async Task SaveAllPluginsAsync()
+    {
+        foreach (var plugin in InstalledPlugins.OfType<IPersistentPlugin>())
+        {
+            try
+            {
+                await plugin.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                // centralize logging instead of crashing
+                _logService.Warn($"Failed to save {plugin.Name}: {ex}");
+            }
+        }
+    }
+
     Type[] SafeGetTypes(Assembly asm)
     {
         try
@@ -217,5 +243,10 @@ internal class PluginManager : IPluginManager
             // return only successfully loaded types
             return ex.Types.Where(t => t != null).ToArray()!;
         }
+    }
+
+    private async Task App_Suspending(object sender, SuspendingEventArgs e)
+    {
+        await SaveAllPluginsAsync();
     }
 }
