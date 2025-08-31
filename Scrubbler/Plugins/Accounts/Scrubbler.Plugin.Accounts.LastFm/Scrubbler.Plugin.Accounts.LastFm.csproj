@@ -34,6 +34,7 @@
             <PluginOutputs Include="$(TargetPath)" />
             <PluginOutputs Include="$(TargetDir)$(TargetName).pdb" Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
             <PluginOutputs Include="$(TargetDir)$(TargetName).xml" Condition="Exists('$(TargetDir)$(TargetName).xml')" />
+            <PluginOutputs Include="$(TargetDir)environment.env" Condition="Exists('$(TargetDir)environment.env')" />
         </ItemGroup>
         <Copy SourceFiles="@(PluginOutputs)" DestinationFolder="$(DebugPluginsDir)" SkipUnchangedFiles="true" />
 

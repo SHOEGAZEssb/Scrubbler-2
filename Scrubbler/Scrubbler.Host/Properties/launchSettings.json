@@ -14,7 +14,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "SCRUBBLER_PLUGIN_MODE": "Debug",
-        "SOLUTIONDIR": "{SolutionDir}"
+        "SOLUTIONDIR": "E:\\Stuff\\Github\\Last.fm-Scrubbler-2\\Scrubbler"
       }
     }
   },

@@ -6,8 +6,6 @@ using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Host.Presentation.Plugins;
 using Scrubbler.Host.Services;
-using Scrubbler.Host.Services.Logging;
-using Scrubbler.Plugin.ManualScrobbler;
 
 namespace Scrubbler.Host.Presentation;
 

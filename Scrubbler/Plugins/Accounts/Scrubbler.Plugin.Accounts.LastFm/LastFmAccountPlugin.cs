@@ -57,10 +57,10 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     public LastFmAccountPlugin()
     {
-        _apiKeyStorage = new ApiKeyStorage("LAST_FM_API_KEY", "LAST_FM_API_SECRET", "environment.env");
+        var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
         LogService = new NoopLogger();
 
-        var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
+        _apiKeyStorage = new ApiKeyStorage("LAST_FM_API_KEY", "LAST_FM_API_SECRET", Path.Combine(pluginDir, "environment.env"));
         _secureStore = new FileSecureStore(Path.Combine(pluginDir, "settings.dat"), Name);
         _settingsStore = new JsonSettingsStore(Path.Combine(pluginDir, "settings.json"));
     }
