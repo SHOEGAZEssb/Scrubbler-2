@@ -1,5 +1,4 @@
 using Microsoft.UI.Xaml.Controls;
-using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
 
@@ -29,10 +28,10 @@ public class ManualScrobblePlugin : IScrobblePlugin
         LogService = new NoopLogger();
     }
 
-    public Task<IEnumerable<ScrobbleData>> GetScrobblesAsync(CancellationToken ct)
-    {
-        return Task.FromResult(_vm.GetScrobbles());
-    }
+    //public Task<IEnumerable<ScrobbleData>> GetScrobblesAsync(CancellationToken ct)
+    //{
+    //    return Task.FromResult(_vm.GetScrobbles());
+    //}
 
     public IPluginViewModel GetViewModel()
     {

@@ -36,24 +36,9 @@
             </muxc:NavigationView.MenuItemTemplate>
         </muxc:NavigationView>
 
-        <!-- Main content area -->
-        <Grid Grid.Column="1" RowDefinitions="*,Auto">
-
-            <!-- Plugin or Page View -->
-            <ContentPresenter Content="{Binding CurrentViewModel}"
-                              ContentTemplateSelector="{StaticResource ViewLocatorSelector}"
-                              Grid.Row="0"/>
-
-            <!-- Scrobble/Preview panel -->
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="1"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        Padding="12"
-                        Spacing="12"
-                        Visibility="{Binding IsScrobblePanelVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Button Content="Scrobble" Command="{Binding ScrobbleCommand}"/>
-                <Button Content="Preview" Command="{Binding PreviewCommand}"/>
-            </StackPanel>
-        </Grid>
+        <!-- Plugin or Page View -->
+        <ContentPresenter Content="{Binding CurrentViewModel}"
+                          ContentTemplateSelector="{StaticResource ViewLocatorSelector}"
+                          Grid.Column="1"/>
     </Grid>
 </Page>

@@ -1,5 +1,10 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace Scrubbler.Abstractions.Plugin;
-public abstract class ScrobblePluginViewModelBase : PluginViewModelBase
+
+public abstract partial class ScrobblePluginViewModelBase : PluginViewModelBase, IScrobblePluginViewModel
 {
-    public abstract IEnumerable<ScrobbleData> GetScrobbles();
+    public abstract bool CanScrobble { get; }
+
+    public abstract Task<IEnumerable<ScrobbleData>> GetScrobblesAsync();
 }

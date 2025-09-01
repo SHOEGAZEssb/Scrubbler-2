@@ -5,12 +5,31 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
+    d:DesignHeight="350"
     d:DesignWidth="400">
 
     <StackPanel Spacing="8" Padding="12">
-        <TextBox Header="Artist" Text="{Binding Artist, Mode=TwoWay}" />
-        <TextBox Header="Track" Text="{Binding Track, Mode=TwoWay}" />
-        <DatePicker Date="{Binding PlayedAt, Mode=TwoWay}" />
+        <!-- Artist -->
+        <TextBox Header="Artist Name" Text="{Binding ArtistName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <!-- Track -->
+        <TextBox Header="Track Name" Text="{Binding TrackName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <!-- Album -->
+        <TextBox Header="Album Name" Text="{Binding AlbumName, Mode=TwoWay}" />
+
+        <!-- Album Artist -->
+        <TextBox Header="Album Artist Name" Text="{Binding AlbumArtistName, Mode=TwoWay}" />
+
+        <NumberBox Header="Amount" Value="{Binding Amount, Mode=TwoWay}" Minimum="1" Maximum="3000"
+                   SpinButtonPlacementMode="Inline"
+                   SmallChange="1"
+                   LargeChange="10" />
+
+        <!-- Timestamp -->
+        <StackPanel Orientation="Horizontal" Spacing="5">
+            <DatePicker Date="{Binding PlayedAt, Mode=TwoWay}" />
+            <TimePicker Time="{Binding PlayedAtTime, Mode=TwoWay}" />
+        </StackPanel>
     </StackPanel>
 </UserControl>

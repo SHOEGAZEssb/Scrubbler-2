@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Scrubbler.Abstractions.Plugin;
-using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 internal class PluginMetadataViewModel : ObservableObject

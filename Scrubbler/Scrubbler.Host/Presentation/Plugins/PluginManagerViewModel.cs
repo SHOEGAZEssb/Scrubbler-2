@@ -1,4 +1,3 @@
-using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;

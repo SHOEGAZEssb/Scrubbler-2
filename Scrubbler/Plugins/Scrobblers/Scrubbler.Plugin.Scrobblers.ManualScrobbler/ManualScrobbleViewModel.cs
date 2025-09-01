@@ -3,14 +3,17 @@ using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Plugin;
 
 namespace Scrubbler.Plugin.ManualScrobbler;
+
 public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
 {
     #region Properties
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanScrobble))]
     private string _artistName = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanScrobble))]
     private string _trackName = string.Empty;
 
     [ObservableProperty]
@@ -20,26 +23,36 @@ public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
     private string _albumArtistName = string.Empty;
 
     [ObservableProperty]
-    private int _amount;
+    [NotifyPropertyChangedFor(nameof(CanScrobble))]
+    private int _amount = 1;
 
     [ObservableProperty]
-    private DateTime _playedAt;
+    [NotifyPropertyChangedFor(nameof(CanScrobble))]
+    private DateTimeOffset _playedAt = DateTimeOffset.Now;
+
+    [ObservableProperty]
+    private TimeSpan _playedAtTime = DateTimeOffset.Now.TimeOfDay;
+
+    public override bool CanScrobble => !string.IsNullOrEmpty(ArtistName) && !string.IsNullOrEmpty(TrackName) && Amount > 0 && Amount <= 3000;
 
     #endregion Properties
 
-    public override IEnumerable<ScrobbleData> GetScrobbles()
+    public override async Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
     {
         IsBusy = true;
 
         try
         {
-            var scrobbles = new ScrobbleData[Amount];
-            for (int i = 0; i < scrobbles.Length; i++)
+            return await Task.Run(() =>
             {
-                scrobbles[i] = new ScrobbleData();
-            }
+                var scrobbles = new ScrobbleData[Amount];
+                for (int i = 0; i < scrobbles.Length; i++)
+                {
+                    scrobbles[i] = new ScrobbleData(TrackName, ArtistName, PlayedAt.Date, PlayedAtTime);
+                }
 
-            return scrobbles;
+                return scrobbles;
+            });
         }
         finally
         {

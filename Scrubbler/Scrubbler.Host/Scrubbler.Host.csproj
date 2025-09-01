@@ -71,4 +71,14 @@
     <ItemGroup>
       <Folder Include="Services\Settings\" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Presentation\Plugins\ScrobblePluginHostView.xaml.cs">
+        <DependentUpon>ScrobblePluginHostView.xaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="Presentation\Plugins\ScrobblePluginHostView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
 </Project>

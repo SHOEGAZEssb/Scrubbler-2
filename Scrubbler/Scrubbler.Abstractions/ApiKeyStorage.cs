@@ -7,9 +7,9 @@ public class ApiKeyStorage
 {
     #region Properties
 
-    public string? ApiKey { get; }
+    public string ApiKey { get; }
 
-    public string? ApiSecret { get; }
+    public string ApiSecret { get; }
 
     #endregion Properties
 
@@ -37,8 +37,8 @@ public class ApiKeyStorage
             }
         }
 
-        ApiKey = apiKey;
-        ApiSecret = apiSecret;
+        ApiKey = apiKey ?? throw new ArgumentNullException("Could not get api key from storage");
+        ApiSecret = apiSecret ?? throw new ArgumentNullException("Could not get api secret from storage");
     }
 
     private static Dictionary<string, string> LoadEnvFile(string path)

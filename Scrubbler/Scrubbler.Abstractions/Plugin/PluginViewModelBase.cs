@@ -9,10 +9,4 @@ public abstract partial class PluginViewModelBase : ObservableObject, IPluginVie
     /// </summary>
     [ObservableProperty]
     protected bool _isBusy;
-
-    /// <summary>
-    /// Stores the latest error message, if any.
-    /// </summary>
-    [ObservableProperty]
-    protected string? _errorMessage;
 }

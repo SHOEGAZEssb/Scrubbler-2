@@ -1,9 +1,9 @@
-using System.Reflection;
 using Microsoft.UI.Xaml.Controls;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Settings;
+using Shoegaze.LastFM;
 using Shoegaze.LastFM.Authentication;
 
 namespace Scrubbler.Plugin.Accounts.LastFm;
@@ -45,13 +45,13 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     private const string AccountIdKey = "LastFmAccountId";
     private const string SessionKeyKey = "LastFmSessionKey";
-    private const string IsScrobblingEnabledKey = "LastFmIsScrobblingEnabled";
 
     private string? _sessionKey;
 
     public string? AccountId { get; private set; }
 
     private readonly ApiKeyStorage _apiKeyStorage;
+    private ILastfmClient? _lastfmClient;
 
     #endregion Properties
 
@@ -72,6 +72,12 @@ public class LastFmAccountPlugin : IAccountPlugin
         AccountId = await _secureStore.GetAsync(AccountIdKey);
         _sessionKey = await _secureStore.GetAsync(SessionKeyKey);
         _settings = await _settingsStore.GetOrCreateAsync<PluginSettings>(Name);
+
+        if (!string.IsNullOrEmpty(_sessionKey))
+        {
+            _lastfmClient = new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
+            _lastfmClient.SetSessionKey(_sessionKey);
+        }
     }
 
     public async Task SaveAsync()
@@ -98,12 +104,22 @@ public class LastFmAccountPlugin : IAccountPlugin
         }
 
         LogService.Debug("Starting OAuth flow");
-        var a = new LastfmAuthService(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
-        var sessions = await a.AuthenticateAsync();
+        try
+        {
+            var a = new LastfmAuthService(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
+            var session = await a.AuthenticateAsync();
 
-        AccountId = sessions.Username;
-        _sessionKey = sessions.SessionKey;
-        LogService.Debug($"Finished OAuth flow. Logged in as {AccountId}");
+            AccountId = session.Username;
+            _sessionKey = session.SessionKey;
+
+            _lastfmClient = new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
+            _lastfmClient.SetSessionKey(_sessionKey);
+            LogService.Debug($"Finished OAuth flow. Logged in as {AccountId}");
+        }
+        catch (Exception ex)
+        {
+            LogService.Error("Error during OAuth flow.", ex);
+        }
     }
 
     public Task LogoutAsync()
@@ -121,8 +137,19 @@ public class LastFmAccountPlugin : IAccountPlugin
     public async Task ScrobbleAsync(IEnumerable<ScrobbleData> scrobbles)
     {
         if (!IsScrobblingEnabled || !IsAuthenticated)
-            return; // todo: should never happen: log
+        {
+            LogService.Warn("Tried to scrobble, but scrobbling was not enabled, or client was not authenticated");
+            return;
+        }
 
-        throw new NotImplementedException();
+        var s = scrobbles.Select(s => new Shoegaze.LastFM.Track.ScrobbleData(s.Artist, s.Track, s.Timestamp, s.Album, s.AlbumArtist));
+        int batches = (int)Math.Ceiling(s.Count() / 50d);
+        int i = 1;
+        foreach (var batch in s.Chunk(50))
+        {
+            LogService.Info($"Scrobbling batch {i++} / {batches}...");
+            var response = await _lastfmClient!.Track.ScrobbleAsync(batch);
+            LogService.Info($"Scrobble Status: {response.LastFmStatus}");
+        }
     }
 }

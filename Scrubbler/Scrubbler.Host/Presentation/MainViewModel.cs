@@ -23,7 +23,6 @@ internal partial class MainViewModel : ObservableObject
             if (SetProperty(ref _selectedItem, value))
             {
                 // Whenever SelectedItem changes, notify dependent properties
-                OnPropertyChanged(nameof(IsScrobblePanelVisible));
                 OnPropertyChanged(nameof(CurrentViewModel));
             }
         }
@@ -31,8 +30,6 @@ internal partial class MainViewModel : ObservableObject
     private NavigationItemViewModel? _selectedItem;
 
     public object? CurrentViewModel => SelectedItem?.Content;
-
-    public bool IsScrobblePanelVisible => SelectedItem is PluginNavigationItemViewModel { Plugin: IScrobblePlugin };
 
     private readonly NavigationItemViewModel _pluginGroup;
     private readonly IPluginManager _pluginManager;
@@ -72,7 +69,7 @@ internal partial class MainViewModel : ObservableObject
 
         foreach (var plugin in _pluginManager.InstalledPlugins.Where(p => p is IScrobblePlugin))
         {
-            _pluginGroup.Children.Add(new PluginNavigationItemViewModel(plugin));
+            _pluginGroup.Children.Add(new PluginNavigationItemViewModel(plugin, _pluginManager));
         }
     }
 }
