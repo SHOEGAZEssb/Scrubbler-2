@@ -1,8 +1,15 @@
 name: Publish Plugins
 
 on:
+  # allow manual trigger
+  workflow_dispatch:
+
+  # auto trigger on push to main if relevant files changed
   push:
     branches: [ main ]
+    paths:
+      - 'Scrubbler/Plugins/**'
+      - 'Scrubbler/Scrubbler.Abstractions/**'
 
 jobs:
   build-and-publish:
