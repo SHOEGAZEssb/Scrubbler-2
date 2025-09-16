@@ -10,6 +10,7 @@ on:
     paths:
       - 'Scrubbler/Plugins/**'
       - 'Scrubbler/Scrubbler.Abstractions/**'
+      - 'Scrubbler/PluginMetadataGenerator/**'
 
 jobs:
   build-and-publish:
