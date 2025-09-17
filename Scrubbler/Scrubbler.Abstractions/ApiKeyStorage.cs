@@ -45,14 +45,17 @@ public class ApiKeyStorage
     {
         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var line in File.ReadAllLines(path))
+        if (File.Exists(path))
         {
-            if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
-                continue;
+            foreach (var line in File.ReadAllLines(path))
+            {
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                    continue;
 
-            var parts = line.Split('=', 2);
-            if (parts.Length == 2)
-                dict[parts[0].Trim()] = parts[1].Trim();
+                var parts = line.Split('=', 2);
+                if (parts.Length == 2)
+                    dict[parts[0].Trim()] = parts[1].Trim();
+            }
         }
 
         return dict;
