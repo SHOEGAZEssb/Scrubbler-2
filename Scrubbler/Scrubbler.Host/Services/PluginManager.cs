@@ -13,6 +13,7 @@ internal class PluginManager : IPluginManager
     private readonly HostLogService _hostLogService;
     private readonly ILogService _logService;
     private readonly ISettingsStore _settings;
+    private readonly string _rootDir;
 
     public bool IsFetchingPlugins
     {
@@ -31,8 +32,6 @@ internal class PluginManager : IPluginManager
     public event EventHandler<bool>? IsFetchingPluginsChanged;
     public event EventHandler? PluginInstalled;
     public event EventHandler? PluginUninstalled;
-
-    private string _rootDir;
 
     public PluginManager(HostLogService hostLogService, ISettingsStore settings)
     {
@@ -178,16 +177,14 @@ internal class PluginManager : IPluginManager
             var all = new List<PluginManifestEntry>();
 
             using var http = new HttpClient();
+            var serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             foreach (var repo in repos)
             {
                 try
                 {
                     var json = await http.GetStringAsync(repo.Url);
 
-                    var docs = JsonSerializer.Deserialize<List<PluginManifestEntry>>(json, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
+                    var docs = JsonSerializer.Deserialize<List<PluginManifestEntry>>(json, serializerOptions);
 
                     if (docs != null)
                     {

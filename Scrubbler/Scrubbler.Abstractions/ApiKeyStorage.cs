@@ -37,8 +37,8 @@ public class ApiKeyStorage
             apiSecret = apiSecretDefault;
         }
 
-        ApiKey = apiKey ?? throw new ArgumentNullException("Could not get api key from storage");
-        ApiSecret = apiSecret ?? throw new ArgumentNullException("Could not get api secret from storage");
+        ApiKey = apiKey ?? throw new Exception("Could not get api key from storage");
+        ApiSecret = apiSecret ?? throw new Exception("Could not get api secret from storage");
     }
 
     private static Dictionary<string, string> LoadEnvFile(string path)
@@ -49,7 +49,7 @@ public class ApiKeyStorage
         {
             foreach (var line in File.ReadAllLines(path))
             {
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
                     continue;
 
                 var parts = line.Split('=', 2);
