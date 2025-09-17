@@ -4,15 +4,9 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Navigation;
 
-internal sealed class PluginNavigationItemViewModel : NavigationItemViewModel
+internal sealed class PluginNavigationItemViewModel(IPlugin plugin, IPluginManager manager) : NavigationItemViewModel(plugin.Name, plugin.Icon, MakeHostViewModel(plugin, manager))
 {
-    public IPlugin Plugin { get; }
-
-    public PluginNavigationItemViewModel(IPlugin plugin, IPluginManager manager)
-        : base(plugin.Name, plugin.Icon, MakeHostViewModel(plugin, manager))
-    {
-        Plugin = plugin;
-    }
+    public IPlugin Plugin { get; } = plugin;
 
     private static object MakeHostViewModel(IPlugin plugin, IPluginManager manager)
     {
