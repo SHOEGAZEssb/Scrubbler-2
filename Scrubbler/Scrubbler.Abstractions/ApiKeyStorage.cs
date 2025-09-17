@@ -13,28 +13,28 @@ public class ApiKeyStorage
 
     #endregion Properties
 
-    public ApiKeyStorage(string apiKeyEnv, string apiSecretEnv, string envFile = ".env")
+    public ApiKeyStorage(string apiKeyDefault, string apiSecretDefault, string envFile = ".env")
     {
-        // try environment first
-        var apiKey = Environment.GetEnvironmentVariable(apiKeyEnv);
-        var apiSecret = Environment.GetEnvironmentVariable(apiSecretEnv);
+        string? apiKey = null;
+        string? apiSecret = null;
+
+        // try env file first
+        try
+        {
+            var values = LoadEnvFile(envFile);
+            values.TryGetValue(apiKeyDefault, out apiKey);
+            values.TryGetValue(apiSecretDefault, out apiSecret);
+        }
+        catch (Exception)
+        {
+            // optional: log or throw depending on how strict you want it
+        }
 
         if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
         {
-            try
-            {
-                var values = LoadEnvFile(envFile);
-
-                if (string.IsNullOrEmpty(apiKey))
-                    values.TryGetValue(apiKeyEnv, out apiKey);
-
-                if (string.IsNullOrEmpty(apiSecret))
-                    values.TryGetValue(apiSecretEnv, out apiSecret);
-            }
-            catch (Exception)
-            {
-                // optional: log or throw depending on how strict you want it
-            }
+            // use ci injected values
+            apiKey = apiKeyDefault;
+            apiSecret = apiSecretDefault;
         }
 
         ApiKey = apiKey ?? throw new ArgumentNullException("Could not get api key from storage");
