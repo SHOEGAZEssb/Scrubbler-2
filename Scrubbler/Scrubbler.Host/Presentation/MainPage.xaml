@@ -40,5 +40,14 @@
         <ContentPresenter Content="{Binding CurrentViewModel}"
                           ContentTemplateSelector="{StaticResource ViewLocatorSelector}"
                           Grid.Column="1"/>
+
+        <!-- Global InfoBar -->
+        <InfoBar x:Name="GlobalInfoBar" Grid.Column="1"
+             Title="Notification"
+             IsOpen="False"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Top"
+             Margin="16"
+             IsClosable="False" />
     </Grid>
 </Page>

@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Plugin;
@@ -14,6 +13,7 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
 
     private readonly IPlugin _plugin;
     private readonly IPluginManager _pluginManager;
+    private readonly IUserFeedbackService _userFeedbackService;
 
     private bool CanScrobble => PluginViewModel.CanScrobble;
 
@@ -21,10 +21,11 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
 
     #region Construction
 
-    public ScrobblePluginHostViewModel(IScrobblePlugin plugin, IPluginManager manager)
+    public ScrobblePluginHostViewModel(IScrobblePlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService)
     {
         _plugin = plugin;
         _pluginManager = manager;
+        _userFeedbackService = feedbackService;
         
         _pluginViewModel = (_plugin.GetViewModel() as IScrobblePluginViewModel)!; // todo: log in case this is ever null (should not happen)
 
@@ -46,6 +47,8 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
     {
         if (PluginViewModel is IScrobblePluginViewModel spv)
             await ScrobbleToPlugins(await spv.GetScrobblesAsync());
+
+        _userFeedbackService.ShowSuccess("Scrobbled!");
     }
 
     private async Task ScrobbleToPlugins(IEnumerable<ScrobbleData> scrobbles)

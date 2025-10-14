@@ -33,6 +33,7 @@ internal partial class MainViewModel : ObservableObject
 
     private readonly NavigationItemViewModel _pluginGroup;
     private readonly IPluginManager _pluginManager;
+    private readonly IUserFeedbackService _userFeedbackService;
 
     #endregion Properties
 
@@ -49,6 +50,7 @@ internal partial class MainViewModel : ObservableObject
         // plugins
         _pluginManager = services.GetRequiredService<IPluginManager>();
         _pluginManager.PluginInstalled += PluginManager_PluginInstalled;
+        _userFeedbackService = services.GetRequiredService<IUserFeedbackService>();
         RefreshPluginList();
 
         Items.Add(_pluginGroup);
@@ -69,7 +71,7 @@ internal partial class MainViewModel : ObservableObject
 
         foreach (var plugin in _pluginManager.InstalledPlugins.Where(p => p is IScrobblePlugin))
         {
-            _pluginGroup.Children.Add(new PluginNavigationItemViewModel(plugin, _pluginManager));
+            _pluginGroup.Children.Add(new PluginNavigationItemViewModel(plugin, _pluginManager, _userFeedbackService));
         }
     }
 }

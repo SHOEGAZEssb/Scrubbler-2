@@ -19,7 +19,9 @@ public partial class App : Application
     }
 
     protected Window? MainWindow { get; private set; }
-    protected IHost? Host { get; private set; }
+    public IHost? Host { get; private set; }
+
+    public event EventHandler Ready;
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
@@ -73,6 +75,7 @@ public partial class App : Application
                     services.AddSingleton<LogViewModel>();
                     services.AddHostedService<LogViewModelInitializer>();
 
+                    services.AddSingleton<IUserFeedbackService, UserFeedbackService>();
                     services.AddSingleton<ISettingsStore, JsonSettingsStore>();
                     services.AddSingleton<IPluginManager, PluginManager>();
                     services.AddTransient<AccountsViewModel>();
@@ -88,6 +91,7 @@ public partial class App : Application
         //MainWindow.SetWindowIcon();
 
         Host = await builder.NavigateAsync<Shell>();
+        Ready?.Invoke(this, EventArgs.Empty);
     }
 
     private static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
