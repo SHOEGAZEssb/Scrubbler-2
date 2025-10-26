@@ -6,4 +6,3 @@ public interface ISecureStore
     Task<string?> GetAsync(string key);
     Task RemoveAsync(string key);
 }
-
