@@ -18,5 +18,9 @@ public sealed partial class MainPage : Page
         var feedback = app.Host?.Services.GetRequiredService<IUserFeedbackService>();
         if (feedback is UserFeedbackService impl)
             impl.AttachInfoBar(GlobalInfoBar);
+
+        var dialogService = app.Host?.Services.GetRequiredService<IDialogService>();
+        if (dialogService is DialogService dImpl)
+            dImpl.InitializeXamlRoot(this);
     }
 }

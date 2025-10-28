@@ -81,4 +81,9 @@
         <Generator>MSBuild:Compile</Generator>
       </Page>
     </ItemGroup>
+    <ItemGroup>
+      <Page Update="Presentation\Plugins\ScrobblePreviewDialog.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
 </Project>

@@ -76,6 +76,7 @@ public partial class App : Application
                     services.AddHostedService<LogViewModelInitializer>();
 
                     services.AddSingleton<IUserFeedbackService, UserFeedbackService>();
+                    services.AddSingleton<IDialogService, DialogService>();
                     services.AddSingleton<ISettingsStore, JsonSettingsStore>();
                     services.AddSingleton<IPluginManager, PluginManager>();
                     services.AddTransient<AccountsViewModel>();

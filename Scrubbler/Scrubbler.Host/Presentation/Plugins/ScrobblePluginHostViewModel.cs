@@ -4,6 +4,7 @@ using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
+
 internal partial class ScrobblePluginHostViewModel : ObservableObject
 {
     #region Properties
@@ -14,6 +15,7 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
     private readonly IPlugin _plugin;
     private readonly IPluginManager _pluginManager;
     private readonly IUserFeedbackService _userFeedbackService;
+    private readonly IDialogService _dialogService;
 
     private bool CanScrobble => PluginViewModel.CanScrobble;
 
@@ -21,12 +23,13 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
 
     #region Construction
 
-    public ScrobblePluginHostViewModel(IScrobblePlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService)
+    public ScrobblePluginHostViewModel(IScrobblePlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
     {
         _plugin = plugin;
         _pluginManager = manager;
         _userFeedbackService = feedbackService;
-        
+        _dialogService = dialogService;
+
         _pluginViewModel = (_plugin.GetViewModel() as IScrobblePluginViewModel)!; // todo: log in case this is ever null (should not happen)
 
         _pluginViewModel.PropertyChanged += (s, e) =>
@@ -62,6 +65,10 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanScrobble))]
     private async Task Preview()
     {
-
+        if (PluginViewModel is IScrobblePluginViewModel spv)
+        {
+            var d = new ScrobblePreviewDialog(await spv.GetScrobblesAsync());
+            await _dialogService.ShowDialogAsync(d);
+        }
     }
 }
