@@ -117,6 +117,8 @@ internal class PluginManager : IPluginManager
         {
             _logService.Error($"Failed to remove plugin files: {ex.Message}");
         }
+
+        PluginUninstalled?.Invoke(this, EventArgs.Empty);
     }
 
     private async Task DiscoverInstalledPlugins()

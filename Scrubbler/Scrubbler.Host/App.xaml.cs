@@ -21,7 +21,7 @@ public partial class App : Application
     protected Window? MainWindow { get; private set; }
     public IHost? Host { get; private set; }
 
-    public event EventHandler Ready;
+    public event EventHandler? Ready;
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
