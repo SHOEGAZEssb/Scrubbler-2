@@ -1,5 +1,8 @@
 namespace Scrubbler.Abstractions.Settings;
 
+/// <summary>
+/// Extension methods for <see cref="ISettingsStore"/>.
+/// </summary>
 public static class SettingsStoreExtensions
 {
     /// <summary>
@@ -9,11 +12,12 @@ public static class SettingsStoreExtensions
     /// <param name="store">The settings store.</param>
     /// <param name="key">The key to fetch.</param>
     /// <param name="factory">
-    /// Optional factory for creating the default value. If null,
+    /// Optional factory for creating the default value. If <c>null</c>,
     /// <c>new T()</c> is used.
     /// </param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>The loaded or newly created settings object.</returns>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the loaded or newly created settings object.</returns>
+    /// <seealso cref="ISettingsStore"/>
     public static async Task<T> GetOrCreateAsync<T>(
         this ISettingsStore store,
         string key,

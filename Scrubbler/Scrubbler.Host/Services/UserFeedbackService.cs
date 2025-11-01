@@ -7,14 +7,33 @@ public class UserFeedbackService : IUserFeedbackService
 {
     private InfoBar? _infoBar;
 
+    /// <summary>
+    /// Attaches an <see cref="InfoBar"/> control to this service for displaying messages.
+    /// </summary>
+    /// <param name="infoBar">The InfoBar control to use for displaying messages.</param>
     public void AttachInfoBar(InfoBar infoBar) => _infoBar = infoBar;
 
+    /// <summary>
+    /// Displays a success message to the user.
+    /// </summary>
+    /// <param name="message">The message to display.</param>
+    /// <param name="duration">The duration to show the message. If <c>null</c>, defaults to 5 seconds.</param>
     public void ShowSuccess(string message, TimeSpan? duration = null) =>
         Show(message, InfoBarSeverity.Success, duration ?? TimeSpan.FromSeconds(5));
 
+    /// <summary>
+    /// Displays an error message to the user.
+    /// </summary>
+    /// <param name="message">The error message to display.</param>
+    /// <param name="duration">The duration to show the message. If <c>null</c>, defaults to 5 seconds.</param>
     public void ShowError(string message, TimeSpan? duration = null) =>
         Show(message, InfoBarSeverity.Error, duration ?? TimeSpan.FromSeconds(5));
 
+    /// <summary>
+    /// Displays an informational message to the user.
+    /// </summary>
+    /// <param name="message">The informational message to display.</param>
+    /// <param name="duration">The duration to show the message. If <c>null</c>, defaults to 5 seconds.</param>
     public void ShowInfo(string message, TimeSpan? duration = null) =>
         Show(message, InfoBarSeverity.Informational, duration ?? TimeSpan.FromSeconds(5));
 

@@ -17,6 +17,11 @@ public class FileSecureStore : ISecureStore
 
     private readonly Dictionary<string, string> _cache;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileSecureStore"/> class.
+    /// </summary>
+    /// <param name="fileName">The path to the file where encrypted data will be stored.</param>
+    /// <param name="key">The encryption key used to encrypt and decrypt data.</param>
     public FileSecureStore(string fileName, string key)
     {
         _storePath = fileName;
@@ -25,6 +30,12 @@ public class FileSecureStore : ISecureStore
         _cache = LoadFromDisk();
     }
 
+    /// <summary>
+    /// Securely stores a string value associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key to associate with the value.</param>
+    /// <param name="value">The value to store securely.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public Task SaveAsync(string key, string value)
     {
         _cache[key] = value;
@@ -32,11 +43,21 @@ public class FileSecureStore : ISecureStore
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Retrieves a securely stored value associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key to retrieve the value for.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the value if found; otherwise, <c>null</c>.</returns>
     public Task<string?> GetAsync(string key)
     {
         return Task.FromResult(_cache.TryGetValue(key, out var value) ? value : null);
     }
 
+    /// <summary>
+    /// Removes a securely stored value associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key to remove.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public Task RemoveAsync(string key)
     {
         if (_cache.Remove(key))

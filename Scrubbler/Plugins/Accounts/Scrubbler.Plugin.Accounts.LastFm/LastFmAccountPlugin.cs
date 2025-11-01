@@ -35,8 +35,14 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     #endregion IPlugin
 
+    /// <summary>
+    /// Gets a value indicating whether the user is currently authenticated with Last.fm.
+    /// </summary>
     public bool IsAuthenticated => !string.IsNullOrEmpty(_sessionKey);
 
+    /// <summary>
+    /// Gets or sets whether scrobbling to Last.fm is currently enabled.
+    /// </summary>
     public bool IsScrobblingEnabled
     {
         get => _settings.IsScrobblingEnabled;
@@ -60,6 +66,9 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     private string? _sessionKey;
 
+    /// <summary>
+    /// Gets the Last.fm username of the authenticated account, or <c>null</c> if not authenticated.
+    /// </summary>
     public string? AccountId { get; private set; }
 
     private readonly ApiKeyStorage _apiKeyStorage;
@@ -67,6 +76,12 @@ public class LastFmAccountPlugin : IAccountPlugin
 
     #endregion Properties
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LastFmAccountPlugin"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Initializes storage services for secure data (session keys) and settings.
+    /// </remarks>
     public LastFmAccountPlugin()
     {
         var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
@@ -77,6 +92,11 @@ public class LastFmAccountPlugin : IAccountPlugin
         _settingsStore = new JsonSettingsStore(Path.Combine(pluginDir, "settings.json"));
     }
 
+    /// <summary>
+    /// Loads plugin state from secure or non-secure storage.
+    /// Called once at startup.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous load operation.</returns>
     public async Task LoadAsync()
     {
         LogService.Debug("Loading settings...");
@@ -92,6 +112,11 @@ public class LastFmAccountPlugin : IAccountPlugin
         }
     }
 
+    /// <summary>
+    /// Saves plugin state to secure or non-secure storage.
+    /// Called when application exits or when plugin requests persistence.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous save operation.</returns>
     public async Task SaveAsync()
     {
         if (AccountId == null)
@@ -107,6 +132,11 @@ public class LastFmAccountPlugin : IAccountPlugin
         await _settingsStore.SetAsync(Name, _settings);
     }
 
+    /// <summary>
+    /// Initiates an OAuth authentication flow with Last.fm.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous authentication operation.</returns>
+    /// <exception cref="Exception">Thrown when OAuth authentication fails.</exception>
     public async Task AuthenticateAsync()
     {
         if (_apiKeyStorage.ApiKey == null || _apiKeyStorage.ApiSecret == null)
@@ -134,6 +164,10 @@ public class LastFmAccountPlugin : IAccountPlugin
         }
     }
 
+    /// <summary>
+    /// Logs out the Last.fm account and clears authentication state.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous logout operation.</returns>
     public Task LogoutAsync()
     {
         AccountId = null;
@@ -141,11 +175,22 @@ public class LastFmAccountPlugin : IAccountPlugin
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Gets the view model instance for this plugin's UI.
+    /// </summary>
+    /// <returns>A new instance of <see cref="IPluginViewModel"/> for this plugin.</returns>
+    /// <exception cref="NotImplementedException">This method is not yet implemented.</exception>
     public IPluginViewModel GetViewModel()
     {
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Submits the provided scrobbles to Last.fm.
+    /// </summary>
+    /// <param name="scrobbles">The collection of tracks to scrobble.</param>
+    /// <returns>A task that represents the asynchronous scrobble operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the account is not authenticated or scrobbling is disabled.</exception>
     public async Task ScrobbleAsync(IEnumerable<ScrobbleData> scrobbles)
     {
         if (!IsScrobblingEnabled || !IsAuthenticated)
