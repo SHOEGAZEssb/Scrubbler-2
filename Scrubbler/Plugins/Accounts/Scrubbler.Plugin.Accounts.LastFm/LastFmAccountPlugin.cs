@@ -40,8 +40,20 @@ public class LastFmAccountPlugin : IAccountPlugin
     public bool IsScrobblingEnabled
     {
         get => _settings.IsScrobblingEnabled;
-        set => _settings.IsScrobblingEnabled = value;
+        set 
+        {
+            if (IsScrobblingEnabled != value)
+            {
+                _settings.IsScrobblingEnabled = value;
+                IsScrobblingEnabledChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
     }
+
+    /// <summary>
+    /// Event that is fired when <see cref="IsScrobblingEnabled"/> changes.
+    /// </summary>
+    public event EventHandler? IsScrobblingEnabledChanged;
 
     private const string AccountIdKey = "LastFmAccountId";
     private const string SessionKeyKey = "LastFmSessionKey";

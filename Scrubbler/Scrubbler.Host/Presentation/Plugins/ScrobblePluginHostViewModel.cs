@@ -17,7 +17,8 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
     private readonly IUserFeedbackService _userFeedbackService;
     private readonly IDialogService _dialogService;
 
-    private bool CanScrobble => PluginViewModel.CanScrobble;
+    private bool CanPreview => PluginViewModel.CanScrobble;
+    private bool CanScrobble => PluginViewModel.CanScrobble && _pluginManager.IsAnyAccountPluginScrobbling;
 
     #endregion Properties
 
@@ -41,6 +42,10 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
             }
         };
 
+        _pluginManager.IsAnyAccountPluginScrobblingChanged += (s, e) =>
+        {
+            ScrobbleCommand.NotifyCanExecuteChanged();
+        };
     }
 
     #endregion Construction
@@ -62,7 +67,7 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanScrobble))]
+    [RelayCommand(CanExecute = nameof(CanPreview))]
     private async Task Preview()
     {
         if (PluginViewModel is IScrobblePluginViewModel spv)

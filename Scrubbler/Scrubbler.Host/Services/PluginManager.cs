@@ -29,6 +29,9 @@ internal class PluginManager : IPluginManager
     }
     private bool _isFetchingPlugins;
 
+    public bool IsAnyAccountPluginScrobbling => InstalledPlugins.OfType<IAccountPlugin>().Any(p => p.IsScrobblingEnabled);
+    public event EventHandler? IsAnyAccountPluginScrobblingChanged;
+
     public event EventHandler<bool>? IsFetchingPluginsChanged;
     public event EventHandler? PluginInstalled;
     public event EventHandler? PluginUninstalled;
@@ -151,6 +154,8 @@ internal class PluginManager : IPluginManager
                         _installed.Add((plugin, context));
                         if (plugin is IPersistentPlugin persistentPlugin)
                             await persistentPlugin.LoadAsync();
+                        if (plugin is IAccountPlugin accountPlugin)
+                            accountPlugin.IsScrobblingEnabledChanged += AccountPlugin_IsScrobblingEnabledChanged;
                         _logService.Info($"Loaded Plugin: {plugin.Name} v{asm.GetName().Version}");
                     }
                 }
@@ -160,6 +165,11 @@ internal class PluginManager : IPluginManager
                 _logService.Error($"Failed to load plugin from {dll}: {ex.Message}");
             }
         }
+    }
+
+    private void AccountPlugin_IsScrobblingEnabledChanged(object? sender, EventArgs e)
+    {
+        IsAnyAccountPluginScrobblingChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public async Task RefreshAvailablePluginsAsync()

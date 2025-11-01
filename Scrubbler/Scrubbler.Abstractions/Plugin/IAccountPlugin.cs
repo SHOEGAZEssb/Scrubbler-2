@@ -20,6 +20,11 @@ public interface IAccountPlugin : IPersistentPlugin
     bool IsScrobblingEnabled { get; set; }
 
     /// <summary>
+    /// Event that is fired when <see cref="IsScrobblingEnabled"/> changes.
+    /// </summary>
+    event EventHandler? IsScrobblingEnabledChanged;
+
+    /// <summary>
     /// Initiates an authentication flow (OAuth, API key, etc.).
     /// May prompt the user for credentials or open a web view.
     /// </summary>

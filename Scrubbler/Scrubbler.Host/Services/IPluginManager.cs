@@ -19,10 +19,12 @@ public interface IPluginManager
     List<PluginManifestEntry> AvailablePlugins { get; }
 
     bool IsFetchingPlugins { get; }
+    bool IsAnyAccountPluginScrobbling { get; }
 
     event EventHandler<bool>? IsFetchingPluginsChanged;
     event EventHandler? PluginInstalled;
     event EventHandler? PluginUninstalled;
+    event EventHandler? IsAnyAccountPluginScrobblingChanged;
 
     /// <summary>
     /// Installs a plugin given its metadata.
