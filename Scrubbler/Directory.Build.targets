@@ -1,2 +1,46 @@
-﻿<Project>
+<Project>
+    <!-- =============================================
+       Shared post-build plugin copy logic
+       ============================================= -->
+    <PropertyGroup>
+        <!-- Base output folder for all plugin debug copies -->
+        <DebugPluginsRoot>$(SolutionDir)DebugPlugins</DebugPluginsRoot>
+    </PropertyGroup>
+
+    <!-- =============================================
+       Only apply to projects inside the Plugins folder
+       ============================================= -->
+    <Target Name="CopyToDebugPlugins"
+            AfterTargets="Build"
+            Condition=" '$(MSBuildProjectDirectory)' != '' and
+                      $(MSBuildProjectDirectory.Contains('Plugins')) ">
+
+        <!-- Compute target subdirectory: DebugPlugins\<ProjectName> -->
+        <PropertyGroup>
+            <DebugPluginsDir>$(DebugPluginsRoot)\$(MSBuildProjectName)</DebugPluginsDir>
+        </PropertyGroup>
+
+        <!-- Create target directory -->
+        <MakeDir Directories="$(DebugPluginsDir)" />
+
+        <!-- Collect outputs -->
+        <ItemGroup>
+            <PluginOutputs Include="$(TargetPath)" />
+            <PluginOutputs Include="$(TargetDir)$(TargetName).pdb"
+                           Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
+            <PluginOutputs Include="$(TargetDir)$(TargetName).xml"
+                           Condition="Exists('$(TargetDir)$(TargetName).xml')" />
+            <PluginOutputs Include="$(TargetDir)environment.env" Condition="Exists('$(TargetDir)environment.env')" />
+        </ItemGroup>
+
+        <!-- Copy primary outputs -->
+        <Copy SourceFiles="@(PluginOutputs)"
+              DestinationFolder="$(DebugPluginsDir)"
+              SkipUnchangedFiles="true" />
+
+        <!-- Copy referenced assemblies (CopyLocal=true) -->
+        <Copy SourceFiles="@(ReferenceCopyLocalPaths)"
+              DestinationFolder="$(DebugPluginsDir)"
+              SkipUnchangedFiles="true" />
+    </Target>
 </Project>

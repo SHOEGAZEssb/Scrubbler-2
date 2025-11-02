@@ -19,27 +19,4 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
-
-    <PropertyGroup>
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-        <DebugPluginsDir>$(SolutionDir)DebugPlugins\$(MSBuildProjectName)</DebugPluginsDir>
-    </PropertyGroup>
-
-    <Target Name="CopyToDebugPlugins" AfterTargets="Build">
-        <!-- Create target directory -->
-        <MakeDir Directories="$(DebugPluginsDir)" />
-
-        <!-- Copy the main project output (DLL, PDB, XML) -->
-        <ItemGroup>
-            <PluginOutputs Include="$(TargetPath)" />
-            <PluginOutputs Include="$(TargetDir)$(TargetName).pdb" Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
-            <PluginOutputs Include="$(TargetDir)$(TargetName).xml" Condition="Exists('$(TargetDir)$(TargetName).xml')" />
-            <PluginOutputs Include="$(TargetDir)environment.env" Condition="Exists('$(TargetDir)environment.env')" />
-        </ItemGroup>
-        <Copy SourceFiles="@(PluginOutputs)" DestinationFolder="$(DebugPluginsDir)" SkipUnchangedFiles="true" />
-
-        <!-- Also copy dependencies -->
-        <Copy SourceFiles="@(ReferenceCopyLocalPaths)" DestinationFolder="$(DebugPluginsDir)" SkipUnchangedFiles="true" />
-    </Target>
-
 </Project>
