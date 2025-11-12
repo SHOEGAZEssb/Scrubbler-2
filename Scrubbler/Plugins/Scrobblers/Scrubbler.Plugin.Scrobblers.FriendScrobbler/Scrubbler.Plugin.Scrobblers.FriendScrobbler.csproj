@@ -28,8 +28,6 @@
     <ItemGroup>
         <!-- External dependencies -->
         <PackageReference Include="Shoegaze.LastFM" />
-        <PackageReference Include="Uno.WinUI" />
-        <PackageReference Include="CommunityToolkit.Mvvm" />
     </ItemGroup>
 
     <!-- Uno.Sdk already handles XAML codegen, but explicit Page is fine -->
