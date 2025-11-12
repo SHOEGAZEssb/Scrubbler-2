@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Plugin;
 
-namespace Scrubbler.Plugin.ManualScrobbler;
+namespace Scrubbler.Plugin.Scrobblers.ManualScrobbler;
 
 public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
 {
@@ -39,6 +39,9 @@ public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
 
     public override async Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
     {
+        if (!CanScrobble)
+            throw new InvalidOperationException("Invalid data for scrobble creation");
+
         IsBusy = true;
 
         try

@@ -27,7 +27,6 @@
         </UnoFeatures>
     </PropertyGroup>
 
-
     <ItemGroup>
         <!-- Project references -->
         <ProjectReference Include="..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
@@ -42,11 +41,6 @@
         <Page Include="Presentation\MainPage.xaml" />
         <Page Include="Presentation\Shell.xaml" />
         <Page Include="Presentation\Accounts\AccountsView.xaml" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Update="shared-assemblies.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
     <ItemGroup>
       <Page Update="Presentation\Logging\LogView.xaml">
@@ -69,6 +63,7 @@
       </Page>
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="Presentation\Controls\" />
       <Folder Include="Services\Settings\" />
     </ItemGroup>
     <ItemGroup>

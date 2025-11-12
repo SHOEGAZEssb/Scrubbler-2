@@ -15,24 +15,19 @@ internal class PluginLoadContext : AssemblyLoadContext
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        // if it's a shared assembly, always reuse host copy
-        if (SharedAssemblyList.IsShared(assemblyName.Name!))
-        {
-            // Default.Assemblies is not directly enumerable, so resolve explicitly
-            var asm = Default.Assemblies
-                .FirstOrDefault(a => string.Equals(a.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
+        // if already loaded in default, reuse it
+        var existing = Default.Assemblies
+            .FirstOrDefault(a => string.Equals(a.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
 
-            if (asm != null)
-                return asm;
-        }
+        if (existing != null)
+            return existing;
 
-        // otherwise, resolve from plugin folder
+        // otherwise resolve from plugin folder
         var path = _resolver.ResolveAssemblyToPath(assemblyName);
         if (path != null)
-        {
             return LoadFromAssemblyPath(path);
-        }
 
         return null;
     }
+
 }

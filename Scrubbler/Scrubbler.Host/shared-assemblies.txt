@@ -1,5 +1,0 @@
-Scrubbler.Abstractions
-Microsoft.Extensions.*
-Uno
-Uno.*
-CommunityToolkit.Mvvm

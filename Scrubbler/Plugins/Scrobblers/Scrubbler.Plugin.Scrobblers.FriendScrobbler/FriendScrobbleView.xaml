@@ -1,0 +1,73 @@
+﻿<UserControl
+    x:Class="Scrubbler.Plugin.Scrobblers.FriendScrobbler.FriendScrobbleView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Scrubbler.Plugin.Scrobblers.FriendScrobbler"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:Scrubbler.Abstractions.Controls;assembly=Scrubbler.Abstractions"
+    xmlns:tv="using:WinUI.TableView"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Stretch">
+                <TextBox Header="Username" Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <Button Content="Fetch" Command="{Binding FetchCommand}" HorizontalAlignment="Right"/>
+         </StackPanel>
+
+        <controls:ScrobbleMultipleSelectorControl Grid.Row="2" VerticalAlignment="Stretch"/>
+
+        <controls:ScrobbableObjectTableView Grid.Row="4"
+            ItemsSource="{Binding Scrobbles}"
+            AutoGenerateColumns="False"
+            SelectionMode="Extended"
+            CanSortColumns="True"
+            Margin="8"
+            RowHeight="40"
+            HeaderRowHeight="32" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+            <controls:ScrobbableObjectTableView.Columns>
+                <tv:TableViewCheckBoxColumn
+                    Header="Scrobble"
+                    Binding="{Binding ToScrobble}"
+                    IsReadOnly="False"
+                    CanSort="False" />
+
+                <tv:TableViewTextColumn
+                    Header="Track"
+                    Binding="{Binding TrackName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                <tv:TableViewTextColumn
+                    Header="Artist"
+                    Binding="{Binding ArtistName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                <tv:TableViewTextColumn
+                    Header="Album"
+                    Binding="{Binding AlbumName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                <tv:TableViewTextColumn
+                    Header="Album Artist"
+                    Binding="{Binding AlbumArtistName}"
+                    CanSort="True"
+                    Width="*"/>
+            </controls:ScrobbableObjectTableView.Columns>
+        </controls:ScrobbableObjectTableView>
+    </Grid>
+</UserControl>

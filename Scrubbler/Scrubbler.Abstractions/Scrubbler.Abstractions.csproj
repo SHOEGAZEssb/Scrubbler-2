@@ -1,14 +1,37 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Uno.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <!-- Uno expects plural -->
+        <TargetFrameworks>net9.0</TargetFrameworks>
 
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" />
-    <PackageReference Include="Uno.WinUI" />
-  </ItemGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- Enables Uno XAML codegen and build logic -->
+        <UseUnoXaml>true</UseUnoXaml>
+        <EnableDefaultXamlItems>true</EnableDefaultXamlItems>
+
+        <!-- Make it clear it's not a head app -->
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+
+    <!-- Clean out WPF-style default None items -->
+    <ItemGroup>
+        <None Remove="Controls\ScrobbleMultipleSelectorControl.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Required for XAML and controls -->
+        <PackageReference Include="Uno.WinUI" />
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="WinUI.TableView" />
+    </ItemGroup>
+
+    <!-- Uno handles XAML discovery automatically, but explicit pages are fine -->
+    <ItemGroup>
+        <Page Include="Controls\ScrobbleMultipleSelectorControl.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+    </ItemGroup>
 
 </Project>

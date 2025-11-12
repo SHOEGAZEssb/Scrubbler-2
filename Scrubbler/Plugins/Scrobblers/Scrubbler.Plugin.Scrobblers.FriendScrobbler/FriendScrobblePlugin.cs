@@ -1,31 +1,29 @@
 using Microsoft.UI.Xaml.Controls;
+using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
+using Shoegaze.LastFM;
 
-namespace Scrubbler.Plugin.Scrobblers.ManualScrobbler;
+namespace Scrubbler.Plugin.Scrobblers.FriendScrobbler;
 
-/// <summary>
-/// Plugin that allows users to manually enter track details and scrobble them.
-/// </summary>
-/// <seealso cref="IScrobblePlugin"/>
-public class ManualScrobblePlugin : IScrobblePlugin
+public class FriendScrobblePlugin : IScrobblePlugin
 {
     #region Properties
 
     /// <summary>
     /// Gets the display name of the plugin.
     /// </summary>
-    public string Name => "Manual Scrobbler";
+    public string Name => "Friend Scrobbler";
 
     /// <summary>
     /// Gets a description of what the plugin does.
     /// </summary>
-    public string Description => "Enter track details manually and scrobble it";
-    
+    public string Description => "Scrobble tracks from another last.fm user";
+
     /// <summary>
     /// Gets the version of the plugin.
     /// </summary>
-    public Version Version => typeof(ManualScrobblePlugin).Assembly.GetName().Version!;
+    public Version Version => typeof(FriendScrobblePlugin).Assembly.GetName().Version!;
 
     /// <summary>
     /// Gets the platforms this plugin supports.
@@ -35,7 +33,7 @@ public class ManualScrobblePlugin : IScrobblePlugin
     /// <summary>
     /// Gets the icon source for displaying this plugin in the UI.
     /// </summary>
-    public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.Manage };
+    public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.OtherUser };
 
     /// <summary>
     /// Gets or sets the logging service for this plugin.
@@ -43,16 +41,21 @@ public class ManualScrobblePlugin : IScrobblePlugin
     /// <seealso cref="ILogService"/>
     public ILogService LogService { get; set; }
 
-    private readonly ManualScrobbleViewModel _vm = new();
+    private readonly ApiKeyStorage _apiKeyStorage;
+    private readonly FriendScrobbleViewModel _vm;
 
     #endregion Properties
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ManualScrobblePlugin"/> class.
     /// </summary>
-    public ManualScrobblePlugin()
+    public FriendScrobblePlugin()
     {
         LogService = new NoopLogger();
+
+        var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
+        _apiKeyStorage = new ApiKeyStorage(PluginDefaults.ApiKey, PluginDefaults.ApiSecret, Path.Combine(pluginDir, "environment.env"));
+        _vm = new FriendScrobbleViewModel(new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret));
     }
 
     /// <summary>
