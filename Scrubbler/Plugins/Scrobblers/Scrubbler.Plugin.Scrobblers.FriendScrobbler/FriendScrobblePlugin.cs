@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml.Controls;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;

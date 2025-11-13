@@ -1,5 +1,3 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace Scrubbler.Abstractions.Plugin;
 
 /// <summary>

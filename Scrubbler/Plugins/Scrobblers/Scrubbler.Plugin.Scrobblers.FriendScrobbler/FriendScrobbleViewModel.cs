@@ -6,10 +6,10 @@ using Scrubbler.Abstractions.Plugin;
 using Shoegaze.LastFM;
 
 namespace Scrubbler.Plugin.Scrobblers.FriendScrobbler;
+
 internal partial class FriendScrobbleViewModel : ScrobbleMultipleViewModelBase<FetchedScrobbleViewModel>
 {
     [ObservableProperty]
-    //[NotifyPropertyChangedFor(nameof(CanFetch))]
     [NotifyCanExecuteChangedFor(nameof(FetchCommand))]
     private string _userName = string.Empty;
 
@@ -37,7 +37,7 @@ internal partial class FriendScrobbleViewModel : ScrobbleMultipleViewModelBase<F
 
         try
         {
-            var response = await _lastfmClient.User.GetRecentTracksAsync(UserName, extended: true, ignoreNowPlaying: true, limit: 5);
+            var response = await _lastfmClient.User.GetRecentTracksAsync(UserName, extended: true, ignoreNowPlaying: true, limit: 1000);
             if (!response.IsSuccess || response.Data == null)
             {
                 // todo throw

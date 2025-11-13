@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml.Data;
-using Windows.Foundation;
 
 namespace Scrubbler.Abstractions.Plugin;
 
@@ -158,16 +151,16 @@ public abstract partial class ScrobbleMultipleViewModelBase<T> : ScrobblePluginV
         UncheckSelectedCommand.NotifyCanExecuteChanged();
         CheckFirst3000Command.NotifyCanExecuteChanged();
         UncheckFirst3000Command.NotifyCanExecuteChanged();
-        //OnPropertyChanged(nameof(CanScrobble));
-        //OnPropertyChanged(nameof(CanCheckAll));
-        //OnPropertyChanged(nameof(CanUncheckAll));
-        //OnPropertyChanged(nameof(CanCheckSelected));
-        //OnPropertyChanged(nameof(CanUncheckSelected));
-        //OnPropertyChanged(nameof(CanCheckFirst3000));
-        //OnPropertyChanged(nameof(CanUncheckFirst3000));
-        //OnPropertyChanged(nameof(ToScrobbleCount));
-        //OnPropertyChanged(nameof(MaxToScrobbleCount));
-        //OnPropertyChanged(nameof(SelectedCount));
+        OnPropertyChanged(nameof(CanScrobble));
+        OnPropertyChanged(nameof(CanCheckAll));
+        OnPropertyChanged(nameof(CanUncheckAll));
+        OnPropertyChanged(nameof(CanCheckSelected));
+        OnPropertyChanged(nameof(CanUncheckSelected));
+        OnPropertyChanged(nameof(CanCheckFirst3000));
+        OnPropertyChanged(nameof(CanUncheckFirst3000));
+        OnPropertyChanged(nameof(ToScrobbleCount));
+        OnPropertyChanged(nameof(MaxToScrobbleCount));
+        OnPropertyChanged(nameof(SelectedCount));
     }
 
     /// <summary>
