@@ -59,16 +59,6 @@ public abstract partial class ScrobbleMultipleViewModelBase<T> : ScrobblePluginV
     public bool CanUncheckSelected => Scrobbles.Any(s => s.IsSelected && s.ToScrobble);
 
     /// <summary>
-    /// Gets if the first 3000 scrobbles can be checked.
-    /// </summary>
-    public bool CanCheckFirst3000 => Scrobbles.Take(3000).Any(s => s.CanBeScrobbled && !s.ToScrobble);
-
-    /// <summary>
-    /// Gets if the first 3000 scrobbles can be unchecked.
-    /// </summary>
-    public bool CanUncheckFirst3000 => Scrobbles.Take(3000).Any(s => s.ToScrobble);
-
-    /// <summary>
     /// Gets the amount of scrobbles that are
     /// marked as "ToScrobble".
     /// </summary>
@@ -123,24 +113,6 @@ public abstract partial class ScrobbleMultipleViewModelBase<T> : ScrobblePluginV
     }
 
     /// <summary>
-    /// Marks the first 3000 scrobbles as "ToScrobble".
-    /// </summary>
-    [RelayCommand(CanExecute = nameof(CanCheckFirst3000))]
-    protected virtual void CheckFirst3000()
-    {
-        SetToScrobbleState(Scrobbles.Take(3000), true);
-    }
-
-    /// <summary>
-    /// Marks the first 3000 scrobbles as not "ToScrobble".
-    /// </summary>
-    [RelayCommand(CanExecute = nameof(CanUncheckFirst3000))]
-    protected virtual void UncheckFirst3000()
-    {
-        SetToScrobbleState(Scrobbles.Take(3000), false);
-    }
-
-    /// <summary>
     /// Notifies that properties have changed.
     /// </summary>
     protected void NotifyProperties()
@@ -149,15 +121,11 @@ public abstract partial class ScrobbleMultipleViewModelBase<T> : ScrobblePluginV
         UncheckAllCommand.NotifyCanExecuteChanged();
         CheckSelectedCommand.NotifyCanExecuteChanged();
         UncheckSelectedCommand.NotifyCanExecuteChanged();
-        CheckFirst3000Command.NotifyCanExecuteChanged();
-        UncheckFirst3000Command.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(CanScrobble));
         OnPropertyChanged(nameof(CanCheckAll));
         OnPropertyChanged(nameof(CanUncheckAll));
         OnPropertyChanged(nameof(CanCheckSelected));
         OnPropertyChanged(nameof(CanUncheckSelected));
-        OnPropertyChanged(nameof(CanCheckFirst3000));
-        OnPropertyChanged(nameof(CanUncheckFirst3000));
         OnPropertyChanged(nameof(ToScrobbleCount));
         OnPropertyChanged(nameof(MaxToScrobbleCount));
         OnPropertyChanged(nameof(SelectedCount));

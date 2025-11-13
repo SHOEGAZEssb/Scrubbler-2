@@ -28,22 +28,13 @@
                 Content="Uncheck Selected"
                 Command="{Binding UncheckSelectedCommand}"/>
 
-            <Button
-                Content="Check 3000"
-                Command="{Binding CheckFirst3000Command}"/>
-
-            <Button
-                Content="Uncheck 3000"
-                Command="{Binding UncheckFirst3000Command}"/>
-
             <TextBlock VerticalAlignment="Center">
-                <!--<TextBlock.Text>
-                    <MultiBinding StringFormat="{}Num to scrobble: {0} / {1} | Selected: {2}">
-                        <Binding Path="ToScrobbleCount" />
-                        <Binding Path="MaxToScrobbleCount" />
-                        <Binding Path="SelectedCount" />
-                    </MultiBinding>
-                </TextBlock.Text>-->
+                <Run Text="Num to scrobble: " />
+                <Run Text="{Binding ToScrobbleCount}" />
+                <Run Text=" / " />
+                <Run Text="{Binding MaxToScrobbleCount}" />
+                <Run Text=" | Selected: " />
+                <Run Text="{Binding SelectedCount}" />
             </TextBlock>
         </StackPanel>
     </Grid>
