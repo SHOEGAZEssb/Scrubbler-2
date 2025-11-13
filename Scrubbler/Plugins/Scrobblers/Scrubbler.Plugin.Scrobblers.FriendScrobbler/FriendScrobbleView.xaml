@@ -21,9 +21,11 @@
         </Grid.RowDefinitions>
         
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Stretch">
-                <TextBox Header="Username" Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Header="Username" Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <Button Content="Fetch" Command="{Binding FetchCommand}" HorizontalAlignment="Right"/>
+            <NumberBox Header="Limit" Value="{Binding Limit, Mode=TwoWay}" Minimum="1" Maximum="1000" SpinButtonPlacementMode="Inline"/>
+
+            <Button Content="Fetch" Command="{Binding FetchCommand}" HorizontalAlignment="Right"/>
          </StackPanel>
 
         <controls:ScrobbleMultipleSelectorControl Grid.Row="2" VerticalAlignment="Stretch"/>

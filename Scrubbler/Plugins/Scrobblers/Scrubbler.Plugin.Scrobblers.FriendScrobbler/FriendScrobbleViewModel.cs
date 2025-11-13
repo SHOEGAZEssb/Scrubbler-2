@@ -37,7 +37,7 @@ internal partial class FriendScrobbleViewModel : ScrobbleMultipleViewModelBase<F
 
         try
         {
-            var response = await _lastfmClient.User.GetRecentTracksAsync(UserName, extended: true, ignoreNowPlaying: true, limit: 1000);
+            var response = await _lastfmClient.User.GetRecentTracksAsync(UserName, extended: true, ignoreNowPlaying: true, limit: Limit);
             if (!response.IsSuccess || response.Data == null)
             {
                 // todo throw
@@ -53,4 +53,7 @@ internal partial class FriendScrobbleViewModel : ScrobbleMultipleViewModelBase<F
             IsBusy = false;
         }
     }
+
+    [ObservableProperty]
+    private int _limit = 50;
 }
