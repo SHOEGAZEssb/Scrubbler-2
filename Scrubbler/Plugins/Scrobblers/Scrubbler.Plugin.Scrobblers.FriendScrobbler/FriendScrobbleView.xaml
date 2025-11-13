@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:Scrubbler.Abstractions.Controls;assembly=Scrubbler.Abstractions"
-    xmlns:tv="using:WinUI.TableView"
+    xmlns:tv="using:WinUI.TableView" xmlns:abstractions="using:Scrubbler.Abstractions" d:DataContext="{d:DesignInstance Type=abstractions:FetchedScrobbleViewModel}"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
@@ -69,6 +69,13 @@
                     Binding="{Binding AlbumArtistName}"
                     CanSort="True"
                     Width="*"/>
+
+                <tv:TableViewTextColumn
+                    Header="Played At"
+                    Binding="{Binding Timestamp}"
+                    CanSort="True"
+                    Width="*"/>
+
             </controls:ScrobbableObjectTableView.Columns>
         </controls:ScrobbableObjectTableView>
     </Grid>
