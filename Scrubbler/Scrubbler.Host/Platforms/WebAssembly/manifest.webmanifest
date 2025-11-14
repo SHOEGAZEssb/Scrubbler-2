@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "UnoMultiTest",
+  "display": "standalone",
+  "name": "UnoMultiTest",
+  "short_name": "UnoMultiTest",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}

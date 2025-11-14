@@ -16,6 +16,20 @@
         "SCRUBBLER_PLUGIN_MODE": "Debug",
         "SOLUTIONDIR": "E:\\Stuff\\Github\\Last.fm-Scrubbler-2\\Scrubbler"
       }
+    },
+    "Scrubbler.Host (WebAssembly)": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "WebAssembly + Local Plugins": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SCRUBBLER_PLUGIN_MODE": "Debug",
+        "SOLUTIONDIR": "E:\\Stuff\\Github\\Last.fm-Scrubbler-2\\Scrubbler"
+      }
     }
   },
   "iisSettings": {
