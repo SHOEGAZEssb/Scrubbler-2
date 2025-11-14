@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <!-- Uno expects plural -->
-        <TargetFrameworks>net9.0</TargetFrameworks>
+        <TargetFrameworks>net10.0</TargetFrameworks>
 
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
