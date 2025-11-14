@@ -3,15 +3,9 @@ using System.Runtime.Loader;
 
 namespace Scrubbler.Host.Helper;
 
-internal class PluginLoadContext : AssemblyLoadContext
+internal class PluginLoadContext(string mainAssemblyPath) : AssemblyLoadContext(isCollectible: true)
 {
-    private readonly AssemblyDependencyResolver _resolver;
-
-    public PluginLoadContext(string mainAssemblyPath)
-        : base(isCollectible: true) // collectible = unloadable
-    {
-        _resolver = new AssemblyDependencyResolver(mainAssemblyPath);
-    }
+    private readonly AssemblyDependencyResolver _resolver = new AssemblyDependencyResolver(mainAssemblyPath);
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {

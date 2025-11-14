@@ -1,10 +1,10 @@
-﻿namespace Scrubbler.Host.Presentation;
+namespace Scrubbler.Host.Presentation;
 
 public sealed partial class Shell : UserControl, IContentControlProvider
 {
     public Shell()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
     public ContentControl ContentControl => Splash;
 }

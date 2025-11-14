@@ -2,16 +2,10 @@ using Scrubbler.Abstractions.Logging;
 
 namespace Scrubbler.Host.Services.Logging;
 
-internal class ModuleLogService : ILogService
+internal class ModuleLogService(HostLogService hostLog, string pluginName) : ILogService
 {
-    private readonly HostLogService _hostLog;
-    private readonly string _moduleName;
-
-    public ModuleLogService(HostLogService hostLog, string pluginName)
-    {
-        _hostLog = hostLog;
-        _moduleName = pluginName;
-    }
+    private readonly HostLogService _hostLog = hostLog;
+    private readonly string _moduleName = pluginName;
 
     public void Debug(string message) => _hostLog.Write(LogLevel.Debug, _moduleName, message);
     public void Info(string message) => _hostLog.Write(LogLevel.Information, _moduleName, message);

@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Scrubbler.Abstractions;
 
-public partial class FetchedScrobbleViewModel : ObservableObject, IScrobbableObjectViewModel
+public partial class FetchedScrobbleViewModel(ScrobbleData scrobble) : ObservableObject, IScrobbableObjectViewModel
 {
     #region Properties
 
@@ -77,18 +77,9 @@ public partial class FetchedScrobbleViewModel : ObservableObject, IScrobbableObj
 
     public DateTimeOffset Timestamp => _scrobble.Timestamp;
 
-    private readonly ScrobbleData _scrobble;
+    private readonly ScrobbleData _scrobble = scrobble;
 
     #endregion Properties
-
-    #region Construction
-
-    public FetchedScrobbleViewModel(ScrobbleData scrobble)
-    {
-        _scrobble = scrobble;
-    }
-
-    #endregion Construction
 
     public void UpdateIsSelectedSilent(bool isSelected)
     {

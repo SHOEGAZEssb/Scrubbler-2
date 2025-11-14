@@ -5,6 +5,6 @@ public sealed partial class PluginManagerView : UserControl
 {
     public PluginManagerView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

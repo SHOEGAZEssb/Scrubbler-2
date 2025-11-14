@@ -5,6 +5,6 @@ public sealed partial class InstalledPluginsView : UserControl
 {
     public InstalledPluginsView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

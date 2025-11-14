@@ -2,16 +2,10 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal class PluginManagerViewModel
+internal class PluginManagerViewModel(IPluginManager manager)
 {
-    public InstalledPluginsViewModel Installed { get; }
-    public AvailablePluginsViewModel Available { get; }
-
-    public PluginManagerViewModel(IPluginManager manager)
-    {
-        Installed = new InstalledPluginsViewModel(manager);
-        Available = new AvailablePluginsViewModel(manager);
-    }
+    public InstalledPluginsViewModel Installed { get; } = new InstalledPluginsViewModel(manager);
+    public AvailablePluginsViewModel Available { get; } = new AvailablePluginsViewModel(manager);
 
     // optional: a refresh-all command
     public void Refresh()

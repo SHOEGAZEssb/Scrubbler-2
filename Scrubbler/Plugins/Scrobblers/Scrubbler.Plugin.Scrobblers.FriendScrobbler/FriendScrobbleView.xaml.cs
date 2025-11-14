@@ -5,6 +5,6 @@ public sealed partial class FriendScrobbleView : UserControl
 {
     public FriendScrobbleView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

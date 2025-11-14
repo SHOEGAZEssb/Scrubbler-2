@@ -7,7 +7,7 @@ using Shoegaze.LastFM;
 
 namespace Scrubbler.Plugin.Scrobblers.FriendScrobbler;
 
-internal partial class FriendScrobbleViewModel : ScrobbleMultipleViewModelBase<FetchedScrobbleViewModel>
+internal partial class FriendScrobbleViewModel(ILastfmClient lastfmClient) : ScrobbleMultipleViewModelBase<FetchedScrobbleViewModel>
 {
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(FetchCommand))]
@@ -17,12 +17,7 @@ internal partial class FriendScrobbleViewModel : ScrobbleMultipleViewModelBase<F
 
     public override bool CanScrobble => Scrobbles.Any(s => s.ToScrobble);
 
-    private readonly ILastfmClient _lastfmClient;
-
-    public FriendScrobbleViewModel(ILastfmClient lastfmClient)
-    {
-        _lastfmClient = lastfmClient;
-    }
+    private readonly ILastfmClient _lastfmClient = lastfmClient;
 
     public override Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
     {

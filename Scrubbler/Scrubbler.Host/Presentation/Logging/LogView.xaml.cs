@@ -5,6 +5,6 @@ public sealed partial class LogView : UserControl
 {
     public LogView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

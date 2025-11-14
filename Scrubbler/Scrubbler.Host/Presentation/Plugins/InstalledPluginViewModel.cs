@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Plugin;
 
 namespace Scrubbler.Host.Presentation.Plugins;
-internal partial class InstalledPluginViewModel : ObservableObject
+internal partial class InstalledPluginViewModel(IPlugin plugin) : ObservableObject
 {
     public event EventHandler<IPlugin>? UninstallRequested;
 
@@ -24,12 +24,7 @@ internal partial class InstalledPluginViewModel : ObservableObject
         }
     }
 
-    private readonly IPlugin _plugin;
-
-    public InstalledPluginViewModel(IPlugin plugin)
-    {
-        _plugin = plugin;
-    }
+    private readonly IPlugin _plugin = plugin;
 
     [RelayCommand]
     private void Uninstall()

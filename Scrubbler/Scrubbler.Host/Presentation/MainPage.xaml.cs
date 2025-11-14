@@ -7,7 +7,7 @@ public sealed partial class MainPage : Page
 {
     public MainPage()
     {
-        this.InitializeComponent();
+        InitializeComponent();
         var app = (App)Application.Current;
         app.Ready += App_Ready;
     }

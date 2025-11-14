@@ -5,6 +5,6 @@ public sealed partial class ScrobbleMultipleSelectorControl : UserControl
 {
     public ScrobbleMultipleSelectorControl()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

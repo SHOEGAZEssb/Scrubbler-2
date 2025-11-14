@@ -8,7 +8,7 @@ public sealed partial class ScrobblePreviewDialog : ContentDialog
 
     public ScrobblePreviewDialog(IEnumerable<ScrobbleData> scrobbles)
     {
-        this.InitializeComponent();
+        InitializeComponent();
         ViewModel = new ScrobblePreviewViewModel(scrobbles);
         DataContext = ViewModel;
     }

@@ -3,6 +3,6 @@ public sealed partial class AccountsView : UserControl
 {
     public AccountsView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

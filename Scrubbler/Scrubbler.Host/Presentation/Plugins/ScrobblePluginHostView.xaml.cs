@@ -4,6 +4,6 @@ public sealed partial class ScrobblePluginHostView : UserControl
 {
     public ScrobblePluginHostView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }
