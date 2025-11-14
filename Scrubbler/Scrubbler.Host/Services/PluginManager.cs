@@ -146,17 +146,22 @@ internal class PluginManager : IPluginManager
                 var types = SafeGetTypes(asm)
                     .Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract);
 
-                foreach (var pluginType in types)
+                if (!types.Any())
+                    _logService.Warn($"No IPlugin implementations found in {dll}");
+                else
                 {
-                    if (Activator.CreateInstance(pluginType) is IPlugin plugin)
+                    foreach (var pluginType in types)
                     {
-                        plugin.LogService = new ModuleLogService(_hostLogService, plugin.Name);
-                        _installed.Add((plugin, context));
-                        if (plugin is IPersistentPlugin persistentPlugin)
-                            await persistentPlugin.LoadAsync();
-                        if (plugin is IAccountPlugin accountPlugin)
-                            accountPlugin.IsScrobblingEnabledChanged += AccountPlugin_IsScrobblingEnabledChanged;
-                        _logService.Info($"Loaded Plugin: {plugin.Name} v{asm.GetName().Version}");
+                        if (Activator.CreateInstance(pluginType) is IPlugin plugin)
+                        {
+                            plugin.LogService = new ModuleLogService(_hostLogService, plugin.Name);
+                            _installed.Add((plugin, context));
+                            if (plugin is IPersistentPlugin persistentPlugin)
+                                await persistentPlugin.LoadAsync();
+                            if (plugin is IAccountPlugin accountPlugin)
+                                accountPlugin.IsScrobblingEnabledChanged += AccountPlugin_IsScrobblingEnabledChanged;
+                            _logService.Info($"Loaded Plugin: {plugin.Name} v{asm.GetName().Version}");
+                        }
                     }
                 }
             }
@@ -252,10 +257,5 @@ internal class PluginManager : IPluginManager
             // return only successfully loaded types
             return ex.Types.Where(t => t != null).ToArray()!;
         }
-    }
-
-    private async Task App_Suspending(object sender, SuspendingEventArgs e)
-    {
-        await SaveAllPluginsAsync();
     }
 }
