@@ -117,10 +117,6 @@ public abstract partial class ScrobbleMultipleViewModelBase<T> : ScrobblePluginV
     /// </summary>
     protected void NotifyProperties()
     {
-        CheckAllCommand.NotifyCanExecuteChanged();
-        UncheckAllCommand.NotifyCanExecuteChanged();
-        CheckSelectedCommand.NotifyCanExecuteChanged();
-        UncheckSelectedCommand.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(CanScrobble));
         OnPropertyChanged(nameof(CanCheckAll));
         OnPropertyChanged(nameof(CanUncheckAll));
@@ -129,6 +125,10 @@ public abstract partial class ScrobbleMultipleViewModelBase<T> : ScrobblePluginV
         OnPropertyChanged(nameof(ToScrobbleCount));
         OnPropertyChanged(nameof(MaxToScrobbleCount));
         OnPropertyChanged(nameof(SelectedCount));
+        CheckAllCommand.NotifyCanExecuteChanged();
+        UncheckAllCommand.NotifyCanExecuteChanged();
+        CheckSelectedCommand.NotifyCanExecuteChanged();
+        UncheckSelectedCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>

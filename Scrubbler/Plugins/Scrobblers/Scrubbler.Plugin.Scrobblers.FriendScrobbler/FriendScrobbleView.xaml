@@ -6,10 +6,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:Scrubbler.Abstractions.Controls;assembly=Scrubbler.Abstractions"
+    xmlns:conv="using:Scrubbler.Abstractions.Converter"
     xmlns:tv="using:WinUI.TableView" xmlns:abstractions="using:Scrubbler.Abstractions" d:DataContext="{d:DesignInstance Type=abstractions:FetchedScrobbleViewModel}"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <conv:InverseBooleanConverter x:Key="invBool"/>
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -19,14 +24,14 @@
             <RowDefinition Height="5"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Stretch">
             <TextBox Header="Username" Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <NumberBox Header="Limit" Value="{Binding Limit, Mode=TwoWay}" Minimum="1" Maximum="1000" SpinButtonPlacementMode="Inline"/>
 
             <Button Content="Fetch" Command="{Binding FetchCommand}" HorizontalAlignment="Right"/>
-         </StackPanel>
+        </StackPanel>
 
         <controls:ScrobbleMultipleSelectorControl Grid.Row="2" VerticalAlignment="Stretch"/>
 
@@ -40,11 +45,14 @@
             HeaderRowHeight="32" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
             <controls:ScrobbableObjectTableView.Columns>
-                <tv:TableViewCheckBoxColumn
-                    Header="Scrobble"
-                    Binding="{Binding ToScrobble}"
-                    IsReadOnly="False"
-                    CanSort="False" />
+                <tv:TableViewTemplateColumn Header="Scrobble">
+                    <tv:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding ToScrobble, Mode=TwoWay}"
+                                      IsEnabled="{Binding CanBeScrobbled}" />
+                        </DataTemplate>
+                    </tv:TableViewTemplateColumn.CellTemplate>
+                </tv:TableViewTemplateColumn>
 
                 <tv:TableViewTextColumn
                     Header="Track"
@@ -74,7 +82,8 @@
                     Header="Played At"
                     Binding="{Binding Timestamp}"
                     CanSort="True"
-                    Width="*"/>
+                    Width="*"
+                    IsReadOnly="True"/>
 
             </controls:ScrobbableObjectTableView.Columns>
         </controls:ScrobbableObjectTableView>

@@ -1,6 +1,6 @@
 using Microsoft.UI.Xaml.Data;
 
-namespace Scrubbler.Host.Helper;
+namespace Scrubbler.Abstractions.Converter;
 
 /// <summary>
 /// Converts a boolean value to its inverse (negation).

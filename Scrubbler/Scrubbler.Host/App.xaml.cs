@@ -39,28 +39,11 @@ public partial class App : Application
                     logBuilder
                         .SetMinimumLevel(
                             context.HostingEnvironment.IsDevelopment() ?
-                                LogLevel.Information :
+                                LogLevel.Trace :
                                 LogLevel.Warning)
 
                         // Default filters for core Uno Platform namespaces
                         .CoreLogLevel(LogLevel.Warning).XamlBindingLogLevel(LogLevel.Trace);
-
-                    // Uno Platform namespace filter groups
-                    // Uncomment individual methods to see more detailed logging
-                    //// Generic Xaml events
-                    //logBuilder.XamlLogLevel(LogLevel.Debug);
-                    //// Layout specific messages
-                    //logBuilder.XamlLayoutLogLevel(LogLevel.Debug);
-                    //// Storage messages
-                    //logBuilder.StorageLogLevel(LogLevel.Debug);
-                    //// Binding related messages
-                    logBuilder.XamlBindingLogLevel(LogLevel.Debug);
-                    //// Binder memory references tracking
-                    //logBuilder.BinderMemoryReferenceLogLevel(LogLevel.Debug);
-                    //// DevServer and HotReload related
-                    //logBuilder.HotReloadCoreLogLevel(LogLevel.Information);
-                    //// Debug JS interop
-                    //logBuilder.WebAssemblyLogLevel(LogLevel.Debug);
 
                 }, enableUnoLogging: true)
                 .UseConfiguration(configure: configBuilder =>
