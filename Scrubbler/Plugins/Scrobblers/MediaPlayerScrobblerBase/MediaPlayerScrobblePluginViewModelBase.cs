@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Plugin.Account;
 using Shoegaze.LastFM;
 
 namespace Scrubbler.Plugins.Scrobblers.MediaPlayerScrobbleBase;
@@ -20,6 +21,10 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     private bool _autoConnect;
 
     public ILogService Logger { get; set; } = logger;
+
+    public ICanLoveTracks? LoveTrackObject { get; set; }
+
+    public bool CanLoveTracks => LoveTrackObject != null;
 
     protected readonly ILastfmClient _lastfmClient = lastfmClient;
 
@@ -137,6 +142,21 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         //UpdateNowPlaying().Forget();
         //UpdatePlayCountsAndTags().Forget();
         _ = FetchAlbumArtwork();
+    }
+
+    protected async Task UpdateLovedInfo()
+    {
+        if (!CanLoveTracks)
+            return;
+        try
+        {
+            var errorMessage = await LoveTrackObject.GetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName, out bool isLoved);
+            Logger.Debug($"Updated loved info: {CurrentTrackLoved}");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Error updating loved info.", ex);
+        }
     }
 
     protected async Task FetchAlbumArtwork()

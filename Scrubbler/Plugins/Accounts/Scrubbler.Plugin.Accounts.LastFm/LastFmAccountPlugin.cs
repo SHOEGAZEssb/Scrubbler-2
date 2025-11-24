@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml.Controls;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Abstractions.Settings;
 using Shoegaze.LastFM;
 using Shoegaze.LastFM.Authentication;
@@ -12,7 +13,7 @@ namespace Scrubbler.Plugin.Accounts.LastFm;
 /// A plugin that connects to a Last.fm account using session keys.
 /// Implements IAccountPlugin so authentication persists between runs.
 /// </summary>
-public class LastFmAccountPlugin : IAccountPlugin
+public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks
 {
     #region Properties
 
@@ -26,6 +27,8 @@ public class LastFmAccountPlugin : IAccountPlugin
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
 
     public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.Play };
+
+    public string? Username => _secureStore.GetAsync(AccountIdKey).GetAwaiter().GetResult() ?? null;
 
     public ILogService LogService { get; set; }
 
@@ -207,6 +210,27 @@ public class LastFmAccountPlugin : IAccountPlugin
             LogService.Info($"Scrobbling batch {i++} / {batches}...");
             var response = await _lastfmClient!.Track.ScrobbleAsync(batch);
             LogService.Info($"Scrobble Status: {response.LastFmStatus}");
+        }
+    }
+
+    public async Task<string?> SetLoveState(string artistName, string trackName, string? albumName, bool isLoved)
+    {
+        var response = await _lastfmClient!.Track.SetLoveState(artistName, trackName, isLoved);
+        return response.IsSuccess ? null : (response.ErrorMessage ?? "Unknown error");
+    }
+
+    public async Task<string?> GetLoveState(string artistName, string trackName, string? albumName, out bool isLoved)
+    {
+        var response = await _lastfmClient!.Track.GetInfoByNameAsync(artistName, trackName, Username);
+        if (response.IsSuccess && response.Data != null)
+        {
+            isLoved = response.Data.UserLoved ?? false;
+            return null;
+        }
+        else
+        {
+            isLoved = false;
+            return response.ErrorMessage ?? "Unknown error";
         }
     }
 }

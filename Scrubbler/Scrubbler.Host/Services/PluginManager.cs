@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Helper;
 using Scrubbler.Host.Services.Logging;

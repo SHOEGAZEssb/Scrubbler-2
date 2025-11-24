@@ -180,7 +180,7 @@ public partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILo
         }
         catch (Exception ex)
         {
-            //OnStatusUpdated($"Error while getting Apple Music info: {ex.Message}");
+            Logger.Error($"Error while getting Apple Music info: {ex.Message}");
             Disconnect();
         }
     }

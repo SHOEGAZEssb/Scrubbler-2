@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
-using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Plugin.Account;
 
 
 namespace Scrubbler.Host.Presentation.Accounts;

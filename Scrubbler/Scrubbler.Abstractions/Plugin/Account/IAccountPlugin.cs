@@ -1,4 +1,4 @@
-namespace Scrubbler.Abstractions.Plugin;
+namespace Scrubbler.Abstractions.Plugin.Account;
 
 /// <summary>
 /// Represents an account integration (e.g., Last.fm, Spotify).
