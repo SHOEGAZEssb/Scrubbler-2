@@ -13,6 +13,8 @@ internal sealed class PluginNavigationItemViewModel(IPlugin plugin, IPluginManag
     {
         if (plugin is IScrobblePlugin sp)
             return new ScrobblePluginHostViewModel(sp, manager, feedbackService, dialogService);
+        if (plugin is IAutoScrobblePlugin asp)
+            return new AutoScrobblePluginHostViewModel(asp, manager, feedbackService, dialogService);
 
         return null; // todo log throw?
     }

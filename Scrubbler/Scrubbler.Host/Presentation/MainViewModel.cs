@@ -71,7 +71,7 @@ internal partial class MainViewModel : ObservableObject
     {
         _pluginGroup.Children.Clear();
 
-        foreach (var plugin in _pluginManager.InstalledPlugins.Where(p => p is IScrobblePlugin))
+        foreach (var plugin in _pluginManager.InstalledPlugins.Where(p => p is IScrobblePlugin || p is IAutoScrobblePlugin))
         {
             _pluginGroup.Children.Add(new PluginNavigationItemViewModel(plugin, _pluginManager, _userFeedbackService, _dialogService));
         }

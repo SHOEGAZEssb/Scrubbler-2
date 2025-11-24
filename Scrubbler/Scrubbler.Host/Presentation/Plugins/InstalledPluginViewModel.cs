@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Plugin;
 
 namespace Scrubbler.Host.Presentation.Plugins;
+
 internal partial class InstalledPluginViewModel(IPlugin plugin) : ObservableObject
 {
     public event EventHandler<IPlugin>? UninstallRequested;
@@ -17,7 +18,7 @@ internal partial class InstalledPluginViewModel(IPlugin plugin) : ObservableObje
         {
             if (_plugin is IAccountPlugin)
                 return "Account Plugin";
-            if (_plugin is IScrobblePlugin)
+            if (_plugin is IScrobblePlugin || _plugin is IAutoScrobblePlugin)
                 return "Scrobble Plugin";
 
             return "Plugin";

@@ -64,7 +64,6 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Presentation\Controls\" />
-      <Folder Include="Services\Settings\" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Presentation\Plugins\ScrobblePluginHostView.xaml.cs">
@@ -78,6 +77,11 @@
     </ItemGroup>
     <ItemGroup>
       <Page Update="Presentation\Plugins\ScrobblePreviewDialog.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="Presentation\Plugins\AutoScrobblePluginHostView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
     </ItemGroup>

@@ -22,6 +22,7 @@
 
     <ItemGroup>
         <!-- Required for XAML and controls -->
+        <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.WinUI.Managed" />
         <PackageReference Include="Uno.WinUI" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="WinUI.TableView" />

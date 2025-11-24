@@ -13,5 +13,5 @@ public interface IAutoScrobblePluginViewModel : IPluginViewModel
     /// <remarks>
     /// Handlers of this event should scrobble the tracks using an <see cref="IAccountPlugin"/>.
     /// </remarks>
-    event EventHandler<IEnumerable<ScrobbleData>> ScrobblesDetected;
+    event EventHandler<IEnumerable<ScrobbleData>>? ScrobblesDetected;
 }

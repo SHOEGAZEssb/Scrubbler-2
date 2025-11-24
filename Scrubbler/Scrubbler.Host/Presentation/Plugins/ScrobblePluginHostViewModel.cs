@@ -5,17 +5,12 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal partial class ScrobblePluginHostViewModel : ObservableObject
+internal partial class ScrobblePluginHostViewModel : ScrobblePluginHostViewModelBase
 {
     #region Properties
 
     [ObservableProperty]
     private IScrobblePluginViewModel _pluginViewModel;
-
-    private readonly IPlugin _plugin;
-    private readonly IPluginManager _pluginManager;
-    private readonly IUserFeedbackService _userFeedbackService;
-    private readonly IDialogService _dialogService;
 
     private bool CanPreview => PluginViewModel.CanScrobble;
     private bool CanScrobble => PluginViewModel.CanScrobble && _pluginManager.IsAnyAccountPluginScrobbling;
@@ -25,12 +20,8 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
     #region Construction
 
     public ScrobblePluginHostViewModel(IScrobblePlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
+        : base(plugin, manager, feedbackService, dialogService)
     {
-        _plugin = plugin;
-        _pluginManager = manager;
-        _userFeedbackService = feedbackService;
-        _dialogService = dialogService;
-
         _pluginViewModel = (_plugin.GetViewModel() as IScrobblePluginViewModel)!; // todo: log in case this is ever null (should not happen)
 
         _pluginViewModel.PropertyChanged += (s, e) =>
@@ -57,14 +48,6 @@ internal partial class ScrobblePluginHostViewModel : ObservableObject
             await ScrobbleToPlugins(await spv.GetScrobblesAsync());
 
         _userFeedbackService.ShowSuccess("Scrobbled!");
-    }
-
-    private async Task ScrobbleToPlugins(IEnumerable<ScrobbleData> scrobbles)
-    {
-        foreach (var account in _pluginManager.InstalledPlugins.OfType<IAccountPlugin>().Where(p => p.IsScrobblingEnabled))
-        {
-            await account.ScrobbleAsync(scrobbles);
-        }
     }
 
     [RelayCommand(CanExecute = nameof(CanPreview))]

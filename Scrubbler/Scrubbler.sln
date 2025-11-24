@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Host", "Scrubbler.Host\Scrubbler.Host.csproj", "{B5837F93-8584-44CA-AD37-610D233160AC}"
 EndProject
@@ -29,6 +29,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scrobblers", "Scrobblers", "{4536D109-4649-4376-B775-F791CE753B4A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobblers.FriendScrobbler", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobblers.FriendScrobbler\Scrubbler.Plugin.Scrobblers.FriendScrobbler.csproj", "{90433E59-7004-4F98-9E05-BCB43F15DBF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler\Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler.csproj", "{55A31E75-80DC-4F90-B79A-9CDB6840133D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayerScrobblerBase", "Plugins\Scrobblers\MediaPlayerScrobblerBase\MediaPlayerScrobblerBase.csproj", "{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +66,14 @@ Global
 		{90433E59-7004-4F98-9E05-BCB43F15DBF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90433E59-7004-4F98-9E05-BCB43F15DBF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90433E59-7004-4F98-9E05-BCB43F15DBF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55A31E75-80DC-4F90-B79A-9CDB6840133D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55A31E75-80DC-4F90-B79A-9CDB6840133D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55A31E75-80DC-4F90-B79A-9CDB6840133D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55A31E75-80DC-4F90-B79A-9CDB6840133D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +84,8 @@ Global
 		{C4B8A7B8-FD80-4664-AAB7-0667CD5E8D57} = {FD46BF08-594F-4224-BD15-2DB872961D54}
 		{4536D109-4649-4376-B775-F791CE753B4A} = {797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}
 		{90433E59-7004-4F98-9E05-BCB43F15DBF4} = {4536D109-4649-4376-B775-F791CE753B4A}
+		{55A31E75-80DC-4F90-B79A-9CDB6840133D} = {4536D109-4649-4376-B775-F791CE753B4A}
+		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3} = {4536D109-4649-4376-B775-F791CE753B4A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB28EE7E-5D57-4092-8B8A-1EE7C97A6790}
