@@ -26,6 +26,11 @@
             SkiaRenderer;
         </UnoFeatures>
     </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="Presentation\Controls\**" />
+      <EmbeddedResource Remove="Presentation\Controls\**" />
+      <None Remove="Presentation\Controls\**" />
+    </ItemGroup>
 
     <ItemGroup>
         <!-- Project references -->
@@ -63,9 +68,6 @@
       </Page>
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Presentation\Controls\" />
-    </ItemGroup>
-    <ItemGroup>
       <Compile Update="Presentation\Plugins\ScrobblePluginHostView.xaml.cs">
         <DependentUpon>ScrobblePluginHostView.xaml</DependentUpon>
       </Compile>
@@ -84,5 +86,17 @@
       <Page Update="Presentation\Plugins\AutoScrobblePluginHostView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Remove="Presentation\Controls\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Page Remove="Presentation\Controls\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Presentation\Controls\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <PRIResource Remove="Presentation\Controls\**" />
     </ItemGroup>
 </Project>

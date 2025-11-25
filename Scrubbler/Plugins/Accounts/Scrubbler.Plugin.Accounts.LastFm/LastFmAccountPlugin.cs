@@ -13,7 +13,7 @@ namespace Scrubbler.Plugin.Accounts.LastFm;
 /// A plugin that connects to a Last.fm account using session keys.
 /// Implements IAccountPlugin so authentication persists between runs.
 /// </summary>
-public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks
+public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying
 {
     #region Properties
 
@@ -49,7 +49,7 @@ public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks
     public bool IsScrobblingEnabled
     {
         get => _settings.IsScrobblingEnabled;
-        set 
+        set
         {
             if (IsScrobblingEnabled != value)
             {
@@ -213,24 +213,103 @@ public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks
         }
     }
 
+    #region IAccountFunctions
+
     public async Task<string?> SetLoveState(string artistName, string trackName, string? albumName, bool isLoved)
     {
         var response = await _lastfmClient!.Track.SetLoveState(artistName, trackName, isLoved);
         return response.IsSuccess ? null : (response.ErrorMessage ?? "Unknown error");
     }
 
-    public async Task<string?> GetLoveState(string artistName, string trackName, string? albumName, out bool isLoved)
+    public async Task<(string? errorMessage, bool isLoved)> GetLoveState(string artistName, string trackName, string? albumName)
     {
+        if (Username == null || !IsAuthenticated)
+            return ("Not authenticated", false);
+
         var response = await _lastfmClient!.Track.GetInfoByNameAsync(artistName, trackName, Username);
         if (response.IsSuccess && response.Data != null)
+            return (null, response.Data.UserLoved ?? false);
+        else
+            return (response.ErrorMessage ?? "Unknown error", false);
+    }
+
+    public async Task<(string? errorMessage, int playCount)> GetArtistPlayCount(string artistName)
+    {
+        if (Username == null || !IsAuthenticated)
+            return ("Not authenticated", 0);
+
+        var response = await _lastfmClient!.Artist.GetInfoByNameAsync(artistName, Username);
+        if (response.IsSuccess && response.Data != null)
+            return (null, response.Data.UserPlayCount ?? 0);
+        else
+            return (response.ErrorMessage ?? "Unknown error", 0);
+    }
+
+    public async Task<(string? errorMessage, int playCount)> GetTrackPlayCount(string artistName, string trackName)
+    {
+        if (Username == null || !IsAuthenticated)
+            return ("Not authenticated", 0);
+
+        var response = await _lastfmClient!.Track.GetInfoByNameAsync(artistName, trackName, Username);
+        if (response.IsSuccess && response.Data != null)
+            return (null, response.Data.UserPlayCount ?? 0);
+        else
+            return (response.ErrorMessage ?? "Unknown error", 0);
+    }
+
+    public async Task<(string? errorMessage, int playCount)> GetAlbumPlayCount(string artistName, string albumName)
+    {
+        if (Username == null || !IsAuthenticated)
+            return ("Not authenticated", 0);
+
+        var response = await _lastfmClient!.Album.GetInfoByNameAsync(artistName, albumName, Username);
+        if (response.IsSuccess && response.Data != null)
+            return (null, response.Data.UserPlayCount ?? 0);
+        else
+            return (response.ErrorMessage ?? "Unknown error", 0);
+    }
+
+    public async Task<(string? errorMessage, IEnumerable<string> tags)> GetArtistTags(string artistName)
+    {
+        var response = await _lastfmClient!.Artist.GetTopTagsByNameAsync(artistName);
+        if (response.IsSuccess && response.Data != null)
         {
-            isLoved = response.Data.UserLoved ?? false;
-            return null;
+            var tags = response.Data.Select(t => t.Name);
+            return (null, tags);
         }
         else
-        {
-            isLoved = false;
-            return response.ErrorMessage ?? "Unknown error";
-        }
+            return (response.ErrorMessage ?? "Unknown error", []);
     }
+
+    public async Task<(string? errorMessage, IEnumerable<string> tags)> GetTrackTags(string artistName, string trackName)
+    {
+        var response = await _lastfmClient!.Track.GetTopTagsByNameAsync(artistName, trackName);
+        if (response.IsSuccess && response.Data != null)
+        {
+            var tags = response.Data.Select(t => t.Name);
+            return (null, tags);
+        }
+        else
+            return (response.ErrorMessage ?? "Unknown error", []);
+    }
+
+    public async Task<(string? errorMessage, IEnumerable<string> tags)> GetAlbumTags(string artistName, string albumName)
+    {
+        var response = await _lastfmClient!.Album.GetTopTagsByNameAsync(artistName, albumName);
+        if (response.IsSuccess && response.Data != null)
+        {
+            var tags = response.Data.Select(t => t.Name);
+            return (null, tags);
+        }
+        else
+            return (response.ErrorMessage ?? "Unknown error", []);
+    }
+
+    public async Task<string?> UpdateNowPlaying(string artistName, string trackName, string? albumName)
+    {
+        var response = await _lastfmClient!.Track.UpdateNowPlayingAsync(artistName, trackName, albumName);
+        return response.IsSuccess ? null : (response.ErrorMessage ?? "Unknown error");
+    }
+
+    #endregion IAccountFunctions
 }

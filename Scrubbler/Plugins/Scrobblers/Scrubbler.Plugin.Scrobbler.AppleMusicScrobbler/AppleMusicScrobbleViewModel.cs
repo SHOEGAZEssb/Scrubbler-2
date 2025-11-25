@@ -158,7 +158,7 @@ public partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILo
             }
 
             // get duration from slider
-            var s = songFieldsPanel.FindFirstChild("LCDScrubber");
+            var s = songFieldsPanel.FindFirstChild("LCDScrubber") ?? throw new InvalidOperationException("Apple Music song slider is not initialised or missing");
             var duration = s.Patterns.RangeValue.Pattern.Maximum;
             var val = s.Patterns.RangeValue.Pattern.Value;
 
@@ -181,7 +181,7 @@ public partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILo
         catch (Exception ex)
         {
             Logger.Error($"Error while getting Apple Music info: {ex.Message}");
-            Disconnect();
+            _ = Disconnect();
         }
     }
 

@@ -24,7 +24,17 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
     public ICanLoveTracks? LoveTrackObject { get; set; }
 
-    public bool CanLoveTracks => LoveTrackObject != null;
+    private bool CanLoveTracks => LoveTrackObject != null;
+
+    public ICanFetchPlayCounts? FetchPlayCountsObject { get; set; }
+
+    public bool CanFetchPlayCounts => FetchPlayCountsObject != null;
+
+    public ICanFetchTags? FetchTagsObject { get; set; }
+
+    public bool CanFetchTags => FetchTagsObject != null;
+
+    public ICanUpdateNowPlaying? UpdateNowPlayingObject { get; set; }
 
     protected readonly ILastfmClient _lastfmClient = lastfmClient;
 
@@ -138,19 +148,98 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         OnPropertyChanged(nameof(CurrentAlbumName));
         OnPropertyChanged(nameof(CurrentTrackLength));
         OnPropertyChanged(nameof(CurrentTrackLengthToScrobble));
-        //UpdateLovedInfo().Forget();
-        //UpdateNowPlaying().Forget();
-        //UpdatePlayCountsAndTags().Forget();
+        _ = UpdateNowPlaying();
+        _ = UpdatePlayCounts();
+        _ = UpdateLovedInfo();
         _ = FetchAlbumArtwork();
     }
 
-    protected async Task UpdateLovedInfo()
+    private async Task UpdateNowPlaying()
+    {
+        if (UpdateNowPlayingObject == null)
+            return;
+
+        try
+        {
+            Logger.Debug("Updating Now Playing...");
+            var errorMessage = await UpdateNowPlayingObject.UpdateNowPlaying(CurrentArtistName, CurrentTrackName, CurrentAlbumName);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                Logger.Error($"Error updating Now Playing: {errorMessage}");
+                return;
+            }
+            Logger.Debug("Now Playing updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Error updating Now Playing.", ex);
+        }
+    }
+
+    private async Task UpdatePlayCounts()
+    {
+        if (!CanFetchPlayCounts)
+            return;
+
+        try
+        {
+            Logger.Debug("Updating play counts...");
+            var (artistError, artistPlayCount) = await FetchPlayCountsObject!.GetArtistPlayCount(CurrentArtistName);
+            if (!string.IsNullOrEmpty(artistError))
+            {
+                Logger.Error($"Error fetching artist play count: {artistError}");
+            }
+            else
+            {
+                CurrentArtistPlayCount = artistPlayCount;
+                Logger.Debug($"Updated artist play count: {CurrentArtistPlayCount}");
+            }
+            var (trackError, trackPlayCount) = await FetchPlayCountsObject.GetTrackPlayCount(CurrentArtistName, CurrentTrackName);
+            if (!string.IsNullOrEmpty(trackError))
+            {
+                Logger.Error($"Error fetching track play count: {trackError}");
+            }
+            else
+            {
+                CurrentTrackPlayCount = trackPlayCount;
+                Logger.Debug($"Updated track play count: {CurrentTrackPlayCount}");
+            }
+            if (!string.IsNullOrEmpty(CurrentAlbumName))
+            {
+                var (albumError, albumPlayCount) = await FetchPlayCountsObject.GetAlbumPlayCount(CurrentArtistName, CurrentAlbumName);
+                if (!string.IsNullOrEmpty(albumError))
+                {
+                    Logger.Error($"Error fetching album play count: {albumError}");
+                }
+                else
+                {
+                    CurrentAlbumPlayCount = albumPlayCount;
+                    Logger.Debug($"Updated album play count: {CurrentAlbumPlayCount}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Error updating play counts.", ex);
+        }
+    }
+
+    private async Task UpdateLovedInfo()
     {
         if (!CanLoveTracks)
             return;
+
         try
         {
-            var errorMessage = await LoveTrackObject.GetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName, out bool isLoved);
+            Logger.Debug("Updating loved info...");
+            var (errorMessage, isLoved) = await LoveTrackObject!.GetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                Logger.Error($"Error fetching loved info: {errorMessage}");
+                return;
+            }
+
+            CurrentTrackLoved = isLoved;
             Logger.Debug($"Updated loved info: {CurrentTrackLoved}");
         }
         catch (Exception ex)
@@ -159,7 +248,32 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         }
     }
 
-    protected async Task FetchAlbumArtwork()
+    [RelayCommand]
+    private async Task ToggleLovedState()
+    {
+        if (!CanLoveTracks)
+            return;
+
+        try
+        {
+            Logger.Info($"Setting loved state to {!CurrentTrackLoved}...");
+            var errorMessage = await LoveTrackObject!.SetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName, !CurrentTrackLoved);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                Logger.Error($"Error setting loved state: {errorMessage}");
+                return;
+            }
+
+            CurrentTrackLoved = !CurrentTrackLoved;
+            Logger.Info($"Set loved state successfully: {CurrentTrackLoved}");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Error setting loved state.", ex);
+        }
+    }
+
+    private async Task FetchAlbumArtwork()
     {
         if (string.IsNullOrEmpty(CurrentAlbumName) || string.IsNullOrEmpty(CurrentArtistName))
         {
