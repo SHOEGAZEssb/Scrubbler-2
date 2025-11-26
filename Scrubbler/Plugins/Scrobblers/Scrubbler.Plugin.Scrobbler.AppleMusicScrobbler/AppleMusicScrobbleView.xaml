@@ -40,14 +40,14 @@
             <Button x:Name="ConnectButton" Command="{Binding ToggleConnectionCommand}">
                 <beh:Interaction.Behaviors>
                     <beh:DataTriggerBehavior Binding="{Binding IsConnected}" Value="True">
-                        <actions:ChangePropertyAction 
+                        <actions:ChangePropertyAction
                             TargetObject="{Binding ElementName=ConnectButton}"
                             PropertyName="Content"
                             Value="Disconnect"/>
                     </beh:DataTriggerBehavior>
 
                     <beh:DataTriggerBehavior Binding="{Binding IsConnected}" Value="False">
-                        <actions:ChangePropertyAction 
+                        <actions:ChangePropertyAction
                             TargetObject="{Binding ElementName=ConnectButton}"
                             PropertyName="Content"
                             Value="Connect"/>
@@ -130,9 +130,9 @@
                     <TextBlock x:Name="ArtistPlayCount" Text="{Binding CurrentArtistPlayCount}">
                         <beh:Interaction.Behaviors>
                             <beh:DataTriggerBehavior Binding="{Binding CurrentArtistPlayCount}" Value="-1">
-                                <actions:ChangePropertyAction 
+                                <actions:ChangePropertyAction
                                     TargetObject="{Binding ElementName=ArtistPlayCount}"
-                                    PropertyName="Visibility" 
+                                    PropertyName="Visibility"
                                     Value="Collapsed"/>
                             </beh:DataTriggerBehavior>
                         </beh:Interaction.Behaviors>
@@ -149,9 +149,9 @@
                     <TextBlock x:Name="AlbumPlayCount" Text="{Binding CurrentAlbumPlayCount}">
                         <beh:Interaction.Behaviors>
                             <beh:DataTriggerBehavior Binding="{Binding CurrentAlbumPlayCount}" Value="-1">
-                                <actions:ChangePropertyAction 
+                                <actions:ChangePropertyAction
                                     TargetObject="{Binding ElementName=AlbumPlayCount}"
-                                    PropertyName="Visibility" 
+                                    PropertyName="Visibility"
                                     Value="Collapsed"/>
                             </beh:DataTriggerBehavior>
                         </beh:Interaction.Behaviors>
@@ -173,12 +173,12 @@
                 </StackPanel>
 
                 <!-- LOVE BUTTON -->
-                <Button x:Name="LoveButton" Command="{Binding SwitchLoveStateCommand}" Content="Love">
+                <Button x:Name="LoveButton" Command="{Binding ToggleLovedStateCommand}" Content="Love">
                     <beh:Interaction.Behaviors>
                         <beh:DataTriggerBehavior Binding="{Binding CurrentTrackLoved}" Value="True">
-                            <actions:ChangePropertyAction 
+                            <actions:ChangePropertyAction
                                 TargetObject="{Binding ElementName=LoveButton}"
-                                PropertyName="Content" 
+                                PropertyName="Content"
                                 Value="Unlove"/>
                         </beh:DataTriggerBehavior>
                         <beh:DataTriggerBehavior Binding="{Binding EnableControls}" Value="False">
@@ -186,6 +186,10 @@
                                                           PropertyName="IsEnabled" Value="False"/>
                         </beh:DataTriggerBehavior>
                         <beh:DataTriggerBehavior Binding="{Binding IsConnected}" Value="False">
+                            <actions:ChangePropertyAction TargetObject="{Binding ElementName=LoveButton}"
+                                                          PropertyName="IsEnabled" Value="False"/>
+                        </beh:DataTriggerBehavior>
+                        <beh:DataTriggerBehavior Binding="{Binding CanLoveTracks}" Value="False">
                             <actions:ChangePropertyAction TargetObject="{Binding ElementName=LoveButton}"
                                                           PropertyName="IsEnabled" Value="False"/>
                         </beh:DataTriggerBehavior>
@@ -201,7 +205,7 @@
                         <TextBlock x:Name="ScrobbleCount" Text="{Binding CountedSeconds}">
                             <beh:Interaction.Behaviors>
                                 <beh:DataTriggerBehavior Binding="{Binding CurrentTrackScrobbled}" Value="True">
-                                    <actions:ChangePropertyAction 
+                                    <actions:ChangePropertyAction
                                         TargetObject="{Binding ElementName=ScrobbleCount}"
                                         PropertyName="Text"
                                         Value="{Binding CurrentTrackLengthToScrobble}"/>

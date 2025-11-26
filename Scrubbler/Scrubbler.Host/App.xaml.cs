@@ -46,11 +46,15 @@ public partial class App : Application
                         .CoreLogLevel(LogLevel.Warning).XamlBindingLogLevel(LogLevel.Trace);
 
                 }, enableUnoLogging: true)
+
+                .UseSerialization()
                 .UseConfiguration(configure: configBuilder =>
                     configBuilder
                         .EmbeddedSource<App>()
                         .Section<AppConfig>()
+                        .Section<UserConfig>()
                 )
+
                 .ConfigureServices((context, services) =>
                 {
                     services.AddSingleton<HostLogService>();
@@ -65,6 +69,7 @@ public partial class App : Application
                     services.AddTransient<AccountsViewModel>();
                     services.AddTransient<PluginManagerViewModel>();
                 })
+
                 .UseNavigation(RegisterRoutes)
             );
         MainWindow = builder.Window;
@@ -72,7 +77,7 @@ public partial class App : Application
 #if DEBUG
         MainWindow.UseStudio();
 #endif
-        //MainWindow.SetWindowIcon();
+        MainWindow.SetWindowIcon();
 
         Host = await builder.NavigateAsync<Shell>();
         Ready?.Invoke(this, EventArgs.Empty);

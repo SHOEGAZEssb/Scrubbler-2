@@ -28,6 +28,7 @@
                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                                             <CheckBox Content="Scrobble" HorizontalAlignment="Center" IsEnabled="{x:Bind IsAuthenticated, Mode=OneWay}"
                                                   IsChecked="{x:Bind IsScrobblingEnabled, Mode=TwoWay}"/>
+                                            <CheckBox Content="Use Account Functions" HorizontalAlignment="Center" IsChecked="{x:Bind IsUsingAccountFunctions, Mode=TwoWay}"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
                                             <Button Content="Login"

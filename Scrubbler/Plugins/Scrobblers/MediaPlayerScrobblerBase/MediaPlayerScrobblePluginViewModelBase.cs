@@ -22,17 +22,17 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
     public ILogService Logger { get; set; } = logger;
 
-    public ICanLoveTracks? LoveTrackObject { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanLoveTracks))]
+    [NotifyPropertyChangedFor(nameof(CanFetchPlayCounts))]
+    [NotifyPropertyChangedFor(nameof(CanFetchTags))]
+    private AccountFunctionContainer? _functionContainer;
 
-    private bool CanLoveTracks => LoveTrackObject != null;
+    private bool CanLoveTracks => FunctionContainer?.LoveTrackObject != null;
 
-    public ICanFetchPlayCounts? FetchPlayCountsObject { get; set; }
+    public bool CanFetchPlayCounts => FunctionContainer?.FetchPlayCountsObject != null;
 
-    public bool CanFetchPlayCounts => FetchPlayCountsObject != null;
-
-    public ICanFetchTags? FetchTagsObject { get; set; }
-
-    public bool CanFetchTags => FetchTagsObject != null;
+    public bool CanFetchTags => FunctionContainer?.FetchTagsObject != null;
 
     public ICanUpdateNowPlaying? UpdateNowPlayingObject { get; set; }
 
@@ -184,7 +184,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         try
         {
             Logger.Debug("Updating play counts...");
-            var (artistError, artistPlayCount) = await FetchPlayCountsObject!.GetArtistPlayCount(CurrentArtistName);
+            var (artistError, artistPlayCount) = await FunctionContainer!.FetchPlayCountsObject!.GetArtistPlayCount(CurrentArtistName);
             if (!string.IsNullOrEmpty(artistError))
             {
                 Logger.Error($"Error fetching artist play count: {artistError}");
@@ -194,7 +194,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
                 CurrentArtistPlayCount = artistPlayCount;
                 Logger.Debug($"Updated artist play count: {CurrentArtistPlayCount}");
             }
-            var (trackError, trackPlayCount) = await FetchPlayCountsObject.GetTrackPlayCount(CurrentArtistName, CurrentTrackName);
+            var (trackError, trackPlayCount) = await FunctionContainer!.FetchPlayCountsObject.GetTrackPlayCount(CurrentArtistName, CurrentTrackName);
             if (!string.IsNullOrEmpty(trackError))
             {
                 Logger.Error($"Error fetching track play count: {trackError}");
@@ -206,7 +206,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
             }
             if (!string.IsNullOrEmpty(CurrentAlbumName))
             {
-                var (albumError, albumPlayCount) = await FetchPlayCountsObject.GetAlbumPlayCount(CurrentArtistName, CurrentAlbumName);
+                var (albumError, albumPlayCount) = await FunctionContainer!.FetchPlayCountsObject.GetAlbumPlayCount(CurrentArtistName, CurrentAlbumName);
                 if (!string.IsNullOrEmpty(albumError))
                 {
                     Logger.Error($"Error fetching album play count: {albumError}");
@@ -232,7 +232,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         try
         {
             Logger.Debug("Updating loved info...");
-            var (errorMessage, isLoved) = await LoveTrackObject!.GetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName);
+            var (errorMessage, isLoved) = await FunctionContainer!.LoveTrackObject!.GetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName);
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 Logger.Error($"Error fetching loved info: {errorMessage}");
@@ -257,7 +257,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         try
         {
             Logger.Info($"Setting loved state to {!CurrentTrackLoved}...");
-            var errorMessage = await LoveTrackObject!.SetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName, !CurrentTrackLoved);
+            var errorMessage = await FunctionContainer!.LoveTrackObject!.SetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName, !CurrentTrackLoved);
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 Logger.Error($"Error setting loved state: {errorMessage}");

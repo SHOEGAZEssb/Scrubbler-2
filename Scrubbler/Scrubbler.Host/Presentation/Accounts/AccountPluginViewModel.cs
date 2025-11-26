@@ -6,7 +6,7 @@ namespace Scrubbler.Host.Presentation.Accounts;
 
 public partial class AccountPluginViewModel : ObservableObject
 {
-    private readonly IAccountPlugin _plugin;
+    #region Properties
 
     public string Name => _plugin.Name;
 
@@ -32,21 +32,39 @@ public partial class AccountPluginViewModel : ObservableObject
         }
     }
 
-    public IRelayCommand AuthenticateCommand { get; }
-    public IRelayCommand LogoutCommand { get; }
+    public event EventHandler<bool>? RequestedIsUsingAccountFunctionsChange;
 
-    public AccountPluginViewModel(IAccountPlugin plugin)
+    public bool IsUsingAccountFunctions
     {
-        _plugin = plugin;
-
-        _accountId = plugin.AccountId;
-        _isAuthenticated = plugin.IsAuthenticated;
-
-        AuthenticateCommand = new AsyncRelayCommand(AuthenticateAsync);
-        LogoutCommand = new AsyncRelayCommand(LogoutAsync);
+        get => _config.Value.AccountFunctionsPluginID == _plugin.Name;
+        set
+        {
+            RequestedIsUsingAccountFunctionsChange?.Invoke(this, value);
+            OnPropertyChanged();
+        }
     }
 
-    private async Task AuthenticateAsync()
+    private readonly IAccountPlugin _plugin;
+    private readonly IWritableOptions<UserConfig> _config;
+
+    #endregion Properties
+
+    public AccountPluginViewModel(IAccountPlugin plugin, IWritableOptions<UserConfig> config)
+    {
+        _plugin = plugin;
+        _config = config;
+
+        AccountId = plugin.AccountId;
+        IsAuthenticated = plugin.IsAuthenticated;
+    }
+
+    internal void UpdateIsUsingAccountFunctions()
+    {
+        OnPropertyChanged(nameof(IsUsingAccountFunctions));
+    }
+
+    [RelayCommand]
+    private async Task Authenticate()
     {
         try
         {
@@ -60,7 +78,8 @@ public partial class AccountPluginViewModel : ObservableObject
         }
     }
 
-    private async Task LogoutAsync()
+    [RelayCommand]
+    private async Task Logout()
     {
         try
         {

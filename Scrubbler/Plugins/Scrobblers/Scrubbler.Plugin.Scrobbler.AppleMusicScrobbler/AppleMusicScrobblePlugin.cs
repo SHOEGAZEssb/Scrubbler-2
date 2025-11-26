@@ -1,12 +1,13 @@
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Abstractions.Settings;
 using Shoegaze.LastFM;
 
 namespace Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler;
 
-public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin
+public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, IAcceptAccountFunctions
 {
     #region Properties
 
@@ -93,5 +94,10 @@ public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin
 
         _settings.AutoConnect = _vm.AutoConnect;
         await _settingsStore.SetAsync(Name, _settings);
+    }
+
+    public void SetAccountFunctionsContainer(AccountFunctionContainer container)
+    {
+        _vm.FunctionContainer = container;
     }
 }

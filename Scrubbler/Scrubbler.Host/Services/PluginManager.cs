@@ -14,6 +14,7 @@ internal class PluginManager : IPluginManager
     private readonly HostLogService _hostLogService;
     private readonly ILogService _logService;
     private readonly ISettingsStore _settings;
+    private readonly IWritableOptions<UserConfig> _config;
     private readonly string _rootDir;
 
     public bool IsFetchingPlugins
@@ -37,10 +38,11 @@ internal class PluginManager : IPluginManager
     public event EventHandler? PluginInstalled;
     public event EventHandler? PluginUninstalled;
 
-    public PluginManager(HostLogService hostLogService, ISettingsStore settings)
+    public PluginManager(HostLogService hostLogService, ISettingsStore settings, IWritableOptions<UserConfig> config)
     {
         _hostLogService = hostLogService;
         _settings = settings;
+        _config = config;
         _logService = new ModuleLogService(_hostLogService, "Plugin Manager");
         if (Environment.GetEnvironmentVariable("SCRUBBLER_PLUGIN_MODE") == "Debug")
             _rootDir = Path.Combine(Environment.GetEnvironmentVariable("SOLUTIONDIR")!, "DebugPlugins");
@@ -56,6 +58,7 @@ internal class PluginManager : IPluginManager
 
         _ = DiscoverInstalledPlugins();
         _ = RefreshAvailablePluginsAsync();
+        UpdateAccountFunctionsReceiver();
     }
 
     public IEnumerable<IPlugin> InstalledPlugins => _installed.Select(p => p.Plugin);
@@ -80,6 +83,7 @@ internal class PluginManager : IPluginManager
 
         // load only the new plugin
         await LoadPluginsFromDirectory(pluginDir, recursive: false);
+        UpdateAccountFunctionsReceiver();
         PluginInstalled?.Invoke(this, EventArgs.Empty);
     }
 
@@ -173,11 +177,6 @@ internal class PluginManager : IPluginManager
         }
     }
 
-    private void AccountPlugin_IsScrobblingEnabledChanged(object? sender, EventArgs e)
-    {
-        IsAnyAccountPluginScrobblingChanged?.Invoke(this, EventArgs.Empty);
-    }
-
     public async Task RefreshAvailablePluginsAsync()
     {
         AvailablePlugins.Clear();
@@ -240,7 +239,30 @@ internal class PluginManager : IPluginManager
         }
     }
 
-    Type[] SafeGetTypes(Assembly asm)
+    public void UpdateAccountFunctionsReceiver()
+    {
+        var container = GetAccountFunctionContainer();
+        foreach (var plugin in InstalledPlugins.OfType<IAcceptAccountFunctions>())
+        {
+            plugin.SetAccountFunctionsContainer(container);
+        }
+    }
+
+    public AccountFunctionContainer GetAccountFunctionContainer()
+    {
+        var plugin = InstalledPlugins
+            .OfType<IAccountPlugin>()
+            .FirstOrDefault(p => p.Name == _config.Value.AccountFunctionsPluginID);
+
+        return new AccountFunctionContainer(plugin);
+    }
+
+    private void AccountPlugin_IsScrobblingEnabledChanged(object? sender, EventArgs e)
+    {
+        IsAnyAccountPluginScrobblingChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private Type[] SafeGetTypes(Assembly asm)
     {
         try
         {

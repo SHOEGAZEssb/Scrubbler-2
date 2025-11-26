@@ -26,7 +26,7 @@ public interface IPluginManager
     /// Gets a value indicating whether the plugin manager is currently fetching available plugins from repositories.
     /// </summary>
     bool IsFetchingPlugins { get; }
-    
+
     /// <summary>
     /// Gets a value indicating whether any account plugin currently has scrobbling enabled.
     /// </summary>
@@ -36,17 +36,17 @@ public interface IPluginManager
     /// Event that is raised when <see cref="IsFetchingPlugins"/> changes.
     /// </summary>
     event EventHandler<bool>? IsFetchingPluginsChanged;
-    
+
     /// <summary>
     /// Event that is raised when a plugin is installed.
     /// </summary>
     event EventHandler? PluginInstalled;
-    
+
     /// <summary>
     /// Event that is raised when a plugin is uninstalled.
     /// </summary>
     event EventHandler? PluginUninstalled;
-    
+
     /// <summary>
     /// Event that is raised when <see cref="IsAnyAccountPluginScrobbling"/> changes.
     /// </summary>
