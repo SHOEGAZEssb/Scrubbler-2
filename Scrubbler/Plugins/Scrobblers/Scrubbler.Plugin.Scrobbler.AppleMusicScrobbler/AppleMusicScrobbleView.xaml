@@ -16,14 +16,14 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="1"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- STATUS BAR -->
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
 
             <!-- Status Label -->
-            <StackPanel Orientation="Horizontal" Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                 <TextBlock Text="Status:" FontWeight="Bold"/>
 
                 <TextBlock x:Name="StatusText" Text="Connected">
@@ -217,8 +217,27 @@
                         <TextBlock Text="seconds"/>
                     </StackPanel>
                 </StackPanel>
-
             </StackPanel>
+        </Grid>
+
+        <Grid x:Name="NotConnectedGrid" Grid.Row="2" Opacity="0.8" Visibility="Collapsed" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <beh:Interaction.Behaviors>
+                <beh:DataTriggerBehavior Binding="{Binding IsConnected}" Value="False">
+                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=NotConnectedGrid}"
+                                                              PropertyName="Visibility"
+                                                              Value="Visible"/>
+                </beh:DataTriggerBehavior>
+            </beh:Interaction.Behaviors>
+
+            <Border>
+                <Border.Background>
+                    <AcrylicBrush AlwaysUseFallback="False"
+                          TintColor="#80000000"
+                          TintOpacity="0.1"/>
+                </Border.Background>
+            </Border>
+
+            <TextBlock Text="Not connected" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/> "
         </Grid>
 
     </Grid>

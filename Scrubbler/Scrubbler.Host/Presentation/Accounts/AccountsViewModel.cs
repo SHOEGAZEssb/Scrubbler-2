@@ -17,6 +17,7 @@ internal class AccountsViewModel : ObservableObject
         _pluginManager = pluginManager;
         _config = config;
         _pluginManager.PluginInstalled += PluginManager_PluginInstalled;
+        _pluginManager.PluginUninstalled += PluginManager_PluginInstalled;
         Accounts.CollectionChanged += Accounts_CollectionChanged;
         Refresh();
     }
@@ -43,7 +44,7 @@ internal class AccountsViewModel : ObservableObject
                 item.RequestedIsUsingAccountFunctionsChange += Account_RequestedIsUsingAccountFunctionsChange;
             }
         }
-        else if (e.Action == NotifyCollectionChangedAction.Remove || e.Action == NotifyCollectionChangedAction.Reset)
+        else if (e.Action == NotifyCollectionChangedAction.Remove)
         {
             foreach (AccountPluginViewModel item in e.OldItems!)
             {
@@ -74,6 +75,8 @@ internal class AccountsViewModel : ObservableObject
                 // notify
                 account.UpdateIsUsingAccountFunctions();
             }
+
+            _pluginManager.UpdateAccountFunctionsReceiver();
         }
     }
 }

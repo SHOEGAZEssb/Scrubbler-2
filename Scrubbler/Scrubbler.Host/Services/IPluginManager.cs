@@ -67,4 +67,6 @@ public interface IPluginManager
     /// <param name="plugin">The <see cref="IPlugin"/> instance to uninstall.</param>
     /// <returns>A task that represents the asynchronous uninstallation operation.</returns>
     Task UninstallAsync(IPlugin plugin);
+
+    void UpdateAccountFunctionsReceiver();
 }

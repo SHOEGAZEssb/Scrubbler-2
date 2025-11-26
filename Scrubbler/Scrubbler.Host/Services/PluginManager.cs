@@ -96,9 +96,15 @@ internal class PluginManager : IPluginManager
 
         _installed.Remove(entry);
 
+        var pluginName = plugin.Name;
+        var pluginLocation = plugin.GetType().Assembly.Location;
+
         // unload
         entry.Context.Unload();
-        _logService.Info($"Unloaded plugin: {plugin.Name}");
+        // todo: dispose plugin
+        entry.Plugin = null!;
+        plugin = null!;
+        _logService.Info($"Unloaded plugin: {pluginName}");
 
         // force GC to reclaim
         await Task.Run(() =>
@@ -113,20 +119,20 @@ internal class PluginManager : IPluginManager
         try
         {
             // find containing directory of the plugin DLL
-            var pluginAssembly = entry.Plugin.GetType().Assembly.Location;
+            var pluginAssembly = pluginLocation;
             var pluginFolder = Path.GetDirectoryName(pluginAssembly);
             if (!string.IsNullOrEmpty(pluginFolder) && Directory.Exists(pluginFolder))
             {
                 Directory.Delete(pluginFolder, recursive: true);
                 _logService.Info($"Deleted plugin files from {pluginFolder}");
             }
+
+            PluginUninstalled?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
         {
             _logService.Error($"Failed to remove plugin files: {ex.Message}");
         }
-
-        PluginUninstalled?.Invoke(this, EventArgs.Empty);
     }
 
     private async Task DiscoverInstalledPlugins()
@@ -248,7 +254,7 @@ internal class PluginManager : IPluginManager
         }
     }
 
-    public AccountFunctionContainer GetAccountFunctionContainer()
+    private AccountFunctionContainer GetAccountFunctionContainer()
     {
         var plugin = InstalledPlugins
             .OfType<IAccountPlugin>()
