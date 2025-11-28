@@ -102,11 +102,9 @@ public partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILo
         _automation?.Dispose();
         _automation = null;
         _currentSong = null;
-        CountedSeconds = 0;
-        CurrentTrackScrobbled = false;
+        ClearState();
         IsConnected = false;
         //_discordClient.ClearPresence();
-        UpdateCurrentTrackInfo();
     }
 
     private void RefreshTimer_Elapsed(object? sender, ElapsedEventArgs e)

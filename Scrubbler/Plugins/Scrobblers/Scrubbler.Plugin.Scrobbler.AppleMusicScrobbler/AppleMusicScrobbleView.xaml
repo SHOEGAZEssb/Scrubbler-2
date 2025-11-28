@@ -26,11 +26,15 @@
             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                 <TextBlock Text="Status:" FontWeight="Bold"/>
 
-                <TextBlock x:Name="StatusText" Text="Connected">
+                <TextBlock x:Name="StatusText">
                     <beh:Interaction.Behaviors>
                         <beh:DataTriggerBehavior Binding="{Binding IsConnected}" Value="False">
                             <actions:ChangePropertyAction TargetObject="{Binding ElementName=StatusText}"
                                                           PropertyName="Text" Value="Not connected"/>
+                        </beh:DataTriggerBehavior>
+                        <beh:DataTriggerBehavior Binding="{Binding IsConnected}" Value="True">
+                            <actions:ChangePropertyAction TargetObject="{Binding ElementName=StatusText}"
+                                                          PropertyName="Text" Value="Connected"/>
                         </beh:DataTriggerBehavior>
                     </beh:Interaction.Behaviors>
                 </TextBlock>
@@ -74,7 +78,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Album Art -->
-            <Border BorderBrush="Black" BorderThickness="1" Width="150" Height="150">
+            <Border BorderBrush="Black" BorderThickness="1" Width="150" Height="150" VerticalAlignment="Top">
                 <Image x:Name="AlbumArt" Stretch="UniformToFill">
                     <Image.Source>
                         <BitmapImage UriSource="{Binding CurrentAlbumArtwork}" />
@@ -103,21 +107,24 @@
                                      Foreground="Blue"
                                      Command="{Binding TrackClickedCommand}"/>
 
-                    <TextBlock x:Name="TrackPlayCount"
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock x:Name="TrackPlayCount"
                                Text="{Binding CurrentTrackPlayCount}">
-                        <beh:Interaction.Behaviors>
-                            <beh:DataTriggerBehavior Binding="{Binding CurrentTrackPlayCount}" Value="-1">
-                                <actions:ChangePropertyAction TargetObject="{Binding ElementName=TrackPlayCount}"
-                                                              PropertyName="Visibility"
-                                                              Value="Collapsed"/>
-                            </beh:DataTriggerBehavior>
-                            <beh:DataTriggerBehavior Binding="{Binding CurrentTrackName}" Value="{x:Null}">
-                                <actions:ChangePropertyAction TargetObject="{Binding ElementName=TrackPlayCount}"
-                                                              PropertyName="Visibility"
-                                                              Value="Collapsed"/>
-                            </beh:DataTriggerBehavior>
-                        </beh:Interaction.Behaviors>
-                    </TextBlock>
+                            <beh:Interaction.Behaviors>
+                                <beh:DataTriggerBehavior Binding="{Binding CurrentTrackPlayCount}" Value="-1">
+                                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=TrackPlayCount}"
+                                                                  PropertyName="Visibility"
+                                                                  Value="Collapsed"/>
+                                </beh:DataTriggerBehavior>
+                                <beh:DataTriggerBehavior Binding="{Binding CurrentTrackName}" Value="{x:Null}">
+                                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=TrackPlayCount}"
+                                                                  PropertyName="Visibility"
+                                                                  Value="Collapsed"/>
+                                </beh:DataTriggerBehavior>
+                            </beh:Interaction.Behaviors>
+                        </TextBlock>
+                        <TextBlock Text="Plays"/>
+                    </StackPanel>
                 </StackPanel>
 
                 <!-- ARTIST -->
@@ -127,16 +134,19 @@
                                      Foreground="Blue"
                                      Command="{Binding ArtistClickedCommand}"/>
 
-                    <TextBlock x:Name="ArtistPlayCount" Text="{Binding CurrentArtistPlayCount}">
-                        <beh:Interaction.Behaviors>
-                            <beh:DataTriggerBehavior Binding="{Binding CurrentArtistPlayCount}" Value="-1">
-                                <actions:ChangePropertyAction
-                                    TargetObject="{Binding ElementName=ArtistPlayCount}"
-                                    PropertyName="Visibility"
-                                    Value="Collapsed"/>
-                            </beh:DataTriggerBehavior>
-                        </beh:Interaction.Behaviors>
-                    </TextBlock>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock x:Name="ArtistPlayCount" Text="{Binding CurrentArtistPlayCount}">
+                            <beh:Interaction.Behaviors>
+                                <beh:DataTriggerBehavior Binding="{Binding CurrentArtistPlayCount}" Value="-1">
+                                    <actions:ChangePropertyAction
+                                        TargetObject="{Binding ElementName=ArtistPlayCount}"
+                                        PropertyName="Visibility"
+                                        Value="Collapsed"/>
+                                </beh:DataTriggerBehavior>
+                            </beh:Interaction.Behaviors>
+                        </TextBlock>
+                        <TextBlock Text="Plays"/>
+                    </StackPanel>
                 </StackPanel>
 
                 <!-- ALBUM -->
@@ -146,16 +156,20 @@
                                      Foreground="Blue"
                                      Command="{Binding AlbumClickedCommand}"/>
 
-                    <TextBlock x:Name="AlbumPlayCount" Text="{Binding CurrentAlbumPlayCount}">
-                        <beh:Interaction.Behaviors>
-                            <beh:DataTriggerBehavior Binding="{Binding CurrentAlbumPlayCount}" Value="-1">
-                                <actions:ChangePropertyAction
-                                    TargetObject="{Binding ElementName=AlbumPlayCount}"
-                                    PropertyName="Visibility"
-                                    Value="Collapsed"/>
-                            </beh:DataTriggerBehavior>
-                        </beh:Interaction.Behaviors>
-                    </TextBlock>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock x:Name="AlbumPlayCount" Text="{Binding CurrentAlbumPlayCount}">
+                                <beh:Interaction.Behaviors>
+                                    <beh:DataTriggerBehavior Binding="{Binding CurrentAlbumPlayCount}" Value="-1">
+                                        <actions:ChangePropertyAction
+                                            TargetObject="{Binding ElementName=AlbumPlayCount}"
+                                            PropertyName="Visibility"
+                                            Value="Collapsed"/>
+                                    </beh:DataTriggerBehavior>
+                                </beh:Interaction.Behaviors>
+                        </TextBlock>
+
+                        <TextBlock Text="Plays"/>
+                    </StackPanel>
                 </StackPanel>
 
                 <!-- TAGS -->
@@ -220,8 +234,13 @@
             </StackPanel>
         </Grid>
 
-        <Grid x:Name="NotConnectedGrid" Grid.Row="2" Opacity="0.8" Visibility="Collapsed" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid x:Name="NotConnectedGrid" Grid.Row="2" Opacity="0.8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <beh:Interaction.Behaviors>
+                <beh:DataTriggerBehavior Binding="{Binding IsConnected}" Value="True">
+                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=NotConnectedGrid}"
+                                                              PropertyName="Visibility"
+                                                              Value="Collapsed"/>
+                </beh:DataTriggerBehavior>
                 <beh:DataTriggerBehavior Binding="{Binding IsConnected}" Value="False">
                     <actions:ChangePropertyAction TargetObject="{Binding ElementName=NotConnectedGrid}"
                                                               PropertyName="Visibility"

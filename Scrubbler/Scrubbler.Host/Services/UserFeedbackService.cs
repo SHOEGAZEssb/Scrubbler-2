@@ -1,3 +1,6 @@
+using CommunityToolkit.WinUI;
+using Microsoft.UI.Dispatching;
+
 namespace Scrubbler.Host.Services;
 
 /// <summary>
@@ -42,11 +45,22 @@ public class UserFeedbackService : IUserFeedbackService
         if (_infoBar == null)
             return;
 
-        _infoBar.Message = message;
-        _infoBar.Severity = severity;
-        _infoBar.IsOpen = true;
+        var dispatcher = Window.Current?.DispatcherQueue;
+        if (dispatcher == null)
+            return;
+
+        await dispatcher.EnqueueAsync(() =>
+        {
+            _infoBar.Message = message;
+            _infoBar.Severity = severity;
+            _infoBar.IsOpen = true;
+        });
 
         await Task.Delay(duration);
-        _infoBar.IsOpen = false;
+        
+        await dispatcher.EnqueueAsync(() =>
+        {
+            _infoBar.IsOpen = false;
+        });
     }
 }

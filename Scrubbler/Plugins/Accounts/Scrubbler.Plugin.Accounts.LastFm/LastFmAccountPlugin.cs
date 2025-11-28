@@ -250,7 +250,7 @@ public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks, ICanFetchPlay
         if (Username == null || !IsAuthenticated)
             return ("Not authenticated", 0);
 
-        var response = await _lastfmClient!.Track.GetInfoByNameAsync(artistName, trackName, Username);
+        var response = await _lastfmClient!.Track.GetInfoByNameAsync(trackName, artistName, Username);
         if (response.IsSuccess && response.Data != null)
             return (null, response.Data.UserPlayCount ?? 0);
         else
@@ -262,7 +262,7 @@ public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks, ICanFetchPlay
         if (Username == null || !IsAuthenticated)
             return ("Not authenticated", 0);
 
-        var response = await _lastfmClient!.Album.GetInfoByNameAsync(artistName, albumName, Username);
+        var response = await _lastfmClient!.Album.GetInfoByNameAsync(albumName, artistName, Username);
         if (response.IsSuccess && response.Data != null)
             return (null, response.Data.UserPlayCount ?? 0);
         else

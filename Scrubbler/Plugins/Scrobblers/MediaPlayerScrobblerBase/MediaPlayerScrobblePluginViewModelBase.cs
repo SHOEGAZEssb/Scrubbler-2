@@ -69,7 +69,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         get
         {
             int sec = (int)Math.Ceiling(CurrentTrackLength * PercentageToScrobble);
-            return sec < MAXSECONDSTOSCROBBLE ? sec :MAXSECONDSTOSCROBBLE;
+            return sec < MAXSECONDSTOSCROBBLE ? sec : MAXSECONDSTOSCROBBLE;
         }
     }
 
@@ -154,9 +154,21 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         _ = FetchAlbumArtwork();
     }
 
+    protected void ClearState()
+    {
+        CurrentTrackPlayCount = -1;
+        CurrentArtistPlayCount = -1;
+        CurrentAlbumPlayCount = -1;
+        CurrentTrackLoved = false;
+        CurrentAlbumArtwork = null;
+        CountedSeconds = 0;
+        CurrentTrackScrobbled = false;
+        UpdateCurrentTrackInfo();
+    }
+
     private async Task UpdateNowPlaying()
     {
-        if (UpdateNowPlayingObject == null)
+        if (UpdateNowPlayingObject == null || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
             return;
 
         try
@@ -178,7 +190,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
     private async Task UpdatePlayCounts()
     {
-        if (!CanFetchPlayCounts)
+        if (!CanFetchPlayCounts || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
             return;
 
         try
@@ -204,18 +216,15 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
                 CurrentTrackPlayCount = trackPlayCount;
                 Logger.Debug($"Updated track play count: {CurrentTrackPlayCount}");
             }
-            if (!string.IsNullOrEmpty(CurrentAlbumName))
+            var (albumError, albumPlayCount) = await FunctionContainer!.FetchPlayCountsObject.GetAlbumPlayCount(CurrentArtistName, CurrentAlbumName);
+            if (!string.IsNullOrEmpty(albumError))
             {
-                var (albumError, albumPlayCount) = await FunctionContainer!.FetchPlayCountsObject.GetAlbumPlayCount(CurrentArtistName, CurrentAlbumName);
-                if (!string.IsNullOrEmpty(albumError))
-                {
-                    Logger.Error($"Error fetching album play count: {albumError}");
-                }
-                else
-                {
-                    CurrentAlbumPlayCount = albumPlayCount;
-                    Logger.Debug($"Updated album play count: {CurrentAlbumPlayCount}");
-                }
+                Logger.Error($"Error fetching album play count: {albumError}");
+            }
+            else
+            {
+                CurrentAlbumPlayCount = albumPlayCount;
+                Logger.Debug($"Updated album play count: {CurrentAlbumPlayCount}");
             }
         }
         catch (Exception ex)
@@ -226,7 +235,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
     private async Task UpdateLovedInfo()
     {
-        if (!CanLoveTracks)
+        if (!CanLoveTracks || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
             return;
 
         try
@@ -251,7 +260,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     [RelayCommand]
     private async Task ToggleLovedState()
     {
-        if (!CanLoveTracks)
+        if (!CanLoveTracks || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
             return;
 
         try

@@ -5,24 +5,16 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal abstract class ScrobblePluginHostViewModelBase : ObservableObject
+internal abstract class ScrobblePluginHostViewModelBase(IPlugin plugin, IPluginManager pluginManager, IUserFeedbackService userFeedbackService, IDialogService dialogService) : ObservableObject
 {
     #region Properties
 
-    protected readonly IPlugin _plugin;
-    protected readonly IPluginManager _pluginManager;
-    protected readonly IUserFeedbackService _userFeedbackService;
-    protected readonly IDialogService _dialogService;
+    protected readonly IPlugin _plugin = plugin;
+    protected readonly IPluginManager _pluginManager = pluginManager;
+    protected readonly IUserFeedbackService _userFeedbackService = userFeedbackService;
+    protected readonly IDialogService _dialogService = dialogService;
 
     #endregion Properties
-
-    public ScrobblePluginHostViewModelBase(IPlugin plugin, IPluginManager pluginManager, IUserFeedbackService userFeedbackService, IDialogService dialogService)
-    {
-        _plugin = plugin;
-        _pluginManager = pluginManager;
-        _userFeedbackService = userFeedbackService;
-        _dialogService = dialogService;
-    }
 
     protected async Task ScrobbleToPlugins(IEnumerable<ScrobbleData> scrobbles)
     {

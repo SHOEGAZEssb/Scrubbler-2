@@ -260,6 +260,20 @@ internal class PluginManager : IPluginManager
             .OfType<IAccountPlugin>()
             .FirstOrDefault(p => p.Name == _config.Value.AccountFunctionsPluginID);
 
+        if (plugin == null && _config.Value.AccountFunctionsPluginID != null)
+        {
+            _logService.Warn($"Configured Account Functions Plugin '{_config.Value.AccountFunctionsPluginID}' not found. Reverting to default.");
+            _config.UpdateAsync(current =>
+            {
+                var updated = current with
+                {
+                    AccountFunctionsPluginID = null
+                };
+
+                return updated;
+            });
+        }
+
         return new AccountFunctionContainer(plugin);
     }
 
