@@ -13,27 +13,27 @@
         <EnableDefaultXamlItems>true</EnableDefaultXamlItems>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="FlaUI.UIA3" />
+        <PackageReference Include="FlaUI.UIA3" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\MediaPlayerScrobblerBase\MediaPlayerScrobblerBase.csproj" />
+        <ProjectReference Include="..\MediaPlayerScrobblerBase\MediaPlayerScrobblerBase.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <None Update="AppleMusicScrobbleView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </None>
-      <None Update="environment.env">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="AppleMusicScrobbleView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </None>
+        <None Update="environment.env">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <ItemGroup>
-      <Page Update="AppleMusicScrobbleView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+        <Page Update="AppleMusicScrobbleView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
     </ItemGroup>
     <ItemGroup>
-      <Content Update="Assets\noartistimage.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+        <Content Update="Assets\noartistimage.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 </Project>
