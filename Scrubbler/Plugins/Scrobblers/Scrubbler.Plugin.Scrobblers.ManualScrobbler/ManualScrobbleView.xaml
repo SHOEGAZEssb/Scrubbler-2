@@ -21,11 +21,6 @@
         <!-- Album Artist -->
         <TextBox Header="Album Artist Name" Text="{Binding AlbumArtistName, Mode=TwoWay}" />
 
-        <NumberBox Header="Amount" Value="{Binding Amount, Mode=TwoWay}" Minimum="1" Maximum="3000"
-                   SpinButtonPlacementMode="Inline"
-                   SmallChange="1"
-                   LargeChange="10" />
-
         <!-- Timestamp -->
         <StackPanel Orientation="Horizontal" Spacing="5">
             <DatePicker Date="{Binding PlayedAt, Mode=TwoWay}" />

@@ -24,16 +24,12 @@ public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanScrobble))]
-    private int _amount = 1;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanScrobble))]
     private DateTimeOffset _playedAt = DateTimeOffset.Now;
 
     [ObservableProperty]
     private TimeSpan _playedAtTime = DateTimeOffset.Now.TimeOfDay;
 
-    public override bool CanScrobble => !string.IsNullOrEmpty(ArtistName) && !string.IsNullOrEmpty(TrackName) && Amount > 0 && Amount <= 3000;
+    public override bool CanScrobble => !string.IsNullOrEmpty(ArtistName) && !string.IsNullOrEmpty(TrackName);
 
     #endregion Properties
 
@@ -48,13 +44,7 @@ public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
         {
             return await Task.Run(() =>
             {
-                var scrobbles = new ScrobbleData[Amount];
-                for (int i = 0; i < scrobbles.Length; i++)
-                {
-                    scrobbles[i] = new ScrobbleData(TrackName, ArtistName, PlayedAt.Date, PlayedAtTime);
-                }
-
-                return scrobbles;
+                return new[] { new ScrobbleData(TrackName, ArtistName, PlayedAt.Date, PlayedAtTime) };
             });
         }
         finally
