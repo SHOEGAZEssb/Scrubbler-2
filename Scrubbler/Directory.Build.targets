@@ -1,35 +1,31 @@
 <Project>
     <PropertyGroup>
-        <!-- Base output folder for all plugin debug copies -->
-        <DebugPluginsRoot>$(SolutionDir)DebugPlugins</DebugPluginsRoot>
+        <!-- enabled only for local debugging -->
+        <EnableDebugPluginCopy Condition="'$(Configuration)' == 'Debug' and '$(CI)' != 'true'">true</EnableDebugPluginCopy>
+        <EnableDebugPluginCopy Condition="'$(EnableDebugPluginCopy)' == ''">false</EnableDebugPluginCopy>
+
+        <!-- Safe fallback for DebugPluginsRoot -->
+        <DebugPluginsRoot Condition="'$(SolutionDir)' != ''">$(SolutionDir)DebugPlugins</DebugPluginsRoot>
+        <DebugPluginsRoot Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)DebugPlugins</DebugPluginsRoot>
     </PropertyGroup>
 
     <Target Name="CopyToDebugPlugins"
             AfterTargets="Build"
-            Condition=" '$(MSBuildProjectDirectory)' != '' and
-                      $(MSBuildProjectDirectory.Contains('Plugins')) ">
+            Condition="'$(EnableDebugPluginCopy)' == 'true' and $(MSBuildProjectDirectory.Contains('Plugins'))">
 
         <PropertyGroup>
             <DebugPluginsDir>$(DebugPluginsRoot)\$(MSBuildProjectName)</DebugPluginsDir>
         </PropertyGroup>
 
-        <!-- Create target directory -->
         <MakeDir Directories="$(DebugPluginsDir)" />
 
-        <!-- Collect outputs -->
         <ItemGroup>
-            <PluginOutputs Include="$(TargetPath)" />
-            <PluginOutputs Include="$(TargetDir)$(TargetName).pdb" Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
-            <PluginOutputs Include="$(TargetDir)$(TargetName).xml" Condition="Exists('$(TargetDir)$(TargetName).xml')" />
-
-            <!-- Include all DLL/PDB/XML dependencies -->
             <AllOutputs Include="$(TargetDir)*.dll" />
             <AllOutputs Include="$(TargetDir)*.pdb" />
             <AllOutputs Include="$(TargetDir)*.xml" />
             <AllOutputs Include="$(TargetDir)*.env" />
         </ItemGroup>
 
-        <!-- Copy primary + dependencies -->
         <Copy SourceFiles="@(AllOutputs)"
               DestinationFolder="$(DebugPluginsDir)"
               SkipUnchangedFiles="true" />
