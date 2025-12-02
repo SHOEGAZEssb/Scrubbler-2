@@ -19,7 +19,7 @@ public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, 
     /// <summary>
     /// Gets a description of what the plugin does.
     /// </summary>
-    public string Description => "Scrobble tracks from another last.fm user";
+    public string Description => "Automatically scrobble tracks playing in the Apple Music desktop app";
 
     /// <summary>
     /// Gets the version of the plugin.

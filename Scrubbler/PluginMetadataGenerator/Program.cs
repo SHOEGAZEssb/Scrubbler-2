@@ -22,7 +22,8 @@ class Program
     private static readonly Dictionary<Type, string> _pluginTypes = new()
     {
         { typeof(IAccountPlugin), "Account Plugin" },
-        { typeof(IScrobblePlugin), "Scrobble Plugin" }
+        { typeof(IScrobblePlugin), "Scrobble Plugin" },
+        { typeof(IAutoScrobblePlugin), "Scrobble Plugin" }
         // add more here as you introduce new plugin kinds
     };
 
