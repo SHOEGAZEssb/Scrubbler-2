@@ -98,6 +98,7 @@ jobs:
           path: out
 
       - name: Sync plugins + manifest
+        shell: bash
         run: |
           mkdir -p out/plugins
           cp artifacts/zips/*.zip out/plugins/ || echo "No plugin zips found"
