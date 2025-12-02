@@ -31,8 +31,8 @@ jobs:
         run: dotnet restore Scrubbler.sln
         working-directory: Scrubbler
 
-      # 🔹 NEW: inject API keys into PluginDefaults.cs
       - name: Inject API keys into PluginDefaults.cs
+        shell: bash
         run: |
           for file in $(find Scrubbler/Plugins -name PluginDefaults.cs); do
             echo "Processing $file"
@@ -45,13 +45,13 @@ jobs:
               fi
             done < <(printenv)
           done
-        shell: bash
         env:
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
           LASTFM_API_SECRET: ${{ secrets.LASTFM_API_SECRET }}
           # add more secrets here as you add plugins
 
       - name: Build plugins
+        shell: bash
         run: |
           mkdir -p ../artifacts/plugins
           for proj in $(find Plugins -name '*.csproj'); do
@@ -63,6 +63,7 @@ jobs:
         working-directory: Scrubbler
 
       - name: Package plugins
+        shell: bash
         run: |
           mkdir -p artifacts/zips
           
