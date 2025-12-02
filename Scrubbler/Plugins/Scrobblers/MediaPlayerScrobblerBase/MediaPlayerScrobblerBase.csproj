@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Shoegaze.LastFM" />
+        <PackageReference Include="Uno.WinUI" />
     </ItemGroup>
 
     <ItemGroup>
