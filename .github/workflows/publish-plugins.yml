@@ -64,26 +64,27 @@ jobs:
           done
         working-directory: Scrubbler
 
-      - name: Package plugins
-        shell: bash
-        run: |
-          mkdir -p artifacts/zips
-          
-          # read shared assemblies from file
-          SHARED_ASSEMBLIES=$(cat Scrubbler/shared-assemblies.txt)
-              
-          for dir in artifacts/plugins/*; do
-            if [ -d "$dir" ]; then
-              pluginName=$(basename "$dir")
-              zipFile="artifacts/zips/${pluginName}.zip"
-              echo "Zipping $pluginName -> $zipFile"
-              excludes=""
-              for pat in $SHARED_ASSEMBLIES; do
-                excludes="$excludes -x $pat"
-              done
-              (cd "$dir" && zip -r "../../zips/${pluginName}.zip" . $excludes)
-            fi
-          done
+        - name: Package plugins
+          shell: bash
+          run: |
+            mkdir -p artifacts/zips
+            
+            # read shared assemblies from file
+            SHARED_ASSEMBLIES=$(cat Scrubbler/shared-assemblies.txt)
+                
+            for dir in artifacts/plugins/*; do
+              if [ -d "$dir" ]; then
+                pluginName=$(basename "$dir")
+                zipFile="artifacts/zips/${pluginName}.zip"
+                echo "Zipping $pluginName -> $zipFile"
+                excludes=""
+                for pat in $SHARED_ASSEMBLIES; do
+                  excludes="$excludes -x!$pat"
+                done
+                (cd "$dir" && 7z a "../../zips/${pluginName}.zip" . $excludes)
+              fi
+            done
+
 
       - name: Generate plugins.json
         run: dotnet run --project PluginMetadataGenerator ../artifacts/zips ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
