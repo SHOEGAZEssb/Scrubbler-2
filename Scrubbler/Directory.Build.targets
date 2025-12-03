@@ -11,7 +11,8 @@
 
     <Target Name="CopyToDebugPlugins"
             AfterTargets="Build"
-            Condition="'$(EnableDebugPluginCopy)' == 'true' and $(MSBuildProjectDirectory.Contains('Plugins'))">
+            Condition="'$(EnableDebugPluginCopy)' == 'true' and $(MSBuildProjectDirectory.Contains('Plugins'))
+            and $(MSBuildProjectName.StartsWith('Scrubbler.Plugin'))">
 
         <PropertyGroup>
             <DebugPluginsDir>$(DebugPluginsRoot)\$(MSBuildProjectName)</DebugPluginsDir>
