@@ -25,6 +25,12 @@ public partial class App : Application
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        if (Environment.GetEnvironmentVariable("SCRUBBLER_PLUGIN_MODE") == "Debug")
+        {
+            var slnDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../"));
+            Environment.SetEnvironmentVariable("SOLUTIONDIR", slnDir);
+        }
+
         var builder = this.CreateBuilder(args)
             // Add navigation support for toolkit controls such as TabBar and NavigationView
             .UseToolkitNavigation()

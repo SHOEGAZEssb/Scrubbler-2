@@ -29,6 +29,12 @@
                                             <CheckBox Content="Scrobble" HorizontalAlignment="Center" IsEnabled="{x:Bind IsAuthenticated, Mode=OneWay}"
                                                   IsChecked="{x:Bind IsScrobblingEnabled, Mode=TwoWay}"/>
                                             <CheckBox Content="Use Account Functions" HorizontalAlignment="Center" IsChecked="{x:Bind IsUsingAccountFunctions, Mode=TwoWay}"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+                                                <TextBlock Text="Scrobble Limit:"/>
+                                                <TextBlock Text="{x:Bind CurrentScrobbleCount}"/>
+                                                <TextBlock Text=" / "/>
+                                                <TextBlock Text="{x:Bind ScrobbleLimit}"/>
+                                            </StackPanel>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
                                             <Button Content="Login"

@@ -32,6 +32,28 @@ public partial class AccountPluginViewModel : ObservableObject
         }
     }
 
+    public bool SupportsScrobbleLimit => _plugin is IHaveScrobbleLimit;
+
+    public int? ScrobbleLimit
+    {
+        get
+        {
+            if (_plugin is IHaveScrobbleLimit scrobbleLimitPlugin)
+                return scrobbleLimitPlugin.ScrobbleLimit;
+            return null;
+        }
+    }
+
+    public int? CurrentScrobbleCount
+    {
+        get
+        {
+            if (_plugin is IHaveScrobbleLimit scrobbleLimitPlugin)
+                return scrobbleLimitPlugin.CurrentScrobbleCount;
+            return null;
+        }
+    }
+
     public event EventHandler<bool>? RequestedIsUsingAccountFunctionsChange;
 
     public bool IsUsingAccountFunctions
@@ -56,6 +78,14 @@ public partial class AccountPluginViewModel : ObservableObject
 
         AccountId = plugin.AccountId;
         IsAuthenticated = plugin.IsAuthenticated;
+
+        if (_plugin is IHaveScrobbleLimit scrobbleLimitPlugin)
+        {
+            scrobbleLimitPlugin.CurrentScrobbleCountChanged += (s, e) =>
+            {
+                OnPropertyChanged(nameof(CurrentScrobbleCount));
+            };
+        }
     }
 
     internal void UpdateIsUsingAccountFunctions()

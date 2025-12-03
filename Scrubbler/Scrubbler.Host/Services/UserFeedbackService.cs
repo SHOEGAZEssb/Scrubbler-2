@@ -1,5 +1,4 @@
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Dispatching;
 
 namespace Scrubbler.Host.Services;
 

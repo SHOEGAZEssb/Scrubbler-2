@@ -295,7 +295,7 @@ internal class PluginManager : IPluginManager
                 .Where(e => e != null)
                 .Select(e => e!.Message);
 
-            _logService.Warn($"Some types in {asm.FullName} could not be loaded: {string.Join("; ", msgs)}");
+            _logService.Error($"Some types in {asm.FullName} could not be loaded: {string.Join("; ", msgs)}");
 
             // return only successfully loaded types
             return ex.Types.Where(t => t != null).ToArray()!;

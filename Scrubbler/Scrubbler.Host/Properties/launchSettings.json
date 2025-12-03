@@ -13,8 +13,7 @@
     "Local Plugins": {
       "commandName": "Project",
       "environmentVariables": {
-        "SCRUBBLER_PLUGIN_MODE": "Debug",
-        "SOLUTIONDIR": "E:\\Stuff\\Github\\Last.fm-Scrubbler-2\\Scrubbler"
+        "SCRUBBLER_PLUGIN_MODE": "Debug"
       }
     }
   },

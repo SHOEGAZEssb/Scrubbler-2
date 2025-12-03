@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml.Controls;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
@@ -13,7 +12,7 @@ namespace Scrubbler.Plugin.Accounts.LastFm;
 /// A plugin that connects to a Last.fm account using session keys.
 /// Implements IAccountPlugin so authentication persists between runs.
 /// </summary>
-public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying
+public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying
 {
     #region Properties
 
@@ -73,6 +72,27 @@ public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks, ICanFetchPlay
     /// Gets the Last.fm username of the authenticated account, or <c>null</c> if not authenticated.
     /// </summary>
     public string? AccountId { get; private set; }
+
+    public event EventHandler? CurrentScrobbleCountChanged;
+
+    public int ScrobbleLimit => 3000;
+
+    public int CurrentScrobbleCount
+    {
+        get => _currentScrobbleCount;
+        private set
+        {
+            if (CurrentScrobbleCount != value)
+            {
+                _currentScrobbleCount = value;
+                CurrentScrobbleCountChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+    }
+    private int _currentScrobbleCount;
+
+    public bool HasReachedScrobbleLimit => CurrentScrobbleCount >= ScrobbleLimit;
+
 
     private readonly ApiKeyStorage _apiKeyStorage;
     private ILastfmClient? _lastfmClient;
@@ -202,6 +222,13 @@ public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks, ICanFetchPlay
             return;
         }
 
+        await UpdateScrobbleCount();
+        if (HasReachedScrobbleLimit)
+        {
+            LogService.Warn("Scrobble limit reached; not scrobbling.");
+            return;
+        }
+
         var s = scrobbles.Select(s => new Shoegaze.LastFM.Track.ScrobbleData(s.Artist, s.Track, s.Timestamp, s.Album, s.AlbumArtist));
         int batches = (int)Math.Ceiling(s.Count() / 50d);
         int i = 1;
@@ -210,6 +237,27 @@ public class LastFmAccountPlugin : IAccountPlugin, ICanLoveTracks, ICanFetchPlay
             LogService.Info($"Scrobbling batch {i++} / {batches}...");
             var response = await _lastfmClient!.Track.ScrobbleAsync(batch);
             LogService.Info($"Scrobble Status: {response.LastFmStatus}");
+        }
+    }
+
+    public async Task UpdateScrobbleCount()
+    {
+        if (!IsAuthenticated || Username == null || _lastfmClient == null)
+        {
+            CurrentScrobbleCount = 0;
+            LogService.Warn("Cannot update scrobble count: not authenticated");
+            return;
+        }
+
+        var response = await _lastfmClient.User.GetRecentTracksAsync(Username, extended: false, fromDate: DateTime.Now.Subtract(TimeSpan.FromHours(24)),
+                                                                                                toDate: DateTime.Now, limit: 3000);
+
+        if (response.IsSuccess && response.Data != null)
+            CurrentScrobbleCount = response.Data.Items.Count;
+        else
+        {
+            CurrentScrobbleCount = 0;
+            LogService.Error("Failed to update scrobble count: " + (response.ErrorMessage ?? "Unknown error"));
         }
     }
 
