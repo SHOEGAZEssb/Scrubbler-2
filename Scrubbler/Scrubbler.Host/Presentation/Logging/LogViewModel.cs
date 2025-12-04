@@ -14,8 +14,15 @@ internal partial class LogViewModel : ObservableObject, IHostedService
 
     public ObservableCollection<LogLevelFilterViewModel> LogLevelFilters { get; } = [];
 
+    public ObservableCollection<string> Modules { get; } = [];
+
+    [ObservableProperty]
+    private string _selectedModule = ALLMODULE;
+
     [ObservableProperty]
     private string _searchText = string.Empty;
+
+    private const string ALLMODULE = "All";
 
     #endregion Properties
 
@@ -37,6 +44,8 @@ internal partial class LogViewModel : ObservableObject, IHostedService
             };
             LogLevelFilters.Add(filterVm);
         }
+
+        RebuildModulesList();
     }
 
     #endregion Construction
@@ -45,6 +54,9 @@ internal partial class LogViewModel : ObservableObject, IHostedService
     private void Clear()
     {
         Entries.Clear();
+        FilteredEntries.Clear();
+        RebuildModulesList();
+        SelectedModule = ALLMODULE;
     }
 
     private void RebuildFilteredEntries()
@@ -57,8 +69,21 @@ internal partial class LogViewModel : ObservableObject, IHostedService
         }
     }
 
+    private void RebuildModulesList()
+    {
+        Modules.Clear();
+        Modules.Add(ALLMODULE);
+        var modules = Entries.Select(e => e.Module).Distinct().OrderBy(m => m);
+        foreach (var module in modules)
+        {
+            Modules.Add(module);
+        }
+
+    }
+
     private bool MatchesFilter(LogMessage entry)
     {
+        // search text
         if (!string.IsNullOrWhiteSpace(SearchText))
         {
             if (!entry.Message.Contains(SearchText, StringComparison.OrdinalIgnoreCase) &&
@@ -68,6 +93,11 @@ internal partial class LogViewModel : ObservableObject, IHostedService
             }
         }
 
+        // module
+        if (SelectedModule != ALLMODULE && entry.Module != SelectedModule)
+            return false;
+
+        // log level
         foreach (var filter in LogLevelFilters)
         {
             if (!filter.PassesFilter(entry))
@@ -85,8 +115,15 @@ internal partial class LogViewModel : ObservableObject, IHostedService
     {
         Entries.Add(entry);
 
+        RebuildModulesList();
+
         if (MatchesFilter(entry))
             FilteredEntries.Add(entry);
+    }
+
+    partial void OnSelectedModuleChanged(string value)
+    {
+        RebuildFilteredEntries();
     }
 
     partial void OnSearchTextChanged(string value)

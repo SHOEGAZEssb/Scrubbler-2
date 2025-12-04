@@ -17,10 +17,9 @@
 
             <Border Width="1" Margin="8,0" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
-            <TextBlock Text="Log Levels" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock Text="Log Levels:" FontWeight="SemiBold" VerticalAlignment="Center"/>
             <ComboBox
                 ItemsSource="{Binding LogLevelFilters}"
-                MinWidth="200"
                 IsEditable="False"
                 IsTextSearchEnabled="False">
 
@@ -38,7 +37,12 @@
 
             <Border Width="1" Margin="8,0" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
-            <Button Content="Clear Logs" Command="{Binding ClearLogsCommand}" HorizontalAlignment="Right">
+            <TextBlock Text="Module:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Modules}" SelectedItem="{Binding SelectedModule, Mode=TwoWay}"/>
+
+            <Border Width="1" Margin="8,0" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+            <Button Content="Clear Logs" Command="{Binding ClearCommand}" HorizontalAlignment="Right"/>
         </StackPanel>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
