@@ -19,7 +19,7 @@
             IsBackButtonVisible="Collapsed"
             IsPaneToggleButtonVisible="True"
             PaneDisplayMode="Left"
-            Grid.Column="0">
+            Grid.Column="0" IsSettingsVisible="False">
 
             <muxc:NavigationView.MenuItemTemplate>
                 <DataTemplate x:DataType="navigation:NavigationItemViewModel">

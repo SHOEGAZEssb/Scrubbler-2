@@ -56,7 +56,7 @@ internal class PluginManager : IPluginManager
             await SaveAllPluginsAsync();
         };
 
-        _ = DiscoverInstalledPlugins();
+        DiscoverInstalledPlugins().Wait();
         _ = RefreshAvailablePluginsAsync();
         UpdateAccountFunctionsReceiver();
     }
