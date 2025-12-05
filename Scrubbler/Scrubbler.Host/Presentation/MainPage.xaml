@@ -6,48 +6,56 @@
       xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       Background="{ThemeResource BackgroundBrush}">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <muxc:NavigationView
+        MenuItemsSource="{Binding Items}"
+        SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+        IsBackButtonVisible="Collapsed"
+        IsPaneToggleButtonVisible="True"
+        IsSettingsVisible="False"
+        PaneDisplayMode="Left"
+        CompactPaneLength="80">
 
-        <!-- Sidebar -->
-        <muxc:NavigationView
-            MenuItemsSource="{Binding Items}"
-            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-            IsBackButtonVisible="Collapsed"
-            IsPaneToggleButtonVisible="True"
-            PaneDisplayMode="Left"
-            Grid.Column="0" IsSettingsVisible="False">
+        <!-- Template for NavigationView Items -->
+        <muxc:NavigationView.MenuItemTemplate>
+            <DataTemplate x:DataType="navigation:NavigationItemViewModel">
+                <muxc:NavigationViewItem Content="{x:Bind Title}"
+                                         SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
+                    <muxc:NavigationViewItem.Icon>
+                        <muxc:IconSourceElement IconSource="{x:Bind Icon}" />
+                    </muxc:NavigationViewItem.Icon>
+                    <muxc:NavigationViewItem.MenuItemsSource>
+                        <Binding Path="Children" />
+                    </muxc:NavigationViewItem.MenuItemsSource>
+                </muxc:NavigationViewItem>
+            </DataTemplate>
+        </muxc:NavigationView.MenuItemTemplate>
 
-            <muxc:NavigationView.MenuItemTemplate>
-                <DataTemplate x:DataType="navigation:NavigationItemViewModel">
-                    <muxc:NavigationViewItem Content="{x:Bind Title}"
-                                             SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
-                        <muxc:NavigationViewItem.Icon>
-                            <muxc:IconSourceElement IconSource="{x:Bind Icon}" />
-                        </muxc:NavigationViewItem.Icon>
-                        <muxc:NavigationViewItem.MenuItemsSource>
-                            <Binding Path="Children" />
-                        </muxc:NavigationViewItem.MenuItemsSource>
-                    </muxc:NavigationViewItem>
-                </DataTemplate>
-            </muxc:NavigationView.MenuItemTemplate>
-        </muxc:NavigationView>
 
-        <!-- Plugin or Page View -->
-        <ContentPresenter Content="{Binding CurrentViewModel}"
-                          ContentTemplateSelector="{StaticResource ViewLocatorSelector}"
-                          Grid.Column="1"/>
+        <!-- 📌 ALL MAIN UI CONTENT GOES HERE -->
+        <muxc:NavigationView.Content>
 
-        <!-- Global InfoBar -->
-        <InfoBar x:Name="GlobalInfoBar" Grid.Column="1"
-             Title="Notification"
-             IsOpen="False"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Top"
-             Margin="16"
-             IsClosable="False" />
-    </Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Global InfoBar -->
+                <InfoBar x:Name="GlobalInfoBar"
+                         Title="Notification"
+                         IsOpen="False"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         Margin="16"
+                         IsClosable="False" />
+
+                <!-- Page or Plugin View -->
+                <ContentPresenter Grid.Row="1"
+                                  Content="{Binding CurrentViewModel}"
+                                  ContentTemplateSelector="{StaticResource ViewLocatorSelector}" />
+            </Grid>
+
+        </muxc:NavigationView.Content>
+
+    </muxc:NavigationView>
 </Page>
