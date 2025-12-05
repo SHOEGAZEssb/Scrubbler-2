@@ -267,7 +267,7 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
         }
 
         var response = await _lastfmClient.User.GetRecentTracksAsync(Username, extended: false, fromDate: DateTime.Now.Subtract(TimeSpan.FromHours(24)),
-                                                                                                toDate: DateTime.Now);
+                                                                                                toDate: DateTime.Now, ignoreNowPlaying: true);
 
         if (response.IsSuccess && response.Data != null)
             CurrentScrobbleCount = response.Data.TotalItems;
