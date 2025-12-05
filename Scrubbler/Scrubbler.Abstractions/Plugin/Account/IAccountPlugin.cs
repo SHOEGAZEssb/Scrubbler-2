@@ -45,7 +45,8 @@ public interface IAccountPlugin : IPersistentPlugin
     /// Submits the provided scrobbles to the connected account.
     /// </summary>
     /// <param name="scrobbles">The collection of tracks to scrobble.</param>
-    /// <returns>A task that represents the asynchronous scrobble operation.</returns>
+    /// <returns>A task that represents the asynchronous scrobble operation,
+    /// containing the scrobble response.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the account is not authenticated or scrobbling is disabled.</exception>
-    Task ScrobbleAsync(IEnumerable<ScrobbleData> scrobbles);
+    Task<ScrobbleResponse> ScrobbleAsync(IEnumerable<ScrobbleData> scrobbles);
 }

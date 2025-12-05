@@ -113,6 +113,7 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
         _apiKeyStorage = new ApiKeyStorage(PluginDefaults.ApiKey, PluginDefaults.ApiSecret, Path.Combine(pluginDir, "environment.env"));
         _secureStore = new FileSecureStore(Path.Combine(pluginDir, "settings.dat"), Name);
         _settingsStore = new JsonSettingsStore(Path.Combine(pluginDir, "settings.json"));
+        _ = UpdateScrobbleCount();
     }
 
     /// <summary>
@@ -214,19 +215,24 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
     /// <param name="scrobbles">The collection of tracks to scrobble.</param>
     /// <returns>A task that represents the asynchronous scrobble operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the account is not authenticated or scrobbling is disabled.</exception>
-    public async Task ScrobbleAsync(IEnumerable<ScrobbleData> scrobbles)
+    public async Task<ScrobbleResponse> ScrobbleAsync(IEnumerable<ScrobbleData> scrobbles)
     {
         if (!IsScrobblingEnabled || !IsAuthenticated)
         {
             LogService.Warn("Tried to scrobble, but scrobbling was not enabled, or client was not authenticated");
-            return;
+            return new ScrobbleResponse(false, "Not authenticated");
         }
 
         await UpdateScrobbleCount();
         if (HasReachedScrobbleLimit)
         {
             LogService.Warn("Scrobble limit reached; not scrobbling.");
-            return;
+            return new ScrobbleResponse(false, "Scrobble limit reached");
+        }
+        else if (CurrentScrobbleCount + scrobbles.Count() > ScrobbleLimit)
+        {
+            LogService.Warn("Scrobble limit will be exceeded; not scrobbling.");
+            return new ScrobbleResponse(false, "Scrobble limit will be exceeded");
         }
 
         var s = scrobbles.Select(s => new Shoegaze.LastFM.Track.ScrobbleData(s.Artist, s.Track, s.Timestamp, s.Album, s.AlbumArtist));
@@ -237,11 +243,21 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
             LogService.Info($"Scrobbling batch {i++} / {batches}...");
             var response = await _lastfmClient!.Track.ScrobbleAsync(batch);
             LogService.Info($"Scrobble Status: {response.LastFmStatus}");
+            if (!response.IsSuccess)
+            {
+                LogService.Error("Error during scrobble: " + (response.ErrorMessage ?? "Unknown error"));
+                return new ScrobbleResponse(false, response.ErrorMessage ?? "Unknown error");
+            }
         }
+
+        await UpdateScrobbleCount();
+        return new ScrobbleResponse(true, null);
     }
 
     public async Task UpdateScrobbleCount()
     {
+        LogService.Debug("Updating scrobble count...");
+
         if (!IsAuthenticated || Username == null || _lastfmClient == null)
         {
             CurrentScrobbleCount = 0;

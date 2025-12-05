@@ -45,8 +45,6 @@ internal partial class ScrobblePluginHostViewModel : ScrobblePluginHostViewModel
     {
         if (PluginViewModel is IScrobblePluginViewModel spv)
             await ScrobbleToPlugins(await spv.GetScrobblesAsync());
-
-        _userFeedbackService.ShowSuccess("Scrobbled!");
     }
 
     [RelayCommand(CanExecute = nameof(CanPreview))]

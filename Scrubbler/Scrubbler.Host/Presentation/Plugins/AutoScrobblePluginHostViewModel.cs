@@ -23,6 +23,5 @@ internal partial class AutoScrobblePluginHostViewModel : ScrobblePluginHostViewM
     private async void PluginViewModel_ScrobblesDetected(object? sender, IEnumerable<ScrobbleData> e)
     {
         await ScrobbleToPlugins(e);
-        _userFeedbackService.ShowSuccess("Successfully scrobbled");
     }
 }
