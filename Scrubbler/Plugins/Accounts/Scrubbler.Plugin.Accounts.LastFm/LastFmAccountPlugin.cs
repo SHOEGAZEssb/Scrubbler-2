@@ -113,7 +113,6 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
         _apiKeyStorage = new ApiKeyStorage(PluginDefaults.ApiKey, PluginDefaults.ApiSecret, Path.Combine(pluginDir, "environment.env"));
         _secureStore = new FileSecureStore(Path.Combine(pluginDir, "settings.dat"), Name);
         _settingsStore = new JsonSettingsStore(Path.Combine(pluginDir, "settings.json"));
-        _ = UpdateScrobbleCount();
     }
 
     /// <summary>
@@ -134,6 +133,8 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
             _lastfmClient = new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
             _lastfmClient.SetSessionKey(_sessionKey);
         }
+
+        await UpdateScrobbleCount();
     }
 
     /// <summary>
@@ -266,10 +267,10 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
         }
 
         var response = await _lastfmClient.User.GetRecentTracksAsync(Username, extended: false, fromDate: DateTime.Now.Subtract(TimeSpan.FromHours(24)),
-                                                                                                toDate: DateTime.Now, limit: 3000);
+                                                                                                toDate: DateTime.Now);
 
         if (response.IsSuccess && response.Data != null)
-            CurrentScrobbleCount = response.Data.Items.Count;
+            CurrentScrobbleCount = response.Data.TotalItems;
         else
         {
             CurrentScrobbleCount = 0;
