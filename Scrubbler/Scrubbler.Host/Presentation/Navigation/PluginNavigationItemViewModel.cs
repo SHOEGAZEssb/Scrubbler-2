@@ -9,13 +9,13 @@ internal sealed class PluginNavigationItemViewModel(IPlugin plugin, IPluginManag
 {
     public IPlugin Plugin { get; } = plugin;
 
-    private static object MakeHostViewModel(IPlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
+    private static ScrobblePluginHostViewModelBase MakeHostViewModel(IPlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
     {
         if (plugin is IScrobblePlugin sp)
             return new ScrobblePluginHostViewModel(sp, manager, feedbackService, dialogService);
         if (plugin is IAutoScrobblePlugin asp)
             return new AutoScrobblePluginHostViewModel(asp, manager, feedbackService, dialogService);
 
-        return null; // todo log throw?
+        throw new NotSupportedException($"Plugin type {plugin.GetType().FullName} is not supported in the navigation.");
     }
 }
