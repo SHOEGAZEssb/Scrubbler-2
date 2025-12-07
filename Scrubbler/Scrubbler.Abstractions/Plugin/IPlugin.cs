@@ -58,11 +58,6 @@ public interface IPlugin
     IPluginViewModel GetViewModel();
     
     /// <summary>
-    /// Gets the icon source for displaying this plugin in the UI, if available.
-    /// </summary>
-    IconSource? Icon { get; }
-    
-    /// <summary>
     /// Gets or sets the logging service for this plugin.
     /// </summary>
     /// <seealso cref="ILogService"/>

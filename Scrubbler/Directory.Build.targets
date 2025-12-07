@@ -25,6 +25,7 @@
             <AllOutputs Include="$(TargetDir)*.pdb" />
             <AllOutputs Include="$(TargetDir)*.xml" />
             <AllOutputs Include="$(TargetDir)*.env" />
+            <AllOutputs Include="$(TargetDir)*.png" />
         </ItemGroup>
 
         <Copy SourceFiles="@(AllOutputs)"

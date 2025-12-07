@@ -1,5 +1,8 @@
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Scrubbler.Abstractions.Plugin.Account;
+using Scrubbler.Host.Helper;
+using SkiaSharp;
 
 
 namespace Scrubbler.Host.Presentation.Accounts;
@@ -18,6 +21,9 @@ public partial class AccountPluginViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isBusy;
+
+    public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(_plugin);
+    private ImageSource? _icon;
 
     public bool IsScrobblingEnabled
     {
@@ -122,6 +128,8 @@ public partial class AccountPluginViewModel : ObservableObject
             IsBusy = false;
         }
     }
+
+
 
     private void UpdateState()
     {

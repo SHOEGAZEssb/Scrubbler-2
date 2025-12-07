@@ -11,7 +11,7 @@ internal partial class InstalledPluginViewModel(IPlugin plugin) : ObservableObje
     public string Name => _plugin.Name;
     public string Description => _plugin.Description;
     public Version Version => _plugin.Version;
-    public IconSource? Icon => _plugin.Icon;
+    public IconSource? Icon => /*_plugin.Icon*/ null;
 
     public string PluginType
     {

@@ -6,8 +6,46 @@
       xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       Background="{ThemeResource BackgroundBrush}">
 
+    <Page.Resources>
+
+        <DataTemplate x:Key="MenuItemTemplate" x:DataType="navigation:MenuNavigationItemViewModel">
+            <muxc:NavigationViewItem Content="{x:Bind Title}"
+                                         SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
+                <muxc:NavigationViewItem.Icon>
+                    <muxc:IconSourceElement IconSource="{x:Bind Icon}" />
+                </muxc:NavigationViewItem.Icon>
+                <muxc:NavigationViewItem.MenuItemsSource>
+                    <Binding Path="Children" />
+                </muxc:NavigationViewItem.MenuItemsSource>
+            </muxc:NavigationViewItem>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PluginItemTemplate"
+              x:DataType="navigation:PluginNavigationItemViewModel">
+            <muxc:NavigationViewItem SelectsOnInvoked="True">
+                <StackPanel Orientation="Horizontal"
+                    Spacing="8">
+                    <Image Width="20"
+                   Height="20"
+                   Source="{x:Bind Icon}"
+                   Stretch="Uniform" />
+                    <TextBlock Text="{x:Bind Title}" />
+                </StackPanel>
+            </muxc:NavigationViewItem>
+        </DataTemplate>
+
+
+        <navigation:NavigationTemplateSelector
+            x:Key="NavigationSelector"
+            MenuTemplate="{StaticResource MenuItemTemplate}"
+            PluginTemplate="{StaticResource PluginItemTemplate}" />
+
+    </Page.Resources>
+
+
     <muxc:NavigationView
         MenuItemsSource="{Binding Items}"
+        MenuItemTemplateSelector="{StaticResource NavigationSelector}"
         SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
         IsBackButtonVisible="Collapsed"
         IsPaneToggleButtonVisible="True"
@@ -16,8 +54,8 @@
         CompactPaneLength="80">
 
         <!-- Template for NavigationView Items -->
-        <muxc:NavigationView.MenuItemTemplate>
-            <DataTemplate x:DataType="navigation:NavigationItemViewModel">
+        <!--<muxc:NavigationView.MenuItemTemplate>
+            <DataTemplate x:DataType="navigation:MenuNavigationItemViewModel">
                 <muxc:NavigationViewItem Content="{x:Bind Title}"
                                          SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
                     <muxc:NavigationViewItem.Icon>
@@ -28,7 +66,15 @@
                     </muxc:NavigationViewItem.MenuItemsSource>
                 </muxc:NavigationViewItem>
             </DataTemplate>
-        </muxc:NavigationView.MenuItemTemplate>
+            <DataTemplate x:DataType="navigation:PluginNavigationItemViewModel">
+                <muxc:NavigationViewItem Content="{x:Bind Title}"
+                                         SelectsOnInvoked="True">
+                    <muxc:NavigationViewItem.Icon>
+                        <muxc:ImageIcon Source="{x:Bind Icon}"/>
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+            </DataTemplate>
+        </muxc:NavigationView.MenuItemTemplate>-->
 
 
         <!-- 📌 ALL MAIN UI CONTENT GOES HERE -->

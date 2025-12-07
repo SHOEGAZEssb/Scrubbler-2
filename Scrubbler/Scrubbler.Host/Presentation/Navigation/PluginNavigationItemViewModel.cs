@@ -1,13 +1,16 @@
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Host.Helper;
 using Scrubbler.Host.Presentation.Plugins;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Navigation;
 
 internal sealed class PluginNavigationItemViewModel(IPlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
-    : NavigationItemViewModel(plugin.Name, plugin.Icon, MakeHostViewModel(plugin, manager, feedbackService, dialogService))
+    : NavigationItemViewModelBase(plugin.Name, MakeHostViewModel(plugin, manager, feedbackService, dialogService))
 {
-    public IPlugin Plugin { get; } = plugin;
+    public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(plugin);
+    private ImageSource? _icon;
+
 
     private static ScrobblePluginHostViewModelBase MakeHostViewModel(IPlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
     {

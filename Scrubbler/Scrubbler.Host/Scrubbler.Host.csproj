@@ -99,4 +99,7 @@
     <ItemGroup>
       <PRIResource Remove="Presentation\Controls\**" />
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="SkiaSharp" />
+    </ItemGroup>
 </Project>

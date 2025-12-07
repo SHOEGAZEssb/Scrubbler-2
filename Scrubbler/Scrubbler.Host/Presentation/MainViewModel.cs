@@ -13,9 +13,9 @@ internal partial class MainViewModel : ObservableObject
 {
     #region Properties
 
-    public ObservableCollection<NavigationItemViewModel> Items { get; } = [];
+    public ObservableCollection<NavigationItemViewModelBase> Items { get; } = [];
 
-    public NavigationItemViewModel? SelectedItem
+    public NavigationItemViewModelBase? SelectedItem
     {
         get => _selectedItem;
         set
@@ -27,11 +27,11 @@ internal partial class MainViewModel : ObservableObject
             }
         }
     }
-    private NavigationItemViewModel? _selectedItem;
+    private NavigationItemViewModelBase? _selectedItem;
 
     public object? CurrentViewModel => SelectedItem?.Content;
 
-    private readonly NavigationItemViewModel _pluginGroup;
+    private readonly MenuNavigationItemViewModel _pluginGroup;
     private readonly IPluginManager _pluginManager;
     private readonly IUserFeedbackService _userFeedbackService;
     private readonly IDialogService _dialogService;
@@ -41,12 +41,12 @@ internal partial class MainViewModel : ObservableObject
     public MainViewModel(IServiceProvider services)
     {
         // static pages
-        Items.Add(new NavigationItemViewModel("Home", new SymbolIconSource() { Symbol = Symbol.Home }, new HomeViewModel()));
-        Items.Add(new NavigationItemViewModel("Accounts", new SymbolIconSource() { Symbol = Symbol.Account }, services.GetRequiredService<AccountsViewModel>()));
-        Items.Add(new NavigationItemViewModel("Plugin Manager", new SymbolIconSource() { Symbol = Symbol.Admin }, services.GetRequiredService<PluginManagerViewModel>()));
+        Items.Add(new MenuNavigationItemViewModel("Home", new SymbolIconSource() { Symbol = Symbol.Home }, new HomeViewModel()));
+        Items.Add(new MenuNavigationItemViewModel("Accounts", new SymbolIconSource() { Symbol = Symbol.Account }, services.GetRequiredService<AccountsViewModel>()));
+        Items.Add(new MenuNavigationItemViewModel("Plugin Manager", new SymbolIconSource() { Symbol = Symbol.Admin }, services.GetRequiredService<PluginManagerViewModel>()));
 
         // plugins group
-        _pluginGroup = new NavigationItemViewModel("Plugins", new SymbolIconSource { Symbol = Symbol.AllApps });
+        _pluginGroup = new MenuNavigationItemViewModel("Plugins", new SymbolIconSource { Symbol = Symbol.AllApps });
 
         // plugins
         _pluginManager = services.GetRequiredService<IPluginManager>();
@@ -57,7 +57,7 @@ internal partial class MainViewModel : ObservableObject
 
         Items.Add(_pluginGroup);
 
-        Items.Add(new NavigationItemViewModel("Logs", new SymbolIconSource() { Symbol = Symbol.Document }, services.GetRequiredService<LogViewModel>()));
+        Items.Add(new MenuNavigationItemViewModel("Logs", new SymbolIconSource() { Symbol = Symbol.Document }, services.GetRequiredService<LogViewModel>()));
 
         SelectedItem = Items.FirstOrDefault();
     }

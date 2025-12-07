@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Reflection;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
@@ -24,8 +27,6 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
     public Version Version => typeof(LastFmAccountPlugin).Assembly.GetName().Version!;
 
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
-
-    public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.Play };
 
     public string? Username => _secureStore.GetAsync(AccountIdKey).GetAwaiter().GetResult() ?? null;
 
