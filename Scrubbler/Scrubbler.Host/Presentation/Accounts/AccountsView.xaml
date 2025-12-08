@@ -15,8 +15,8 @@
                                 <Grid Padding="32">
                                     <!-- Main content -->
                                     <StackPanel Spacing="8" HorizontalAlignment="Center">
-                                        <Image Width="32"
-                                               Height="32"
+                                        <Image Width="64"
+                                               Height="64"
                                                Source="{Binding Icon}"
                                                HorizontalAlignment="Center" />
                                         <TextBlock Text="{x:Bind Name}"

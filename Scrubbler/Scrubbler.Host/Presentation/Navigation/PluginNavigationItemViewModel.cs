@@ -11,7 +11,6 @@ internal sealed class PluginNavigationItemViewModel(IPlugin plugin, IPluginManag
     public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(plugin);
     private ImageSource? _icon;
 
-
     private static ScrobblePluginHostViewModelBase MakeHostViewModel(IPlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
     {
         if (plugin is IScrobblePlugin sp)

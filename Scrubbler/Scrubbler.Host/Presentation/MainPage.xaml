@@ -23,13 +23,12 @@
         <DataTemplate x:Key="PluginItemTemplate"
               x:DataType="navigation:PluginNavigationItemViewModel">
             <muxc:NavigationViewItem SelectsOnInvoked="True">
-                <StackPanel Orientation="Horizontal"
-                    Spacing="8">
-                    <Image Width="20"
-                   Height="20"
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                    <Image Width="25"
+                   Height="25"
                    Source="{x:Bind Icon}"
                    Stretch="Uniform" />
-                    <TextBlock Text="{x:Bind Title}" />
+                    <TextBlock Text="{x:Bind Title}" VerticalAlignment="Center"/>
                 </StackPanel>
             </muxc:NavigationViewItem>
         </DataTemplate>
