@@ -15,7 +15,7 @@ namespace Scrubbler.Plugin.Accounts.LastFm;
 /// A plugin that connects to a Last.fm account using session keys.
 /// Implements IAccountPlugin so authentication persists between runs.
 /// </summary>
-public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying
+public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying, ICanOpenLinks
 {
     #region Properties
 
@@ -375,6 +375,26 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
     {
         var response = await _lastfmClient!.Track.UpdateNowPlayingAsync(artistName, trackName, albumName);
         return response.IsSuccess ? null : (response.ErrorMessage ?? "Unknown error");
+    }
+
+    public void OpenArtistLink(string artistName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OpenAlbumLink(string albumName, string artistName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OpenTrackLink(string trackName, string artistName, string? albumName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OpenTagLink(string tagName)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion IAccountFunctions

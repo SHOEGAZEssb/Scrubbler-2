@@ -93,7 +93,7 @@ class Program
                         Name: plugin.Name,
                         Version: version,
                         Description: plugin.Description,
-                        IconUri: null,
+                        IconUri: new Uri($"{baseUrl}/plugins/{Path.GetFileNameWithoutExtension(zipFile) + ".png"}"),
                         PluginType: pluginTypeLabel,
                         SupportedPlatforms: plugin.SupportedPlatforms.ToString().Split(", "),
                         SourceUri: new Uri($"{baseUrl}/plugins/{Path.GetFileName(zipFile)}")
