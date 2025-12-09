@@ -116,6 +116,7 @@ jobs:
         run: |
           mkdir -p out/plugins
           cp artifacts/zips/*.zip out/plugins/ || echo "No plugin zips found"
+          cp artifacts/zips/*.png out/plugins/ || echo "No plugin icons found"
           cp artifacts/plugins.json out/
 
       - name: Commit and push

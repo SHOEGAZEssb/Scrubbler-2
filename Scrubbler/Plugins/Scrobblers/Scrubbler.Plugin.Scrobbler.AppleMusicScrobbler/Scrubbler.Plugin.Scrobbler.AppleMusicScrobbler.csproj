@@ -37,7 +37,7 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-      <Content Update="icon.png">
+      <Content Include="icon.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
