@@ -77,13 +77,27 @@ jobs:
               pluginName=$(basename "$dir")
               zipFile="artifacts/zips/${pluginName}.zip"
               echo "Zipping $pluginName -> $zipFile"
+
+              # Exclude patterns for shared assemblies
               excludes=""
               for pat in $SHARED_ASSEMBLIES; do
                 excludes="$excludes -x!$pat"
               done
+
+              # Create the zip
               (cd "$dir" && 7z a "../../zips/${pluginName}.zip" . $excludes)
+
+              # copy icons
+              if [ -f "$dir/icon.png" ]; then
+                cp "$dir/icon.png" "artifacts/zips/${pluginName}.icon"
+                echo "Copied icon for $pluginName"
+              else
+                echo "No icon.png for $pluginName"
+              fi
+
             fi
           done
+
 
 
       - name: Generate plugins.json
