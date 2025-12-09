@@ -1,8 +1,9 @@
 using System.Reflection;
 using System.Text.Json;
-using Scrubbler.Abstractions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Plugin.Account;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Helper;
 using Scrubbler.Host.Services.Logging;
@@ -11,10 +12,13 @@ namespace Scrubbler.Host.Services;
 
 internal class PluginManager : IPluginManager
 {
+    #region Properties
+
     private readonly HostLogService _hostLogService;
     private readonly ILogService _logService;
     private readonly ISettingsStore _settings;
     private readonly IWritableOptions<UserConfig> _config;
+    private readonly IServiceProvider _serviceProvider;
     private readonly string _rootDir;
 
     public bool IsFetchingPlugins
@@ -38,11 +42,14 @@ internal class PluginManager : IPluginManager
     public event EventHandler? PluginInstalled;
     public event EventHandler? PluginUninstalled;
 
-    public PluginManager(HostLogService hostLogService, ISettingsStore settings, IWritableOptions<UserConfig> config)
+    #endregion Properties
+
+    public PluginManager(HostLogService hostLogService, ISettingsStore settings, IWritableOptions<UserConfig> config, IServiceProvider serviceProvider)
     {
         _hostLogService = hostLogService;
         _settings = settings;
         _config = config;
+        _serviceProvider = serviceProvider;
         _logService = new ModuleLogService(_hostLogService, "Plugin Manager");
         if (Environment.GetEnvironmentVariable("SCRUBBLER_PLUGIN_MODE") == "Debug")
             _rootDir = Path.Combine(Environment.GetEnvironmentVariable("SOLUTIONDIR")!, "DebugPlugins");
@@ -163,9 +170,9 @@ internal class PluginManager : IPluginManager
                 {
                     foreach (var pluginType in types)
                     {
-                        if (Activator.CreateInstance(pluginType) is IPlugin plugin)
+                        if (ActivatorUtilities.CreateInstance(_serviceProvider, pluginType) is IPlugin plugin)
                         {
-                            plugin.LogService = new ModuleLogService(_hostLogService, plugin.Name);
+                            //plugin.LogService = new ModuleLogService(_hostLogService, plugin.Name);
                             _installed.Add((plugin, context));
                             if (plugin is IPersistentPlugin persistentPlugin)
                                 await persistentPlugin.LoadAsync();

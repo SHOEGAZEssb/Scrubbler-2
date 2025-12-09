@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Presentation.Logging;
@@ -72,6 +73,8 @@ public partial class App : Application
                     services.AddSingleton<IDialogService, DialogService>();
                     services.AddSingleton<ISettingsStore, JsonSettingsStore>();
                     services.AddSingleton<IPluginManager, PluginManager>();
+                    services.AddSingleton<ILinkOpenerService, LinkOpenerService>();
+                    services.AddSingleton<IModuleLogServiceFactory, ModuleLogServiceFactory>();
                     services.AddTransient<AccountsViewModel>();
                     services.AddTransient<PluginManagerViewModel>();
                 })

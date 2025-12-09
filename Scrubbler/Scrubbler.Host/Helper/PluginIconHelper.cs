@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Scrubbler.Abstractions.Plugin;
 using SkiaSharp;

@@ -1,6 +1,6 @@
 using Scrubbler.Abstractions;
-using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Services;
 using Shoegaze.LastFM;
 
 namespace Scrubbler.Plugin.Scrobblers.FriendScrobbler;
@@ -29,17 +29,7 @@ public class FriendScrobblePlugin : IScrobblePlugin
     /// </summary>
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
 
-    /// <summary>
-    /// Gets the icon source for displaying this plugin in the UI.
-    /// </summary>
-    public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.OtherUser };
-
-    /// <summary>
-    /// Gets or sets the logging service for this plugin.
-    /// </summary>
-    /// <seealso cref="ILogService"/>
-    public ILogService LogService { get; set; }
-
+    private readonly ILogService _logService;
     private readonly ApiKeyStorage _apiKeyStorage;
     private readonly FriendScrobbleViewModel _vm;
 
@@ -48,9 +38,9 @@ public class FriendScrobblePlugin : IScrobblePlugin
     /// <summary>
     /// Initializes a new instance of the <see cref="ManualScrobblePlugin"/> class.
     /// </summary>
-    public FriendScrobblePlugin()
+    public FriendScrobblePlugin(IModuleLogServiceFactory logFactory)
     {
-        LogService = new NoopLogger();
+        _logService = logFactory.Create(Name);
 
         var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
         _apiKeyStorage = new ApiKeyStorage(PluginDefaults.ApiKey, PluginDefaults.ApiSecret, Path.Combine(pluginDir, "environment.env"));

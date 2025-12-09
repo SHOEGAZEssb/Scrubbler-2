@@ -1,4 +1,4 @@
-using Scrubbler.Abstractions.Logging;
+using Scrubbler.Abstractions.Services;
 
 namespace Scrubbler.Abstractions.Plugin;
 
@@ -35,31 +35,25 @@ public interface IPlugin
     /// Gets the display name of the plugin.
     /// </summary>
     string Name { get; }
-    
+
     /// <summary>
     /// Gets a description of what the plugin does.
     /// </summary>
     string Description { get; }
-    
+
     /// <summary>
     /// Gets the version of the plugin.
     /// </summary>
     Version Version { get; }
-    
+
     /// <summary>
     /// Gets the platforms this plugin supports.
     /// </summary>
     PlatformSupport SupportedPlatforms { get; }
-    
+
     /// <summary>
     /// Gets the view model instance for this plugin's UI.
     /// </summary>
     /// <returns>A new instance of <see cref="IPluginViewModel"/> for this plugin.</returns>
     IPluginViewModel GetViewModel();
-    
-    /// <summary>
-    /// Gets or sets the logging service for this plugin.
-    /// </summary>
-    /// <seealso cref="ILogService"/>
-    ILogService LogService { get; set; }
 }

@@ -1,5 +1,5 @@
-using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Services;
 
 namespace Scrubbler.Plugin.Scrobblers.ManualScrobbler;
 
@@ -20,7 +20,7 @@ public class ManualScrobblePlugin : IScrobblePlugin
     /// Gets a description of what the plugin does.
     /// </summary>
     public string Description => "Enter track details manually and scrobble it";
-    
+
     /// <summary>
     /// Gets the version of the plugin.
     /// </summary>
@@ -31,17 +31,7 @@ public class ManualScrobblePlugin : IScrobblePlugin
     /// </summary>
     public PlatformSupport SupportedPlatforms => PlatformSupport.All;
 
-    /// <summary>
-    /// Gets the icon source for displaying this plugin in the UI.
-    /// </summary>
-    public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.Manage };
-
-    /// <summary>
-    /// Gets or sets the logging service for this plugin.
-    /// </summary>
-    /// <seealso cref="ILogService"/>
-    public ILogService LogService { get; set; }
-
+    private readonly ILogService _logService;
     private readonly ManualScrobbleViewModel _vm = new();
 
     #endregion Properties
@@ -49,9 +39,9 @@ public class ManualScrobblePlugin : IScrobblePlugin
     /// <summary>
     /// Initializes a new instance of the <see cref="ManualScrobblePlugin"/> class.
     /// </summary>
-    public ManualScrobblePlugin()
+    public ManualScrobblePlugin(IModuleLogServiceFactory logFactory)
     {
-        LogService = new NoopLogger();
+        _logService = logFactory.Create(Name);
     }
 
     /// <summary>

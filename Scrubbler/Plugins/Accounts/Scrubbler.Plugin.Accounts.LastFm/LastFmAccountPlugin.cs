@@ -1,10 +1,7 @@
-using System.Diagnostics;
-using System.Reflection;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Scrubbler.Abstractions;
-using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Plugin.Account;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Abstractions.Settings;
 using Shoegaze.LastFM;
 using Shoegaze.LastFM.Authentication;
@@ -30,8 +27,7 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
 
     public string? Username => _secureStore.GetAsync(AccountIdKey).GetAwaiter().GetResult() ?? null;
 
-    public ILogService LogService { get; set; }
-
+    private readonly ILogService _logService;
     private readonly ISecureStore _secureStore;
     private readonly ISettingsStore _settingsStore;
     private PluginSettings _settings = new();
@@ -97,6 +93,7 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
 
     private readonly ApiKeyStorage _apiKeyStorage;
     private ILastfmClient? _lastfmClient;
+    private readonly ILinkOpenerService _linkOpener;
 
     #endregion Properties
 
@@ -106,14 +103,15 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
     /// <remarks>
     /// Initializes storage services for secure data (session keys) and settings.
     /// </remarks>
-    public LastFmAccountPlugin()
+    public LastFmAccountPlugin(ILinkOpenerService linkOpener, IModuleLogServiceFactory logFactory)
     {
-        LogService = new NoopLogger();
+        _logService = logFactory.Create(Name);
 
         var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
         _apiKeyStorage = new ApiKeyStorage(PluginDefaults.ApiKey, PluginDefaults.ApiSecret, Path.Combine(pluginDir, "environment.env"));
         _secureStore = new FileSecureStore(Path.Combine(pluginDir, "settings.dat"), Name);
         _settingsStore = new JsonSettingsStore(Path.Combine(pluginDir, "settings.json"));
+        _linkOpener = linkOpener;
     }
 
     /// <summary>
@@ -123,7 +121,7 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
     /// <returns>A task that represents the asynchronous load operation.</returns>
     public async Task LoadAsync()
     {
-        LogService.Debug("Loading settings...");
+        _logService.Debug("Loading settings...");
 
         AccountId = await _secureStore.GetAsync(AccountIdKey);
         _sessionKey = await _secureStore.GetAsync(SessionKeyKey);
@@ -171,7 +169,7 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
             return;
         }
 
-        LogService.Debug("Starting OAuth flow");
+        _logService.Debug("Starting OAuth flow");
         try
         {
             var a = new LastfmAuthService(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
@@ -182,11 +180,11 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
 
             _lastfmClient = new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
             _lastfmClient.SetSessionKey(_sessionKey);
-            LogService.Debug($"Finished OAuth flow. Logged in as {AccountId}");
+            _logService.Debug($"Finished OAuth flow. Logged in as {AccountId}");
         }
         catch (Exception ex)
         {
-            LogService.Error("Error during OAuth flow.", ex);
+            _logService.Error("Error during OAuth flow.", ex);
         }
     }
 
@@ -221,19 +219,19 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
     {
         if (!IsScrobblingEnabled || !IsAuthenticated)
         {
-            LogService.Warn("Tried to scrobble, but scrobbling was not enabled, or client was not authenticated");
+            _logService.Warn("Tried to scrobble, but scrobbling was not enabled, or client was not authenticated");
             return new ScrobbleResponse(false, "Not authenticated");
         }
 
         await UpdateScrobbleCount();
         if (HasReachedScrobbleLimit)
         {
-            LogService.Warn("Scrobble limit reached; not scrobbling.");
+            _logService.Warn("Scrobble limit reached; not scrobbling.");
             return new ScrobbleResponse(false, "Scrobble limit reached");
         }
         else if (CurrentScrobbleCount + scrobbles.Count() > ScrobbleLimit)
         {
-            LogService.Warn("Scrobble limit will be exceeded; not scrobbling.");
+            _logService.Warn("Scrobble limit will be exceeded; not scrobbling.");
             return new ScrobbleResponse(false, "Scrobble limit will be exceeded");
         }
 
@@ -242,12 +240,12 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
         int i = 1;
         foreach (var batch in s.Chunk(50))
         {
-            LogService.Info($"Scrobbling batch {i++} / {batches}...");
+            _logService.Info($"Scrobbling batch {i++} / {batches}...");
             var response = await _lastfmClient!.Track.ScrobbleAsync(batch);
-            LogService.Info($"Scrobble Status: {response.LastFmStatus}");
+            _logService.Info($"Scrobble Status: {response.LastFmStatus}");
             if (!response.IsSuccess)
             {
-                LogService.Error("Error during scrobble: " + (response.ErrorMessage ?? "Unknown error"));
+                _logService.Error("Error during scrobble: " + (response.ErrorMessage ?? "Unknown error"));
                 return new ScrobbleResponse(false, response.ErrorMessage ?? "Unknown error");
             }
         }
@@ -258,12 +256,12 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
 
     public async Task UpdateScrobbleCount()
     {
-        LogService.Debug("Updating scrobble count...");
+        _logService.Debug("Updating scrobble count...");
 
         if (!IsAuthenticated || Username == null || _lastfmClient == null)
         {
             CurrentScrobbleCount = 0;
-            LogService.Warn("Cannot update scrobble count: not authenticated");
+            _logService.Warn("Cannot update scrobble count: not authenticated");
             return;
         }
 
@@ -275,7 +273,7 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
         else
         {
             CurrentScrobbleCount = 0;
-            LogService.Error("Failed to update scrobble count: " + (response.ErrorMessage ?? "Unknown error"));
+            _logService.Error("Failed to update scrobble count: " + (response.ErrorMessage ?? "Unknown error"));
         }
     }
 

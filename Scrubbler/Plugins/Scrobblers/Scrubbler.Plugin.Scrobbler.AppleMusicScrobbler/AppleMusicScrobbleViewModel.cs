@@ -5,7 +5,7 @@ using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Conditions;
 using FlaUI.UIA3;
 using Scrubbler.Abstractions;
-using Scrubbler.Abstractions.Logging;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Plugins.Scrobblers.MediaPlayerScrobbleBase;
 using Shoegaze.LastFM;
 using SystemTimer = System.Timers.Timer;

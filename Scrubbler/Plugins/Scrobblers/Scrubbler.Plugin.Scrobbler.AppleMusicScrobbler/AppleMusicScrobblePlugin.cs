@@ -1,7 +1,7 @@
 using Scrubbler.Abstractions;
-using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Plugin.Account;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Abstractions.Settings;
 using Shoegaze.LastFM;
 
@@ -31,29 +31,10 @@ public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, 
     /// </summary>
     public PlatformSupport SupportedPlatforms => PlatformSupport.Windows;
 
-    /// <summary>
-    /// Gets the icon source for displaying this plugin in the UI.
-    /// </summary>
-    public IconSource? Icon => new SymbolIconSource() { Symbol = Symbol.MusicInfo };
-
-    /// <summary>
-    /// Gets or sets the logging service for this plugin.
-    /// </summary>
-    /// <seealso cref="ILogService"/>
-    public ILogService LogService
-    {
-        get => _logService;
-        set
-        {
-            _logService = value;
-            _vm.Logger = value;
-        }
-    }
-    private ILogService _logService;
-
     private readonly ApiKeyStorage _apiKeyStorage;
     private readonly AppleMusicScrobbleViewModel _vm;
     private readonly ISettingsStore _settingsStore;
+    private readonly ILogService _logService;
     private PluginSettings _settings = new();
 
     #endregion Properties
@@ -61,14 +42,14 @@ public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, 
     /// <summary>
     /// Initializes a new instance of the <see cref="ManualScrobblePlugin"/> class.
     /// </summary>
-    public AppleMusicScrobblePlugin()
+    public AppleMusicScrobblePlugin(IModuleLogServiceFactory logFactory)
     {
-        _logService = new NoopLogger();
+        _logService = logFactory.Create(Name);
 
         var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
         _apiKeyStorage = new ApiKeyStorage(PluginDefaults.ApiKey, PluginDefaults.ApiSecret, Path.Combine(pluginDir, "environment.env"));
         _settingsStore = new JsonSettingsStore(Path.Combine(pluginDir, "settings.json"));
-        _vm = new AppleMusicScrobbleViewModel(new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret), LogService);
+        _vm = new AppleMusicScrobbleViewModel(new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret), _logService);
     }
 
     /// <summary>
@@ -82,7 +63,7 @@ public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, 
 
     public async Task LoadAsync()
     {
-        LogService.Debug("Loading settings...");
+        _logService.Debug("Loading settings...");
 
         _settings = await _settingsStore.GetOrCreateAsync<PluginSettings>(Name);
         _vm.SetInitialAutoConnectState(_settings.AutoConnect);
@@ -90,7 +71,7 @@ public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, 
 
     public async Task SaveAsync()
     {
-        LogService.Debug("Saving settings...");
+        _logService.Debug("Saving settings...");
 
         _settings.AutoConnect = _vm.AutoConnect;
         await _settingsStore.SetAsync(Name, _settings);

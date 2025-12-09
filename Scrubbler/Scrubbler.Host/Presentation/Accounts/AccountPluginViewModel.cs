@@ -1,8 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Host.Helper;
-using SkiaSharp;
 
 
 namespace Scrubbler.Host.Presentation.Accounts;

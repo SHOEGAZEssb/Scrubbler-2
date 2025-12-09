@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions;
-using Scrubbler.Abstractions.Logging;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Plugin.Account;
+using Scrubbler.Abstractions.Services;
 using Shoegaze.LastFM;
 
 namespace Scrubbler.Plugins.Scrobblers.MediaPlayerScrobbleBase;

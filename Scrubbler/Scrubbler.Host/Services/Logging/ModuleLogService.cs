@@ -1,4 +1,4 @@
-using Scrubbler.Abstractions.Logging;
+using Scrubbler.Abstractions.Services;
 
 namespace Scrubbler.Host.Services.Logging;
 
