@@ -56,7 +56,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p ../artifacts/plugins
-          for proj in $(find Plugins -name '*.csproj'); do
+          for proj in $(find Plugins -name 'Scrubbler.Plugin*.csproj'); do
             echo "Building $proj"
             outdir="../artifacts/plugins/$(basename $proj .csproj)"
             mkdir -p "$outdir"
