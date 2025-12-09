@@ -10,24 +10,24 @@
                 <DataTemplate x:DataType="vm:InstalledPluginViewModel">
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="8" Margin="0,0,0,8">
                         <!-- Icon -->
-                        <IconSourceElement IconSource="{x:Bind Icon}" Width="32" Height="32" VerticalAlignment="Center"/>
+                        <ImageIcon Source="{Binding Icon}" Width="64" Height="64" VerticalAlignment="Center"/> "
 
                         <!-- Info -->
                         <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                            <TextBlock Text="{x:Bind Name}" 
+                            <TextBlock Text="{x:Bind Name}"
                                        Style="{ThemeResource SubtitleTextBlockStyle}" />
                             <TextBlock Text="{x:Bind PluginType}" Foreground="White" FontSize="12"/>
-                            <TextBlock Text="{x:Bind Description}" 
+                            <TextBlock Text="{x:Bind Description}"
                                        TextTrimming="CharacterEllipsis"
                                        Foreground="Gray" FontSize="12"/>
-                            <TextBlock Text="{x:Bind Version}" 
+                            <TextBlock Text="{x:Bind Version}"
                                        Foreground="Gray" FontSize="12"/>
                         </StackPanel>
 
                         <!-- Action -->
-                        <Button Grid.Column="2" 
+                        <Button Grid.Column="2"
                                 Content="Uninstall"
-                                Command="{x:Bind UninstallCommand}" 
+                                Command="{x:Bind UninstallCommand}"
                                 VerticalAlignment="Center"/>
                     </Grid>
                 </DataTemplate>

@@ -3,43 +3,38 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:Scrubbler.Host.Presentation"
       xmlns:navigation="using:Scrubbler.Host.Presentation.Navigation"
-      xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
       Background="{ThemeResource BackgroundBrush}">
 
     <Page.Resources>
-
         <DataTemplate x:Key="MenuItemTemplate" x:DataType="navigation:MenuNavigationItemViewModel">
-            <muxc:NavigationViewItem Content="{x:Bind Title}"
+            <NavigationViewItem Content="{x:Bind Title}"
                                          SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
-                <muxc:NavigationViewItem.Icon>
-                    <muxc:IconSourceElement IconSource="{x:Bind Icon}" />
-                </muxc:NavigationViewItem.Icon>
-                <muxc:NavigationViewItem.MenuItemsSource>
+                <NavigationViewItem.Icon>
+                    <IconSourceElement IconSource="{x:Bind Icon}" />
+                </NavigationViewItem.Icon>
+                <NavigationViewItem.MenuItemsSource>
                     <Binding Path="Children" />
-                </muxc:NavigationViewItem.MenuItemsSource>
-            </muxc:NavigationViewItem>
+                </NavigationViewItem.MenuItemsSource>
+            </NavigationViewItem>
         </DataTemplate>
 
         <DataTemplate x:Key="PluginItemTemplate"
               x:DataType="navigation:PluginNavigationItemViewModel">
-            <muxc:NavigationViewItem SelectsOnInvoked="True">
+            <NavigationViewItem SelectsOnInvoked="True">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
                     <ImageIcon Source="{x:Bind Icon}" Width="25" Height="25" VerticalAlignment="Center"/>
                     <TextBlock Text="{x:Bind Title}" VerticalAlignment="Center"/>
                 </StackPanel>
-            </muxc:NavigationViewItem>
+            </NavigationViewItem>
         </DataTemplate>
-
 
         <navigation:NavigationTemplateSelector
             x:Key="NavigationSelector"
             MenuTemplate="{StaticResource MenuItemTemplate}"
             PluginTemplate="{StaticResource PluginItemTemplate}" />
-
     </Page.Resources>
 
-
-    <muxc:NavigationView
+    <NavigationView
         MenuItemsSource="{Binding Items}"
         MenuItemTemplateSelector="{StaticResource NavigationSelector}"
         SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
@@ -49,33 +44,8 @@
         PaneDisplayMode="Left"
         CompactPaneLength="80">
 
-        <!-- Template for NavigationView Items -->
-        <!--<muxc:NavigationView.MenuItemTemplate>
-            <DataTemplate x:DataType="navigation:MenuNavigationItemViewModel">
-                <muxc:NavigationViewItem Content="{x:Bind Title}"
-                                         SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
-                    <muxc:NavigationViewItem.Icon>
-                        <muxc:IconSourceElement IconSource="{x:Bind Icon}" />
-                    </muxc:NavigationViewItem.Icon>
-                    <muxc:NavigationViewItem.MenuItemsSource>
-                        <Binding Path="Children" />
-                    </muxc:NavigationViewItem.MenuItemsSource>
-                </muxc:NavigationViewItem>
-            </DataTemplate>
-            <DataTemplate x:DataType="navigation:PluginNavigationItemViewModel">
-                <muxc:NavigationViewItem Content="{x:Bind Title}"
-                                         SelectsOnInvoked="True">
-                    <muxc:NavigationViewItem.Icon>
-                        <muxc:ImageIcon Source="{x:Bind Icon}"/>
-                    </muxc:NavigationViewItem.Icon>
-                </muxc:NavigationViewItem>
-            </DataTemplate>
-        </muxc:NavigationView.MenuItemTemplate>-->
-
-
-        <!-- 📌 ALL MAIN UI CONTENT GOES HERE -->
-        <muxc:NavigationView.Content>
-
+        <!-- ALL MAIN UI CONTENT GOES HERE -->
+        <NavigationView.Content>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -96,8 +66,6 @@
                                   Content="{Binding CurrentViewModel}"
                                   ContentTemplateSelector="{StaticResource ViewLocatorSelector}" />
             </Grid>
-
-        </muxc:NavigationView.Content>
-
-    </muxc:NavigationView>
+        </NavigationView.Content>
+    </NavigationView>
 </Page>

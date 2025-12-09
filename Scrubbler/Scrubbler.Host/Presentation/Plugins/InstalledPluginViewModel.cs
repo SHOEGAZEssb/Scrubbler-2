@@ -1,17 +1,21 @@
 using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Plugin.Account;
+using Scrubbler.Host.Helper;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
 internal partial class InstalledPluginViewModel(IPlugin plugin) : ObservableObject
 {
+    #region Properties
+
     public event EventHandler<IPlugin>? UninstallRequested;
 
     public string Name => _plugin.Name;
     public string Description => _plugin.Description;
     public Version Version => _plugin.Version;
-    public IconSource? Icon => /*_plugin.Icon*/ null;
+    public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(_plugin);
+    private ImageSource? _icon;
 
     public string PluginType
     {
@@ -27,6 +31,8 @@ internal partial class InstalledPluginViewModel(IPlugin plugin) : ObservableObje
     }
 
     private readonly IPlugin _plugin = plugin;
+
+    #endregion Properties
 
     [RelayCommand]
     private void Uninstall()

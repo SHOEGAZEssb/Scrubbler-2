@@ -105,6 +105,7 @@ internal class PluginManager : IPluginManager
 
         var pluginName = plugin.Name;
         var pluginLocation = plugin.GetType().Assembly.Location;
+        PluginIconHelper.UnloadPluginIcon(plugin);
 
         // unload
         entry.Context.Unload();

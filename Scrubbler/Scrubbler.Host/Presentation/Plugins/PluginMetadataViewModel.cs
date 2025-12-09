@@ -9,9 +9,10 @@ internal class PluginMetadataViewModel : ObservableObject
 
     public string Name => _meta.Name;
     public string Description => _meta.Description;
-    public Version? Version => new Version(_meta.Version);
-    public IconSource? Icon => new ImageIconSource() { ImageSource = new BitmapImage(_meta.IconUri)};
-    public string PluginType => _meta.PluginType; // or computed similarly
+    public Version? Version => new(_meta.Version);
+    public ImageSource? Icon => _icon ??= new BitmapImage(_meta.IconUri);
+    private ImageSource? _icon;
+    public string PluginType => _meta.PluginType;
 
     public ICommand InstallCommand { get; }
 
