@@ -89,7 +89,7 @@ jobs:
 
               # copy icons
               if [ -f "$dir/icon.png" ]; then
-                cp "$dir/icon.png" "artifacts/zips/${pluginName}.icon"
+                cp "$dir/icon.png" "artifacts/zips/${pluginName}.png"
                 echo "Copied icon for $pluginName"
               else
                 echo "No icon.png for $pluginName"
@@ -97,8 +97,6 @@ jobs:
 
             fi
           done
-
-
 
       - name: Generate plugins.json
         run: dotnet run --project PluginMetadataGenerator ../artifacts/zips ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
