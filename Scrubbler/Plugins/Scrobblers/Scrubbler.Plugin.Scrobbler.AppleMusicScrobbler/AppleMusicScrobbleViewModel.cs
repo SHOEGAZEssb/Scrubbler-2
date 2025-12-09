@@ -83,7 +83,7 @@ public partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILo
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error connecting to Apple Music: {ex.Message}");
+            _logger.Error($"Error connecting to Apple Music: {ex.Message}");
             IsConnected = false;
         }
         finally
@@ -178,7 +178,7 @@ public partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILo
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error while getting Apple Music info: {ex.Message}");
+            _logger.Error($"Error while getting Apple Music info: {ex.Message}");
             _ = Disconnect();
         }
     }

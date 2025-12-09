@@ -86,6 +86,8 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
     private readonly ApiKeyStorage _apiKeyStorage;
     private ILastfmClient? _lastfmClient;
     private readonly ILinkOpenerService _linkOpener;
+    private const string LASTFMMUSICBASEURL = "https://www.last.fm/music/";
+    private const string LASTFMTAGBASEURL = "https://www.last.fm/tag/";
 
     #endregion Properties
 
@@ -366,24 +368,25 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
         return response.IsSuccess ? null : (response.ErrorMessage ?? "Unknown error");
     }
 
-    public void OpenArtistLink(string artistName)
+    public async Task OpenArtistLink(string artistName)
     {
-        throw new NotImplementedException();
+        await _linkOpener.OpenLink($"LASTFMBASEURL{Uri.EscapeDataString(artistName)}");
     }
 
-    public void OpenAlbumLink(string albumName, string artistName)
+    public async Task OpenAlbumLink(string albumName, string artistName)
     {
-        throw new NotImplementedException();
+        await _linkOpener.OpenLink($"LASTFMBASEURL{Uri.EscapeDataString(artistName)}/{Uri.EscapeDataString(albumName)}");
     }
 
-    public void OpenTrackLink(string trackName, string artistName, string? albumName)
+    public async Task OpenTrackLink(string trackName, string artistName, string? albumName)
     {
-        throw new NotImplementedException();
+        string album = string.IsNullOrEmpty(albumName) ? "_" : albumName;
+        await _linkOpener.OpenLink($"LASTFMBASEURL{Uri.EscapeDataString(artistName)}/{Uri.EscapeDataString(album)}/{Uri.EscapeDataString(trackName)}");
     }
 
-    public void OpenTagLink(string tagName)
+    public async Task OpenTagLink(string tagName)
     {
-        throw new NotImplementedException();
+        await _linkOpener.OpenLink($"LASTFMBASEURL{Uri.EscapeDataString(tagName)}");
     }
 
     #endregion IAccountFunctions

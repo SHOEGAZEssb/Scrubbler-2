@@ -1,5 +1,7 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaPlayerScrobblerBase;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Plugin.Account;
@@ -20,12 +22,15 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     [ObservableProperty]
     private bool _autoConnect;
 
-    public ILogService Logger { get; set; } = logger;
+    public ObservableCollection<TagViewModel> CurrentTrackTags { get; } = [];
+
+    protected readonly ILogService _logger = logger;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanLoveTracks))]
     [NotifyPropertyChangedFor(nameof(CanFetchPlayCounts))]
     [NotifyPropertyChangedFor(nameof(CanFetchTags))]
+    [NotifyPropertyChangedFor(nameof(CanOpenLinks))]
     private AccountFunctionContainer? _functionContainer;
 
     private bool CanLoveTracks => FunctionContainer?.LoveTrackObject != null;
@@ -33,6 +38,8 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     public bool CanFetchPlayCounts => FunctionContainer?.FetchPlayCountsObject != null;
 
     public bool CanFetchTags => FunctionContainer?.FetchTagsObject != null;
+
+    public bool CanOpenLinks => FunctionContainer?.OpenLinksObject != null;
 
     public ICanUpdateNowPlaying? UpdateNowPlayingObject { get; set; }
 
@@ -123,7 +130,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
         if (AutoConnect)
         {
-            Logger.Info("Auto-connect is enabled. Attempting to connect...");
+            _logger.Info("Auto-connect is enabled. Attempting to connect...");
             _ = Connect();
         }
     }
@@ -150,6 +157,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         OnPropertyChanged(nameof(CurrentTrackLengthToScrobble));
         _ = UpdateNowPlaying();
         _ = UpdatePlayCounts();
+        _ = UpdateTags();
         _ = UpdateLovedInfo();
         _ = FetchAlbumArtwork();
     }
@@ -163,6 +171,12 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         CurrentAlbumArtwork = null;
         CountedSeconds = 0;
         CurrentTrackScrobbled = false;
+        // clear old tags
+        foreach (var vm in CurrentTrackTags)
+        {
+            vm.OpenLinkRequested -= Tag_OpenLinkRequested;
+        }
+        CurrentTrackTags.Clear();
         UpdateCurrentTrackInfo();
     }
 
@@ -173,18 +187,18 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
         try
         {
-            Logger.Debug("Updating Now Playing...");
+            _logger.Debug("Updating Now Playing...");
             var errorMessage = await UpdateNowPlayingObject.UpdateNowPlaying(CurrentArtistName, CurrentTrackName, CurrentAlbumName);
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                Logger.Error($"Error updating Now Playing: {errorMessage}");
+                _logger.Error($"Error updating Now Playing: {errorMessage}");
                 return;
             }
-            Logger.Debug("Now Playing updated successfully.");
+            _logger.Debug("Now Playing updated successfully.");
         }
         catch (Exception ex)
         {
-            Logger.Error("Error updating Now Playing.", ex);
+            _logger.Error("Error updating Now Playing.", ex);
         }
     }
 
@@ -195,44 +209,88 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
         try
         {
-            Logger.Debug("Updating play counts...");
+            _logger.Debug("Updating play counts...");
             var (artistError, artistPlayCount) = await FunctionContainer!.FetchPlayCountsObject!.GetArtistPlayCount(CurrentArtistName);
             if (!string.IsNullOrEmpty(artistError))
             {
-                Logger.Error($"Error fetching artist play count: {artistError}");
+                _logger.Error($"Error fetching artist play count: {artistError}");
             }
             else
             {
                 CurrentArtistPlayCount = artistPlayCount;
-                Logger.Debug($"Updated artist play count: {CurrentArtistPlayCount}");
+                _logger.Debug($"Updated artist play count: {CurrentArtistPlayCount}");
             }
             var (trackError, trackPlayCount) = await FunctionContainer!.FetchPlayCountsObject.GetTrackPlayCount(CurrentArtistName, CurrentTrackName);
             if (!string.IsNullOrEmpty(trackError))
             {
-                Logger.Error($"Error fetching track play count: {trackError}");
+                _logger.Error($"Error fetching track play count: {trackError}");
             }
             else
             {
                 CurrentTrackPlayCount = trackPlayCount;
-                Logger.Debug($"Updated track play count: {CurrentTrackPlayCount}");
+                _logger.Debug($"Updated track play count: {CurrentTrackPlayCount}");
             }
             var (albumError, albumPlayCount) = await FunctionContainer!.FetchPlayCountsObject.GetAlbumPlayCount(CurrentArtistName, CurrentAlbumName);
             if (!string.IsNullOrEmpty(albumError))
             {
-                Logger.Error($"Error fetching album play count: {albumError}");
+                _logger.Error($"Error fetching album play count: {albumError}");
             }
             else
             {
                 CurrentAlbumPlayCount = albumPlayCount;
-                Logger.Debug($"Updated album play count: {CurrentAlbumPlayCount}");
+                _logger.Debug($"Updated album play count: {CurrentAlbumPlayCount}");
             }
         }
         catch (Exception ex)
         {
-            Logger.Error("Error updating play counts.", ex);
+            _logger.Error("Error updating play counts.", ex);
         }
     }
 
+    private async Task UpdateTags()
+    {
+        if (!CanFetchTags || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName))
+            return;
+        try
+        {
+            _logger.Debug("Updating tags...");
+            var (errorMessage, tags) = await FunctionContainer!.FetchTagsObject!.GetTrackTags(CurrentArtistName, CurrentTrackName);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                _logger.Error($"Error fetching tags: {errorMessage}");
+                return;
+            }
+
+            foreach (var tag in tags)
+            {
+                var vm = new TagViewModel(tag);
+                vm.OpenLinkRequested += Tag_OpenLinkRequested;
+                CurrentTrackTags.Add(vm);
+            }
+            _logger.Debug("Updated tags successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Error updating tags.", ex);
+        }
+    }
+
+    private async void Tag_OpenLinkRequested(object? sender, string e)
+    {
+        if (!CanOpenLinks)
+            return;
+
+        try
+        {
+            _logger.Debug($"Opening tag link for {e}...");
+            await FunctionContainer!.OpenLinksObject!.OpenTagLink(e);
+            _logger.Debug("Opened tag link successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Error opening tag link.", ex);
+        }
+    }
     private async Task UpdateLovedInfo()
     {
         if (!CanLoveTracks || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
@@ -240,20 +298,20 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
         try
         {
-            Logger.Debug("Updating loved info...");
+            _logger.Debug("Updating loved info...");
             var (errorMessage, isLoved) = await FunctionContainer!.LoveTrackObject!.GetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName);
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                Logger.Error($"Error fetching loved info: {errorMessage}");
+                _logger.Error($"Error fetching loved info: {errorMessage}");
                 return;
             }
 
             CurrentTrackLoved = isLoved;
-            Logger.Debug($"Updated loved info: {CurrentTrackLoved}");
+            _logger.Debug($"Updated loved info: {CurrentTrackLoved}");
         }
         catch (Exception ex)
         {
-            Logger.Error("Error updating loved info.", ex);
+            _logger.Error("Error updating loved info.", ex);
         }
     }
 
@@ -265,20 +323,73 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
 
         try
         {
-            Logger.Info($"Setting loved state to {!CurrentTrackLoved}...");
+            _logger.Info($"Setting loved state to {!CurrentTrackLoved}...");
             var errorMessage = await FunctionContainer!.LoveTrackObject!.SetLoveState(CurrentArtistName, CurrentTrackName, CurrentAlbumName, !CurrentTrackLoved);
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                Logger.Error($"Error setting loved state: {errorMessage}");
+                _logger.Error($"Error setting loved state: {errorMessage}");
                 return;
             }
 
             CurrentTrackLoved = !CurrentTrackLoved;
-            Logger.Info($"Set loved state successfully: {CurrentTrackLoved}");
+            _logger.Info($"Set loved state successfully: {CurrentTrackLoved}");
         }
         catch (Exception ex)
         {
-            Logger.Error("Error setting loved state.", ex);
+            _logger.Error("Error setting loved state.", ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ArtistClicked()
+    {
+        if (!CanOpenLinks || string.IsNullOrEmpty(CurrentArtistName))
+            return;
+
+        try
+        {
+            _logger.Debug($"Opening artist link for {CurrentArtistName}...");
+            await FunctionContainer!.OpenLinksObject!.OpenArtistLink(CurrentArtistName);
+            _logger.Debug("Opened artist link successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Error opening artist link.", ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task AlbumClicked()
+    {
+        if (!CanOpenLinks || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
+            return;
+
+        try
+        {
+            _logger.Debug($"Opening album link for {CurrentAlbumName} by {CurrentArtistName}...");
+            await FunctionContainer!.OpenLinksObject!.OpenAlbumLink(CurrentArtistName, CurrentAlbumName);
+            _logger.Debug("Opened album link successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Error opening album link.", ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task TrackClicked()
+    {
+        if (!CanOpenLinks || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentTrackName))
+            return;
+        try
+        {
+            _logger.Debug($"Opening track link for {CurrentTrackName} by {CurrentArtistName}...");
+            await FunctionContainer!.OpenLinksObject!.OpenTrackLink(CurrentArtistName, CurrentAlbumName, CurrentTrackName);
+            _logger.Debug("Opened track link successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Error opening track link.", ex);
         }
     }
 
@@ -286,7 +397,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     {
         if (string.IsNullOrEmpty(CurrentAlbumName) || string.IsNullOrEmpty(CurrentArtistName))
         {
-            Logger.Debug("Cannot fetch album artwork: Album name or artist name is empty.");
+            _logger.Debug("Cannot fetch album artwork: Album name or artist name is empty.");
             CurrentAlbumArtwork = null;
             return;
         }
@@ -295,18 +406,18 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         if (response.IsSuccess && response.Data != null)
         {
             CurrentAlbumArtwork = response.Data.Images.Values.LastOrDefault();
-            Logger.Debug("Fetched album artwork successfully.");
+            _logger.Debug("Fetched album artwork successfully.");
         }
         else
         {
             CurrentAlbumArtwork = null;
-            Logger.Debug($"Failed to fetch album artwork: {response.ErrorMessage}");
+            _logger.Debug($"Failed to fetch album artwork: {response.ErrorMessage}");
         }
     }
 
     protected void OnScrobblesDetected(IEnumerable<ScrobbleData> scrobbles)
     {
-        Logger.Info($"Detected {scrobbles.Count()} scrobble(s).");
+        _logger.Info($"Detected {scrobbles.Count()} scrobble(s).");
         ScrobblesDetected?.Invoke(this, scrobbles);
     }
 }

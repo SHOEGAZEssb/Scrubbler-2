@@ -10,6 +10,8 @@ public class AccountFunctionContainer
 
     public ICanUpdateNowPlaying? UpdateNowPlayingObject { get; }
 
+    public ICanOpenLinks? OpenLinksObject { get; }
+
     public AccountFunctionContainer(IAccountPlugin? plugin)
     {
         if (plugin is ICanFetchPlayCounts fetchPlayCounts)
@@ -20,5 +22,7 @@ public class AccountFunctionContainer
             FetchTagsObject = fetchTags;
         if (plugin is ICanUpdateNowPlaying updateNowPlaying)
             UpdateNowPlayingObject = updateNowPlaying;
+        if (plugin is ICanOpenLinks openLinks)
+            OpenLinksObject = openLinks;
     }
 }

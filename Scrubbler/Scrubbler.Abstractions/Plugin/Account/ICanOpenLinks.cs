@@ -2,8 +2,8 @@ namespace Scrubbler.Abstractions.Plugin.Account;
 
 public interface ICanOpenLinks
 {
-    void OpenArtistLink(string artistName);
-    void OpenAlbumLink(string albumName, string artistName);
-    void OpenTrackLink(string trackName, string artistName, string? albumName);
-    void OpenTagLink(string tagName);
+    Task OpenArtistLink(string artistName);
+    Task OpenAlbumLink(string albumName, string artistName);
+    Task OpenTrackLink(string trackName, string artistName, string? albumName);
+    Task OpenTagLink(string tagName);
 }
