@@ -12,27 +12,19 @@ namespace Scrubbler.Plugin.Accounts.LastFm;
 /// A plugin that connects to a Last.fm account using session keys.
 /// Implements IAccountPlugin so authentication persists between runs.
 /// </summary>
-public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying, ICanOpenLinks
+[PluginMetadata(
+    Name = "Last.fm",
+    Description = "Scrobble to a Last.fm account",
+    SupportedPlatforms = PlatformSupport.All)]
+public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimit, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying, ICanOpenLinks
 {
     #region Properties
 
-    #region IPlugin
-
-    public string Name => "Last.fm";
-
-    public string Description => "Scrobble to a last.fm account";
-    public Version Version => typeof(LastFmAccountPlugin).Assembly.GetName().Version!;
-
-    public PlatformSupport SupportedPlatforms => PlatformSupport.All;
-
     public string? Username => _secureStore.GetAsync(AccountIdKey).GetAwaiter().GetResult() ?? null;
 
-    private readonly ILogService _logService;
     private readonly ISecureStore _secureStore;
     private readonly ISettingsStore _settingsStore;
     private PluginSettings _settings = new();
-
-    #endregion IPlugin
 
     /// <summary>
     /// Gets a value indicating whether the user is currently authenticated with Last.fm.
@@ -104,9 +96,8 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
     /// Initializes storage services for secure data (session keys) and settings.
     /// </remarks>
     public LastFmAccountPlugin(ILinkOpenerService linkOpener, IModuleLogServiceFactory logFactory)
+        : base(logFactory)
     {
-        _logService = logFactory.Create(Name);
-
         var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
         _apiKeyStorage = new ApiKeyStorage(PluginDefaults.ApiKey, PluginDefaults.ApiSecret, Path.Combine(pluginDir, "environment.env"));
         _secureStore = new FileSecureStore(Path.Combine(pluginDir, "settings.dat"), Name);
@@ -204,7 +195,7 @@ public class LastFmAccountPlugin : IAccountPlugin, IHaveScrobbleLimit, ICanLoveT
     /// </summary>
     /// <returns>A new instance of <see cref="IPluginViewModel"/> for this plugin.</returns>
     /// <exception cref="NotImplementedException">This method is not yet implemented.</exception>
-    public IPluginViewModel GetViewModel()
+    public override IPluginViewModel GetViewModel()
     {
         throw new NotImplementedException();
     }

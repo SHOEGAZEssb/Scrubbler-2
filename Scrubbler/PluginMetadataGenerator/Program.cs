@@ -71,12 +71,6 @@ class Program
 
                 foreach (var type in pluginTypes)
                 {
-                    if (Activator.CreateInstance(type) is not IPlugin plugin)
-                    {
-                        Console.WriteLine($"Skipping {zipFile}:{type.Name} → could not instantiate");
-                        continue;
-                    }
-
                     var id = type.FullName?.ToLowerInvariant() ?? Path.GetFileNameWithoutExtension(dll).ToLowerInvariant();
                     var rawVersion = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
                                      ?? asm.GetName().Version?.ToString()
@@ -88,24 +82,29 @@ class Program
                     // resolve type label dynamically
                     var pluginTypeLabel = ResolvePluginType(type);
 
+                    var meta = type.GetCustomAttribute<PluginMetadataAttribute>();
+                    if (meta == null)
+                        throw new InvalidOperationException($"Plugin {type.FullName} has no PluginMetadata attribute");
+
                     var entry = new PluginManifestEntry(
                         Id: id,
-                        Name: plugin.Name,
+                        Name: meta.Name,
                         Version: version,
-                        Description: plugin.Description,
+                        Description: meta.Description,
                         IconUri: new Uri($"{baseUrl}/plugins/{Path.GetFileNameWithoutExtension(zipFile) + ".png"}"),
                         PluginType: pluginTypeLabel,
-                        SupportedPlatforms: plugin.SupportedPlatforms.ToString().Split(", "),
+                        SupportedPlatforms: meta.SupportedPlatforms.ToString().Split(", "),
                         SourceUri: new Uri($"{baseUrl}/plugins/{Path.GetFileName(zipFile)}")
                     );
 
                     entries.Add(entry);
-                    Console.WriteLine($"Added {plugin.Name} v{version} ({pluginTypeLabel})");
+                    Console.WriteLine($"Added {meta.Name} v{version} ({pluginTypeLabel})");
                 }
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"Failed to inspect {zipFile}: {ex.Message}");
+                throw;
             }
             finally
             {

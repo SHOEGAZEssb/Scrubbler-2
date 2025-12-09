@@ -7,34 +7,17 @@ using Shoegaze.LastFM;
 
 namespace Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler;
 
-public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, IAcceptAccountFunctions
+[PluginMetadata(
+    Name = "Apple Music Scrobbler",
+    Description = "Automatically scrobble tracks playing in the Apple Music desktop app",
+    SupportedPlatforms = PlatformSupport.Windows)]
+public class AppleMusicScrobblePlugin : PluginBase, IAutoScrobblePlugin, IPersistentPlugin, IAcceptAccountFunctions
 {
     #region Properties
-
-    /// <summary>
-    /// Gets the display name of the plugin.
-    /// </summary>
-    public string Name => "Apple Music Scrobbler";
-
-    /// <summary>
-    /// Gets a description of what the plugin does.
-    /// </summary>
-    public string Description => "Automatically scrobble tracks playing in the Apple Music desktop app";
-
-    /// <summary>
-    /// Gets the version of the plugin.
-    /// </summary>
-    public Version Version => typeof(AppleMusicScrobblePlugin).Assembly.GetName().Version!;
-
-    /// <summary>
-    /// Gets the platforms this plugin supports.
-    /// </summary>
-    public PlatformSupport SupportedPlatforms => PlatformSupport.Windows;
 
     private readonly ApiKeyStorage _apiKeyStorage;
     private readonly AppleMusicScrobbleViewModel _vm;
     private readonly ISettingsStore _settingsStore;
-    private readonly ILogService _logService;
     private PluginSettings _settings = new();
 
     #endregion Properties
@@ -43,9 +26,8 @@ public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, 
     /// Initializes a new instance of the <see cref="ManualScrobblePlugin"/> class.
     /// </summary>
     public AppleMusicScrobblePlugin(IModuleLogServiceFactory logFactory)
+        : base(logFactory)
     {
-        _logService = logFactory.Create(Name);
-
         var pluginDir = Path.GetDirectoryName(GetType().Assembly.Location)!;
         _apiKeyStorage = new ApiKeyStorage(PluginDefaults.ApiKey, PluginDefaults.ApiSecret, Path.Combine(pluginDir, "environment.env"));
         _settingsStore = new JsonSettingsStore(Path.Combine(pluginDir, "settings.json"));
@@ -56,7 +38,7 @@ public class AppleMusicScrobblePlugin : IAutoScrobblePlugin, IPersistentPlugin, 
     /// Gets the view model instance for this plugin's UI.
     /// </summary>
     /// <returns>The <see cref="IPluginViewModel"/> instance for this plugin.</returns>
-    public IPluginViewModel GetViewModel()
+    public override IPluginViewModel GetViewModel()
     {
         return _vm;
     }
