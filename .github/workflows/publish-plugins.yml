@@ -153,21 +153,27 @@ jobs:
       # ============================================================
       - name: Generate plugins.json
         working-directory: Scrubbler
+        shell: pwsh
         run: |
-          echo "==== BEFORE METADATA GENERATION ===="
-          echo "Artifacts/zips:"
-          ls artifacts/zips || true
+          Write-Host "==== BEFORE METADATA GENERATION ===="
+          Write-Host "Artifacts/zips:"
+          Get-ChildItem artifacts/zips
 
-          ZIP_DIR="artifacts/zips"
-          JSON_PATH="artifacts/plugins.json"
+          # Correct PowerShell variable assignment
+          $ZIP_DIR = "artifacts/zips"
+          $JSON_PATH = "artifacts/plugins.json"
 
-          echo "ZIP_DIR → $(realpath "$ZIP_DIR")"
-          echo "JSON_PATH → $JSON_PATH"
+          Write-Host "ZIP_DIR → $(Resolve-Path $ZIP_DIR)"
+          Write-Host "JSON_PATH → $JSON_PATH"
 
-          dotnet run --project PluginMetadataGenerator "$ZIP_DIR" "$JSON_PATH" "https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main"
+          Write-Host "Running metadata generator..."
+          dotnet run --project PluginMetadataGenerator $ZIP_DIR $JSON_PATH "https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main"
 
-          echo "==== GENERATED plugins.json ===="
-          cat "$JSON_PATH"
+          Write-Host "==== CONTENT OF GENERATED plugins.json ===="
+          Get-Content $JSON_PATH
+        env:
+          DOTNET_ROOT: C:\Program Files\dotnet
+
 
       # ============================================================
       # Checkout distribution repo
