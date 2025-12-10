@@ -41,7 +41,10 @@ class Program
 
         var zips = Directory.GetFiles(zipDir, "Scrubbler.Plugin.*.zip");
         if (zips.Length == 0)
+        {
             Console.Error.WriteLine($"No plugin zips found in {zipDir}");
+            throw new InvalidOperationException();
+        }
         else Console.WriteLine($"Found {zips.Length} plugin zips in {zipDir}");
 
         var entries = new List<PluginManifestEntry>();

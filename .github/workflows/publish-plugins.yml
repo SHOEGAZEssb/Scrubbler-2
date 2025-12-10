@@ -35,11 +35,11 @@ jobs:
           dotnet-version: 10.0.x
 
       # ============================================================
-      # Restore solution (Scrubbler.sln)
+      # Restore solution
       # ============================================================
       - name: Restore solution
-        run: dotnet restore Scrubbler.sln
         working-directory: Scrubbler
+        run: dotnet restore Scrubbler.sln
 
       # ============================================================
       # Inject secrets into PluginDefaults.cs
@@ -67,18 +67,19 @@ jobs:
       # ============================================================
       - name: Build plugins
         shell: bash
+        working-directory: Scrubbler
         run: |
           mkdir -p ../artifacts/plugins
+
           for proj in $(find Plugins -name 'Scrubbler.Plugin*.csproj' ! -name 'Scrubbler.Plugin.Accounts.Mock.csproj'); do
             echo "Building $proj"
             outdir="../artifacts/plugins/$(basename "$proj" .csproj)"
             mkdir -p "$outdir"
             dotnet build "$proj" -c Release -o "$outdir"
           done
-        working-directory: Scrubbler
 
       # ============================================================
-      # Package plugins using hash change detection
+      # Package plugins — ALWAYS create zip, use hash only for sync
       # ============================================================
       - name: Package plugins
         shell: pwsh
@@ -86,7 +87,6 @@ jobs:
           New-Item -ItemType Directory -Path "artifacts/zips" -Force | Out-Null
           New-Item -ItemType Directory -Path "artifacts/hashes" -Force | Out-Null
 
-          # load shared exclusion patterns
           $shared = Get-Content "Scrubbler/shared-assemblies.txt" -ErrorAction SilentlyContinue
 
           function Get-FolderHash($path) {
@@ -94,9 +94,9 @@ jobs:
             $hashInput = foreach ($f in $files) {
               (Get-FileHash -Algorithm SHA256 $f.FullName).Hash + $f.FullName
             }
-            return (Get-FileHash -InputStream ([IO.MemoryStream]::new(
-              [Text.Encoding]::UTF8.GetBytes(($hashInput -join ""))
-            )) -Algorithm SHA256).Hash
+            return (Get-FileHash -Algorithm SHA256 -InputStream (
+              [IO.MemoryStream]::new([Text.Encoding]::UTF8.GetBytes(($hashInput -join "")))
+            )).Hash
           }
 
           foreach ($dir in Get-ChildItem "artifacts/plugins" -Directory) {
@@ -107,26 +107,27 @@ jobs:
             $hashFile = "artifacts/hashes/$name.hash"
             $previousHash = if (Test-Path $hashFile) { Get-Content $hashFile } else { "" }
 
-            if ($hash -eq $previousHash) {
-              Write-Host "Skipping $name — no content change."
-              continue
-            }
+            # Always create a zip (workspace does not persist)
+            $zipPath = "artifacts/zips/$name.zip"
 
-            Write-Host "Packaging $name — content changed."
-            Set-Content -Path $hashFile -Value $hash
-
-            # exclusions for 7z
-            $excludeArgs = $shared | ForEach-Object { "-x!$_" }
-
+            Write-Host "Creating zip for $name"
             Push-Location $folder
-            7z a "../../artifacts/zips/$name.zip" . $excludeArgs
+            $excludeArgs = $shared | ForEach-Object { "-x!$_" }
+            7z a "../zips/$name.zip" . $excludeArgs
             Pop-Location
 
-            # copy icon if exists
+            # Update hash file only if changed
+            if ($hash -ne $previousHash) {
+              Write-Host "$name content changed — updating hash."
+              Set-Content -Path $hashFile -Value $hash
+            } else {
+              Write-Host "$name unchanged — hash unchanged."
+            }
+
+            # Copy icon if exists
             $icon = Join-Path $folder "icon.png"
             if (Test-Path $icon) {
               Copy-Item $icon "artifacts/zips/$name.png"
-              Write-Host "Copied icon for $name"
             }
           }
 
@@ -134,8 +135,8 @@ jobs:
       # Generate plugins.json
       # ============================================================
       - name: Generate plugins.json
-        run: dotnet run --project PluginMetadataGenerator ../artifacts/zips ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
         working-directory: Scrubbler
+        run: dotnet run --project PluginMetadataGenerator ../artifacts/zips ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
 
       # ============================================================
       # Checkout Scrubbler-Plugins (distribution repo)
@@ -148,7 +149,7 @@ jobs:
           path: out
 
       # ============================================================
-      # Sync updated plugin files into Scrubbler-Plugins repo
+      # Sync only updated zips/icons/hashes
       # ============================================================
       - name: Sync plugins + manifest
         shell: pwsh
@@ -170,27 +171,26 @@ jobs:
             if ($hashA -ne $hashB) {
               Copy-Item $src $dst
               Write-Host "Updated: $(Split-Path $dst -Leaf)"
-            }
-            else {
+            } else {
               Write-Host "No change: $(Split-Path $dst -Leaf)"
             }
           }
 
-          # copy all plugin zips + icons
+          # Copy zips and icons
           Get-ChildItem artifacts/zips/* | ForEach-Object {
             Copy-IfChanged $_.FullName ("out/plugins/" + $_.Name)
           }
 
-          # copy hash files
+          # Copy hashes
           Get-ChildItem artifacts/hashes/* | ForEach-Object {
             Copy-IfChanged $_.FullName ("out/hashes/" + $_.Name)
           }
 
-          # copy manifest
+          # Copy plugins.json
           Copy-IfChanged "artifacts/plugins.json" "out/plugins.json"
 
       # ============================================================
-      # Commit & push changes to Scrubbler-Plugins
+      # Commit & push changes to distribution repo
       # ============================================================
       - name: Commit and push
         working-directory: out
