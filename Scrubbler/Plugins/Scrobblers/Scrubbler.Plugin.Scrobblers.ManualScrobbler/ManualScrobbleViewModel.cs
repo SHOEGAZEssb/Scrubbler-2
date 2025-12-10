@@ -44,7 +44,7 @@ public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
         {
             return await Task.Run(() =>
             {
-                return new[] { new ScrobbleData(TrackName, ArtistName, PlayedAt.Date, PlayedAtTime) };
+                return new[] { new ScrobbleData(TrackName, ArtistName, PlayedAt.Date, PlayedAtTime) { Album = AlbumName, AlbumArtist = AlbumArtistName} };
             });
         }
         finally
