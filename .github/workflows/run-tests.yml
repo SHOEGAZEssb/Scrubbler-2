@@ -19,7 +19,7 @@ jobs:
         with:
           dotnet-version: |
             10.0.x
-          cache: true
+          cache: false # can be enabled in the future when packages.lock.json files are added
 
       - name: Discover test projects
         id: discover
