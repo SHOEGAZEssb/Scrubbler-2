@@ -3,11 +3,18 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Scrubbler.Host.Presentation.Accounts"
+    xmlns:beh="using:Microsoft.Xaml.Interactivity"
+    xmlns:actions="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:acc="using:Scrubbler.Abstractions.Plugin.Account"
     xmlns:utu="using:Uno.Toolkit.UI">
 
     <ScrollViewer Padding="12">
-        <ItemsControl ItemsSource="{Binding Accounts}">
-            <ItemsControl.ItemTemplate>
+        <ItemsRepeater ItemsSource="{Binding Accounts}">
+            <ItemsRepeater.Layout>
+                <FlowLayout Orientation="Horizontal"/>
+            </ItemsRepeater.Layout>
+
+            <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="local:AccountPluginViewModel">
                     <utu:CardContentControl Style="{StaticResource ElevatedCardContentControlStyle}">
                         <utu:CardContentControl.ContentTemplate>
@@ -31,8 +38,10 @@
                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                                             <CheckBox Content="Scrobble" HorizontalAlignment="Center" IsEnabled="{x:Bind IsAuthenticated, Mode=OneWay}"
                                                   IsChecked="{x:Bind IsScrobblingEnabled, Mode=TwoWay}"/>
-                                            <CheckBox Content="Use Account Functions" HorizontalAlignment="Center" IsChecked="{x:Bind IsUsingAccountFunctions, Mode=TwoWay}"/>
-                                            <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+                                            <CheckBox Content="Use Account Functions" HorizontalAlignment="Center" IsChecked="{x:Bind IsUsingAccountFunctions, Mode=TwoWay}"
+                                                      Visibility="{Binding HasAccountFunctions, Converter={StaticResource BoolToVis}}"/>
+                                            <StackPanel x:Name="ScrobbleLimitPanel" Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center"
+                                                        Visibility="{Binding HasScrobbleLimit, Converter={StaticResource BoolToVis}}">
                                                 <TextBlock Text="Scrobble Limit:"/>
                                                 <TextBlock Text="{x:Bind CurrentScrobbleCount}"/>
                                                 <TextBlock Text=" / "/>
@@ -62,7 +71,7 @@
                         </utu:CardContentControl.ContentTemplate>
                     </utu:CardContentControl>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
     </ScrollViewer>
 </UserControl>

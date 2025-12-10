@@ -1,6 +1,6 @@
 namespace Scrubbler.Abstractions.Plugin.Account;
 
-public interface ICanFetchPlayCounts
+public interface ICanFetchPlayCounts : IHaveAccountFunctions
 {
     Task<(string? errorMessage, int playCount)> GetArtistPlayCount(string artistName);
 

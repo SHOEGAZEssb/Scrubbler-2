@@ -1,6 +1,6 @@
 namespace Scrubbler.Abstractions.Plugin.Account;
 
-public interface ICanLoveTracks
+public interface ICanLoveTracks : IHaveAccountFunctions
 {
     Task<string?> SetLoveState(string artistName, string trackName, string? albumName, bool isLoved);
 

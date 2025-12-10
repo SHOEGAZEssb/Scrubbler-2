@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobbler.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayerScrobblerBase", "Plugins\Scrobblers\MediaPlayerScrobblerBase\MediaPlayerScrobblerBase.csproj", "{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Accounts.Mock", "Plugins\Accounts\Scrubbler.Plugin.Accounts.Mock\Scrubbler.Plugin.Accounts.Mock.csproj", "{41889419-4A78-467F-A0C1-2BA6B78F72C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41889419-4A78-467F-A0C1-2BA6B78F72C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41889419-4A78-467F-A0C1-2BA6B78F72C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41889419-4A78-467F-A0C1-2BA6B78F72C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41889419-4A78-467F-A0C1-2BA6B78F72C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +92,7 @@ Global
 		{90433E59-7004-4F98-9E05-BCB43F15DBF4} = {4536D109-4649-4376-B775-F791CE753B4A}
 		{55A31E75-80DC-4F90-B79A-9CDB6840133D} = {4536D109-4649-4376-B775-F791CE753B4A}
 		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3} = {4536D109-4649-4376-B775-F791CE753B4A}
+		{41889419-4A78-467F-A0C1-2BA6B78F72C5} = {FD46BF08-594F-4224-BD15-2DB872961D54}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB28EE7E-5D57-4092-8B8A-1EE7C97A6790}

@@ -1,6 +1,6 @@
 namespace Scrubbler.Abstractions.Plugin.Account;
 
-public interface ICanOpenLinks
+public interface ICanOpenLinks : IHaveAccountFunctions
 {
     Task OpenArtistLink(string artistName);
     Task OpenAlbumLink(string albumName, string artistName);

@@ -1,6 +1,6 @@
 namespace Scrubbler.Abstractions.Plugin.Account;
 
-public interface ICanFetchTags
+public interface ICanFetchTags : IHaveAccountFunctions
 {
     Task<(string? errorMessage, IEnumerable<string> tags)> GetArtistTags(string artistName);
 

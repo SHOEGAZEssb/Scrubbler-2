@@ -23,6 +23,10 @@ public partial class AccountPluginViewModel : ObservableObject
     public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(_plugin);
     private ImageSource? _icon;
 
+    public bool HasScrobbleLimit => _plugin is IHaveScrobbleLimit;
+
+    public bool HasAccountFunctions => _plugin is IHaveAccountFunctions;
+
     public bool IsScrobblingEnabled
     {
         get => _plugin.IsScrobblingEnabled;

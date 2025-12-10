@@ -56,9 +56,9 @@ jobs:
         shell: bash
         run: |
           mkdir -p ../artifacts/plugins
-          for proj in $(find Plugins -name 'Scrubbler.Plugin*.csproj'); do
+          for proj in $(find Plugins -name 'Scrubbler.Plugin*.csproj' ! -name 'Scrubbler.Plugin.Accounts.Mock.csproj'); do
             echo "Building $proj"
-            outdir="../artifacts/plugins/$(basename $proj .csproj)"
+            outdir="../artifacts/plugins/$(basename "$proj" .csproj)"
             mkdir -p "$outdir"
             dotnet build "$proj" -c Release -o "$outdir"
           done
