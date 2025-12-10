@@ -1,4 +1,4 @@
-<Project Sdk="Uno.Sdk">
+﻿<Project Sdk="Uno.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net10.0-windows</TargetFrameworks>
         <UnoSingleProject>true</UnoSingleProject>
@@ -30,11 +30,6 @@
         <Page Update="AppleMusicScrobbleView.xaml">
             <Generator>MSBuild:Compile</Generator>
         </Page>
-    </ItemGroup>
-    <ItemGroup>
-        <Content Update="Assets\noartistimage.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
     <ItemGroup>
       <Content Include="icon.png">

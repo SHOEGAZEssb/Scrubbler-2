@@ -250,7 +250,10 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     private async Task UpdateTags()
     {
         if (!CanFetchTags || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName))
+        {
+            _logger.Info("Cannot update tags: Missing account function or track/artist name is empty.");
             return;
+        }
         try
         {
             _logger.Debug("Updating tags...");
@@ -261,7 +264,8 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
                 return;
             }
 
-            foreach (var tag in tags)
+            // use only the first 5 tags
+            foreach (var tag in tags.Take(5))
             {
                 var vm = new TagViewModel(tag);
                 vm.OpenLinkRequested += Tag_OpenLinkRequested;
@@ -278,7 +282,10 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     private async void Tag_OpenLinkRequested(object? sender, string e)
     {
         if (!CanOpenLinks)
+        {
+            _logger.Info("Cannot open tag link: Missing account function.");
             return;
+        }
 
         try
         {
@@ -319,7 +326,10 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     private async Task ToggleLovedState()
     {
         if (!CanLoveTracks || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
+        {
+            _logger.Info("Cannot toggle loved state: Missing account function or track/artist/album name is empty.");
             return;
+        }
 
         try
         {
@@ -344,7 +354,10 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     private async Task ArtistClicked()
     {
         if (!CanOpenLinks || string.IsNullOrEmpty(CurrentArtistName))
+        {
+            _logger.Info("Cannot open artist link: Missing account function or artist name is empty.");
             return;
+        }
 
         try
         {
@@ -362,12 +375,15 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     private async Task AlbumClicked()
     {
         if (!CanOpenLinks || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
+        {
+            _logger.Info("Cannot open album link: Missing account function or artist/album name is empty.");
             return;
+        }
 
         try
         {
             _logger.Debug($"Opening album link for {CurrentAlbumName} by {CurrentArtistName}...");
-            await FunctionContainer!.OpenLinksObject!.OpenAlbumLink(CurrentArtistName, CurrentAlbumName);
+            await FunctionContainer!.OpenLinksObject!.OpenAlbumLink(CurrentAlbumName, CurrentArtistName);
             _logger.Debug("Opened album link successfully.");
         }
         catch (Exception ex)
@@ -380,11 +396,15 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     private async Task TrackClicked()
     {
         if (!CanOpenLinks || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentTrackName))
+        {
+            _logger.Info("Cannot open track link: Missing account function or artist/track name is empty.");
             return;
+        }
+
         try
         {
             _logger.Debug($"Opening track link for {CurrentTrackName} by {CurrentArtistName}...");
-            await FunctionContainer!.OpenLinksObject!.OpenTrackLink(CurrentArtistName, CurrentAlbumName, CurrentTrackName);
+            await FunctionContainer!.OpenLinksObject!.OpenTrackLink(CurrentTrackName, CurrentArtistName, CurrentAlbumName);
             _logger.Debug("Opened track link successfully.");
         }
         catch (Exception ex)

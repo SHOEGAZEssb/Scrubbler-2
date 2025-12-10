@@ -274,6 +274,9 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
 
     public async Task<string?> SetLoveState(string artistName, string trackName, string? albumName, bool isLoved)
     {
+        if (string.IsNullOrEmpty(artistName) || string.IsNullOrEmpty(trackName))
+            return "Invalid artist or track name";
+
         var response = await _lastfmClient!.Track.SetLoveState(artistName, trackName, isLoved);
         return response.IsSuccess ? null : (response.ErrorMessage ?? "Unknown error");
     }
@@ -306,6 +309,8 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
     {
         if (Username == null || !IsAuthenticated)
             return ("Not authenticated", 0);
+        if (string.IsNullOrEmpty(artistName) || string.IsNullOrEmpty(trackName))
+            return ("Invalid artist or track name", 0);
 
         var response = await _lastfmClient!.Track.GetInfoByNameAsync(trackName, artistName, Username);
         if (response.IsSuccess && response.Data != null)
@@ -318,6 +323,8 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
     {
         if (Username == null || !IsAuthenticated)
             return ("Not authenticated", 0);
+        if (string.IsNullOrEmpty(artistName) || string.IsNullOrEmpty(albumName))
+            return ("Invalid artist or album name", 0);
 
         var response = await _lastfmClient!.Album.GetInfoByNameAsync(albumName, artistName, Username);
         if (response.IsSuccess && response.Data != null)
@@ -328,6 +335,9 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
 
     public async Task<(string? errorMessage, IEnumerable<string> tags)> GetArtistTags(string artistName)
     {
+        if (string.IsNullOrEmpty(artistName))
+            return ("Invalid artist name", []);
+
         var response = await _lastfmClient!.Artist.GetTopTagsByNameAsync(artistName);
         if (response.IsSuccess && response.Data != null)
         {
@@ -340,7 +350,10 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
 
     public async Task<(string? errorMessage, IEnumerable<string> tags)> GetTrackTags(string artistName, string trackName)
     {
-        var response = await _lastfmClient!.Track.GetTopTagsByNameAsync(artistName, trackName);
+        if (string.IsNullOrEmpty(artistName) || string.IsNullOrEmpty(trackName))
+            return ("Invalid artist or track name", []);
+
+        var response = await _lastfmClient!.Track.GetTopTagsByNameAsync(trackName, artistName);
         if (response.IsSuccess && response.Data != null)
         {
             var tags = response.Data.Select(t => t.Name);
@@ -352,7 +365,10 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
 
     public async Task<(string? errorMessage, IEnumerable<string> tags)> GetAlbumTags(string artistName, string albumName)
     {
-        var response = await _lastfmClient!.Album.GetTopTagsByNameAsync(artistName, albumName);
+        if (string.IsNullOrEmpty(artistName) || string.IsNullOrEmpty(albumName))
+            return ("Invalid artist or album name", []);
+
+        var response = await _lastfmClient!.Album.GetTopTagsByNameAsync(albumName, artistName);
         if (response.IsSuccess && response.Data != null)
         {
             var tags = response.Data.Select(t => t.Name);
@@ -364,29 +380,46 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
 
     public async Task<string?> UpdateNowPlaying(string artistName, string trackName, string? albumName)
     {
-        var response = await _lastfmClient!.Track.UpdateNowPlayingAsync(artistName, trackName, albumName);
+        if (!IsAuthenticated)
+            return "Not authenticated";
+        if (string.IsNullOrEmpty(artistName) || string.IsNullOrEmpty(trackName))
+            return "Invalid artist or track name";
+
+        var response = await _lastfmClient!.Track.UpdateNowPlayingAsync(trackName, artistName, albumName);
         return response.IsSuccess ? null : (response.ErrorMessage ?? "Unknown error");
     }
 
     public async Task OpenArtistLink(string artistName)
     {
-        await _linkOpener.OpenLink($"LASTFMBASEURL{Uri.EscapeDataString(artistName)}");
+        if (string.IsNullOrEmpty(artistName))
+            return;
+
+        await _linkOpener.OpenLink($"{LASTFMMUSICBASEURL}{Uri.EscapeDataString(artistName)}");
     }
 
     public async Task OpenAlbumLink(string albumName, string artistName)
     {
-        await _linkOpener.OpenLink($"LASTFMBASEURL{Uri.EscapeDataString(artistName)}/{Uri.EscapeDataString(albumName)}");
+        if (string.IsNullOrEmpty(artistName) || string.IsNullOrEmpty(albumName))
+            return;
+
+        await _linkOpener.OpenLink($"{LASTFMMUSICBASEURL}{Uri.EscapeDataString(artistName)}/{Uri.EscapeDataString(albumName)}");
     }
 
     public async Task OpenTrackLink(string trackName, string artistName, string? albumName)
     {
+        if (string.IsNullOrEmpty(artistName) || string.IsNullOrEmpty(trackName))
+            return;
+
         string album = string.IsNullOrEmpty(albumName) ? "_" : albumName;
-        await _linkOpener.OpenLink($"LASTFMBASEURL{Uri.EscapeDataString(artistName)}/{Uri.EscapeDataString(album)}/{Uri.EscapeDataString(trackName)}");
+        await _linkOpener.OpenLink($"{LASTFMMUSICBASEURL}{Uri.EscapeDataString(artistName)}/{Uri.EscapeDataString(album)}/{Uri.EscapeDataString(trackName)}");
     }
 
     public async Task OpenTagLink(string tagName)
     {
-        await _linkOpener.OpenLink($"LASTFMBASEURL{Uri.EscapeDataString(tagName)}");
+        if (string.IsNullOrEmpty(tagName))
+            return;
+
+        await _linkOpener.OpenLink($"{LASTFMTAGBASEURL}{Uri.EscapeDataString(tagName)}");
     }
 
     #endregion IAccountFunctions

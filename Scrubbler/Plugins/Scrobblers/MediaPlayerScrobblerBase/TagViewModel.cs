@@ -14,8 +14,8 @@ public partial class TagViewModel(string tagName) : ObservableObject
     #endregion Properties
 
     [RelayCommand]
-    private void Clicked(string tagName)
+    private void Clicked()
     {
-        OpenLinkRequested?.Invoke(this, tagName);
+        OpenLinkRequested?.Invoke(this, Name);
     }
 }
