@@ -22,9 +22,12 @@ jobs:
 
       - name: Restore
         run: dotnet restore Scrubbler.sln
+        working-directory: Scrubbler
 
       - name: Build
         run: dotnet build Scrubbler.sln --configuration Release --no-restore
+        working-directory: Scrubbler
 
       - name: Run Tests
         run: dotnet test Scrubbler.sln --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+        working-directory: Scrubbler
