@@ -115,7 +115,7 @@ jobs:
       - name: Sync plugins + manifest
         shell: pwsh
         run: |
-          mkdir -p out/plugins
+          New-Item -ItemType Directory -Path "out/plugins" -Force | Out-Null
 
           function Copy-IfChanged($src, $dst) {
             if (!(Test-Path $dst)) {
