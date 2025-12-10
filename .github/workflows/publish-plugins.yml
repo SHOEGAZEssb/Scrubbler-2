@@ -1,8 +1,10 @@
 name: Publish Plugins
 
 on:
+  # allow manual trigger
   workflow_dispatch:
 
+  # auto trigger on push to main if relevant files changed
   push:
     branches: [ main ]
     paths:
@@ -18,47 +20,24 @@ jobs:
       CI: true
 
     steps:
-      # ============================================================
-      # Checkout Scrubbler-2 (main repo)
-      # ============================================================
       - name: Checkout Scrubbler-2
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Log working directory and repo root
-        run: |
-          echo "PWD:"
-          pwd
-          echo "Repo root contents:"
-          ls -R .
-
-      # ============================================================
-      # Setup .NET
-      # ============================================================
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: '10.0.x'
 
-      # ============================================================
-      # Restore
-      # ============================================================
       - name: Restore solution
-        working-directory: Scrubbler
         run: dotnet restore Scrubbler.sln
+        working-directory: Scrubbler
 
-      # ============================================================
-      # Inject API keys
-      # ============================================================
       - name: Inject API keys into PluginDefaults.cs
         shell: bash
-        working-directory: Scrubbler
         run: |
-          echo "Environment variables loaded:"
-          printenv | sort
-
-          for file in $(find Plugins -name PluginDefaults.cs); do
+          for file in $(find Scrubbler/Plugins -name PluginDefaults.cs); do
             echo "Processing $file"
             cp "$file" "$file.bak"
 
@@ -72,112 +51,58 @@ jobs:
         env:
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
           LASTFM_API_SECRET: ${{ secrets.LASTFM_API_SECRET }}
+          # add more secrets here as you add plugins
 
-      # ============================================================
-      # Build Plugins
-      # ============================================================
       - name: Build plugins
         shell: bash
-        working-directory: Scrubbler
         run: |
-          mkdir -p artifacts/plugins
-
-          echo "Plugin projects:"
-          find Plugins -name 'Scrubbler.Plugin*.csproj' ! -name 'Scrubbler.Plugin.Accounts.Mock.csproj'
-
+          mkdir -p ../artifacts/plugins
           for proj in $(find Plugins -name 'Scrubbler.Plugin*.csproj' ! -name 'Scrubbler.Plugin.Accounts.Mock.csproj'); do
             echo "Building $proj"
-            outdir="artifacts/plugins/$(basename "$proj" .csproj)"
+            outdir="../artifacts/plugins/$(basename "$proj" .csproj)"
             mkdir -p "$outdir"
             dotnet build "$proj" -c Release -o "$outdir"
           done
+        working-directory: Scrubbler
 
-          echo "Artifacts/plugins after build:"
-          ls -R artifacts/plugins
-
-      # ============================================================
-      # Package plugins
-      # ============================================================
       - name: Package plugins
-        shell: pwsh
-        working-directory: Scrubbler
+        shell: bash
         run: |
-          New-Item -ItemType Directory -Path "artifacts/zips" -Force | Out-Null
-          New-Item -ItemType Directory -Path "artifacts/hashes" -Force | Out-Null
+          mkdir -p artifacts/zips
+          
+          # read shared assemblies from file
+          SHARED_ASSEMBLIES=$(cat Scrubbler/shared-assemblies.txt)
+            
+          for dir in artifacts/plugins/*; do
+            if [ -d "$dir" ]; then
+              pluginName=$(basename "$dir")
+              zipFile="artifacts/zips/${pluginName}.zip"
+              echo "Zipping $pluginName -> $zipFile"
 
-          Write-Host "--- artifacts/plugins BEFORE PACKAGING ---"
-          Get-ChildItem artifacts/plugins -Recurse
+              # Exclude patterns for shared assemblies
+              excludes=""
+              for pat in $SHARED_ASSEMBLIES; do
+                excludes="$excludes -x!$pat"
+              done
 
-          $shared = Get-Content "shared-assemblies.txt" -ErrorAction SilentlyContinue
+              # Create the zip
+              (cd "$dir" && 7z a "../../zips/${pluginName}.zip" . $excludes)
 
-          function Get-FolderHash($path) {
-            $files = Get-ChildItem -File -Recurse $path | Sort-Object FullName
-            $concat = foreach ($f in $files) { (Get-FileHash -Algorithm SHA256 $f.FullName).Hash + $f.FullName }
-            $bytes = [Text.Encoding]::UTF8.GetBytes(($concat -join ""))
-            return (Get-FileHash -Algorithm SHA256 -InputStream ([IO.MemoryStream]::new($bytes))).Hash
-          }
+              # copy icons
+              if [ -f "$dir/icon.png" ]; then
+                cp "$dir/icon.png" "artifacts/zips/${pluginName}.png"
+                echo "Copied icon for $pluginName"
+              else
+                echo "No icon.png for $pluginName"
+              fi
 
-          foreach ($dir in Get-ChildItem "artifacts/plugins" -Directory) {
-            $name = $dir.Name
-            $folder = $dir.FullName
-            $zipPath = "artifacts/zips/$name.zip"
+            fi
+          done
 
-            Write-Host "Packaging $name → $zipPath"
-
-            Push-Location $folder
-            7z a "../../artifacts/zips/$name.zip" .
-            Pop-Location
-
-            $hash = Get-FolderHash $folder
-            $hashFile = "artifacts/hashes/$name.hash"
-            $prev = if (Test-Path $hashFile) { Get-Content $hashFile } else { "" }
-
-            if ($hash -ne $prev) {
-              Write-Host "Hash changed → updating"
-              Set-Content $hashFile $hash
-            } else {
-              Write-Host "Hash unchanged"
-            }
-
-            $icon = Join-Path $folder "icon.png"
-            if (Test-Path $icon) {
-              Copy-Item $icon "artifacts/zips/$name.png"
-            }
-          }
-
-          Write-Host "--- FINAL ZIPS ---"
-          Get-ChildItem artifacts/zips
-
-      # ============================================================
-      # Generate plugins.json
-      # ============================================================
       - name: Generate plugins.json
+        run: dotnet run --project PluginMetadataGenerator ../artifacts/zips ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
         working-directory: Scrubbler
-        shell: pwsh
-        run: |
-          Write-Host "==== BEFORE METADATA GENERATION ===="
-          Write-Host "Artifacts/zips:"
-          Get-ChildItem artifacts/zips
 
-          # Correct PowerShell variable assignment
-          $ZIP_DIR = "artifacts/zips"
-          $JSON_PATH = "artifacts/plugins.json"
-
-          Write-Host "ZIP_DIR → $(Resolve-Path $ZIP_DIR)"
-          Write-Host "JSON_PATH → $JSON_PATH"
-
-          Write-Host "Running metadata generator..."
-          dotnet run --project PluginMetadataGenerator $ZIP_DIR $JSON_PATH "https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main"
-
-          Write-Host "==== CONTENT OF GENERATED plugins.json ===="
-          Get-Content $JSON_PATH
-        env:
-          DOTNET_ROOT: C:\Program Files\dotnet
-
-
-      # ============================================================
-      # Checkout distribution repo
-      # ============================================================
       - name: Checkout Scrubbler-Plugins
         uses: actions/checkout@v4
         with:
@@ -185,51 +110,20 @@ jobs:
           token: ${{ secrets.PLUGIN_REPO_TOKEN }}
           path: out
 
-      # ============================================================
-      # Sync files into distribution repo
-      # ============================================================
       - name: Sync plugins + manifest
-        shell: pwsh
+        shell: bash
         run: |
-          New-Item -ItemType Directory -Path "out/plugins" -Force | Out-Null
-          New-Item -ItemType Directory -Path "out/hashes" -Force | Out-Null
+          mkdir -p out/plugins
+          cp artifacts/zips/*.zip out/plugins/ || echo "No plugin zips found"
+          cp artifacts/zips/*.png out/plugins/ || echo "No plugin icons found"
+          cp artifacts/plugins.json out/
 
-          function Copy-IfChanged($src, $dst) {
-            if (!(Test-Path $src)) { return }
-            if (!(Test-Path $dst)) {
-              Copy-Item $src $dst
-              Write-Host "NEW: $(Split-Path $dst -Leaf)"
-              return
-            }
-            $a = (Get-FileHash -Algorithm SHA256 $src).Hash
-            $b = (Get-FileHash -Algorithm SHA256 $dst).Hash
-            if ($a -ne $b) {
-              Copy-Item $src $dst
-              Write-Host "UPDATED: $(Split-Path $dst -Leaf)"
-            }
-          }
-
-          # Copy zips + icons
-          Get-ChildItem Scrubbler/artifacts/zips/* | ForEach-Object {
-            Copy-IfChanged $_.FullName ("out/plugins/" + $_.Name)
-          }
-
-          # Copy hashes
-          Get-ChildItem Scrubbler/artifacts/hashes/* | ForEach-Object {
-            Copy-IfChanged $_.FullName ("out/hashes/" + $_.Name)
-          }
-
-          # Copy manifest
-          Copy-IfChanged "Scrubbler/artifacts/plugins.json" "out/plugins.json"
-
-      # ============================================================
-      # Commit & push
-      # ============================================================
       - name: Commit and push
         working-directory: out
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B main
           git add .
           git commit -m "Update plugins from $GITHUB_SHA" || echo "No changes to commit"
           git push origin main
