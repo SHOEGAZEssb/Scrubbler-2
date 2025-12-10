@@ -12,6 +12,9 @@ on:
       - 'Scrubbler/Scrubbler.Abstractions/**'
       - 'Scrubbler/PluginMetadataGenerator/**'
 
+      # exclusions
+      - '!Scrubbler/Plugins/**/Test*/**'
+
 jobs:
   build-and-publish:
     runs-on: windows-latest
@@ -110,12 +113,42 @@ jobs:
           path: out
 
       - name: Sync plugins + manifest
-        shell: bash
+        shell: pwsh
         run: |
           mkdir -p out/plugins
-          cp artifacts/zips/*.zip out/plugins/ || echo "No plugin zips found"
-          cp artifacts/zips/*.png out/plugins/ || echo "No plugin icons found"
-          cp artifacts/plugins.json out/
+
+          function Copy-IfChanged($src, $dst) {
+            if (!(Test-Path $dst)) {
+              Write-Host "New file: $dst"
+              Copy-Item $src $dst
+              return
+            }
+
+            $a = Get-Content $src -Encoding Byte
+            $b = Get-Content $dst -Encoding Byte
+            $diff = Compare-Object $a $b
+
+            if ($diff) {
+              Write-Host "Updated: $(Split-Path $dst -Leaf)"
+              Copy-Item $src $dst
+            }
+            else {
+              Write-Host "No change: $(Split-Path $dst -Leaf)"
+            }
+          }
+
+          # ZIP files
+          Get-ChildItem artifacts/zips/*.zip -ErrorAction Ignore | ForEach-Object {
+            Copy-IfChanged $_.FullName ("out/plugins/" + $_.Name)
+          }
+
+          # PNG icons
+          Get-ChildItem artifacts/zips/*.png -ErrorAction Ignore | ForEach-Object {
+            Copy-IfChanged $_.FullName ("out/plugins/" + $_.Name)
+          }
+
+          # Plugin manifest
+          Copy-IfChanged "artifacts/plugins.json" "out/plugins.json"
 
       - name: Commit and push
         working-directory: out
