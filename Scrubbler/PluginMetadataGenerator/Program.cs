@@ -39,11 +39,14 @@ class Program
         var outputPath = args[1];
         var baseUrl = args[2].TrimEnd('/');
 
-        Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+        var zips = Directory.GetFiles(zipDir, "Scrubbler.Plugin.*.zip");
+        if (zips.Length == 0)
+            Console.Error.WriteLine($"No plugin zips found in {zipDir}");
+        else Console.WriteLine($"Found {zips.Length} plugin zips in {zipDir}");
 
         var entries = new List<PluginManifestEntry>();
-
-        foreach (var zipFile in Directory.GetFiles(zipDir, "Scrubbler.Plugin.*.zip"))
+        Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+        foreach (var zipFile in zips)
         {
             var tempDir = Path.Combine(Path.GetTempPath(), "scrubbler_plugin_" + Path.GetFileNameWithoutExtension(zipFile));
             if (Directory.Exists(tempDir))
