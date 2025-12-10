@@ -118,17 +118,18 @@ jobs:
           New-Item -ItemType Directory -Path "out/plugins" -Force | Out-Null
 
           function Copy-IfChanged($src, $dst) {
+
             if (!(Test-Path $dst)) {
               Write-Host "New file: $dst"
               Copy-Item $src $dst
               return
             }
 
-            $a = Get-Content $src -Encoding Byte
-            $b = Get-Content $dst -Encoding Byte
-            $diff = Compare-Object $a $b
+            # Compute SHA256 hashes
+            $hashSrc = (Get-FileHash -Algorithm SHA256 $src).Hash
+            $hashDst = (Get-FileHash -Algorithm SHA256 $dst).Hash
 
-            if ($diff) {
+            if ($hashSrc -ne $hashDst) {
               Write-Host "Updated: $(Split-Path $dst -Leaf)"
               Copy-Item $src $dst
             }
