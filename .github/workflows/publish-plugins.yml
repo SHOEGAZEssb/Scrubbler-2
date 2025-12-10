@@ -38,11 +38,10 @@ jobs:
       # Restore solution
       # ============================================================
       - name: Restore solution
-        working-directory: Scrubbler
-        run: dotnet restore Scrubbler.sln
+        run: dotnet restore Scrubbler/Scrubbler.sln
 
       # ============================================================
-      # Inject secrets into PluginDefaults.cs
+      # Inject PluginDefaults secrets
       # ============================================================
       - name: Inject API keys into PluginDefaults.cs
         shell: bash
@@ -70,7 +69,6 @@ jobs:
         working-directory: Scrubbler
         run: |
           mkdir -p ../artifacts/plugins
-
           for proj in $(find Plugins -name 'Scrubbler.Plugin*.csproj' ! -name 'Scrubbler.Plugin.Accounts.Mock.csproj'); do
             echo "Building $proj"
             outdir="../artifacts/plugins/$(basename "$proj" .csproj)"
@@ -79,7 +77,7 @@ jobs:
           done
 
       # ============================================================
-      # Package plugins — ALWAYS create zip, use hash only for sync
+      # Package plugins (ZIP + hash tracking)
       # ============================================================
       - name: Package plugins
         shell: pwsh
@@ -107,16 +105,16 @@ jobs:
             $hashFile = "artifacts/hashes/$name.hash"
             $previousHash = if (Test-Path $hashFile) { Get-Content $hashFile } else { "" }
 
-            # Always create a zip (workspace does not persist)
+            # Always create the ZIP, relative path FIXED (../../)
             $zipPath = "artifacts/zips/$name.zip"
 
             Write-Host "Creating zip for $name"
             Push-Location $folder
             $excludeArgs = $shared | ForEach-Object { "-x!$_" }
-            7z a "../zips/$name.zip" . $excludeArgs
+            7z a "$zipPath" . $excludeArgs
             Pop-Location
 
-            # Update hash file only if changed
+            # Update hash only if changed
             if ($hash -ne $previousHash) {
               Write-Host "$name content changed — updating hash."
               Set-Content -Path $hashFile -Value $hash
@@ -124,7 +122,7 @@ jobs:
               Write-Host "$name unchanged — hash unchanged."
             }
 
-            # Copy icon if exists
+            # Copy icon
             $icon = Join-Path $folder "icon.png"
             if (Test-Path $icon) {
               Copy-Item $icon "artifacts/zips/$name.png"
@@ -132,11 +130,14 @@ jobs:
           }
 
       # ============================================================
-      # Generate plugins.json
+      # Generate plugins.json (absolute paths FIXED)
       # ============================================================
       - name: Generate plugins.json
-        working-directory: Scrubbler
-        run: dotnet run --project PluginMetadataGenerator ../artifacts/zips ../artifacts/plugins.json https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main
+        shell: pwsh
+        run: |
+          $zipDir = Resolve-Path "artifacts/zips"
+          $jsonPath = Resolve-Path "artifacts/plugins.json"
+          dotnet run --project Scrubbler/PluginMetadataGenerator $zipDir $jsonPath "https://raw.githubusercontent.com/SHOEGAZEssb/Scrubbler-Plugins/main"
 
       # ============================================================
       # Checkout Scrubbler-Plugins (distribution repo)
@@ -149,7 +150,7 @@ jobs:
           path: out
 
       # ============================================================
-      # Sync only updated zips/icons/hashes
+      # Sync changed files into plugin repo
       # ============================================================
       - name: Sync plugins + manifest
         shell: pwsh
@@ -159,6 +160,7 @@ jobs:
 
           function Copy-IfChanged($src, $dst) {
             if (!(Test-Path $src)) { return }
+
             if (!(Test-Path $dst)) {
               Copy-Item $src $dst
               Write-Host "New: $(Split-Path $dst -Leaf)"
@@ -176,21 +178,21 @@ jobs:
             }
           }
 
-          # Copy zips and icons
+          # plugin zips + icons
           Get-ChildItem artifacts/zips/* | ForEach-Object {
             Copy-IfChanged $_.FullName ("out/plugins/" + $_.Name)
           }
 
-          # Copy hashes
+          # hash files
           Get-ChildItem artifacts/hashes/* | ForEach-Object {
             Copy-IfChanged $_.FullName ("out/hashes/" + $_.Name)
           }
 
-          # Copy plugins.json
+          # manifest
           Copy-IfChanged "artifacts/plugins.json" "out/plugins.json"
 
       # ============================================================
-      # Commit & push changes to distribution repo
+      # Commit changes (only if changed)
       # ============================================================
       - name: Commit and push
         working-directory: out
