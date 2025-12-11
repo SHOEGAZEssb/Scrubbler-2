@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions;
@@ -239,13 +240,22 @@ public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastf
 
     #region Album Clicked
 
-    private async Task<IEnumerable<ScrobbableObjectViewModel>> AlbumClickedAsync(string album, string artist)
+    private async Task AlbumClickedAsync(string album, string artist)
+    {
+        if (SelectedDatabase == Database.Lastfm)
+        {
+            var scrobbles = await AlbumClickedLastfm(album, artist);
+            Scrobbles = new ObservableCollection<ScrobbableObjectViewModel>(scrobbles);
+        }
+    }
+
+    private async Task<IEnumerable<ScrobbableObjectViewModel>> AlbumClickedLastfm(string album, string artist)
     {
         var response = await _lastfmClient.Album.GetInfoByNameAsync(album, artist);
         if (!response.IsSuccess || response.Data == null)
             throw new Exception($"Failed to get info for album '{album}' by artist '{artist}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
-        return response.Data.Tracks.Select(t => new ScrobbableObjectViewModel(artist, t.Name, album, t.Album?.Artist?.Name));
+        return response.Data.Tracks.Select(t => new ScrobbableObjectViewModel(t.Artist!.Name, t.Name, album, t.Album?.Artist?.Name));
     }
 
     #endregion Album Clicked
