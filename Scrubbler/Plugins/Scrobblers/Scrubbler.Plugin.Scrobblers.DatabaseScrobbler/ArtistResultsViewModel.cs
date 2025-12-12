@@ -7,7 +7,9 @@ internal class ArtistResultsViewModel(IEnumerable<ArtistResultViewModel> results
 {
     #region Properties
 
-    public ObservableCollection<SearchResultViewModel> Results { get; } = new ObservableCollection<SearchResultViewModel>(results);
+    public IEnumerable<SearchResultViewModel> Results => TypedResults;
+
+    public ObservableCollection<ArtistResultViewModel> TypedResults { get; } = new ObservableCollection<ArtistResultViewModel>(results);
 
     #endregion Properties
 }

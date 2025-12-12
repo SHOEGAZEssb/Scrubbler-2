@@ -1,5 +1,3 @@
-using Scrubbler.Abstractions.Services;
-
 namespace Scrubbler.Abstractions.Plugin;
 
 /// <summary>

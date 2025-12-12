@@ -8,7 +8,9 @@ internal partial class AlbumResultsViewModel(IEnumerable<AlbumResultViewModel> r
 {
     #region Properties
 
-    public ObservableCollection<SearchResultViewModel> Results { get; } = new ObservableCollection<SearchResultViewModel>(results);
+    public IEnumerable<SearchResultViewModel> Results => TypedResults;
+
+    public ObservableCollection<AlbumResultViewModel> TypedResults { get; } = new ObservableCollection<AlbumResultViewModel>(results);
 
     public bool CanGoBack { get; } = canGoBack;
 
@@ -16,7 +18,7 @@ internal partial class AlbumResultsViewModel(IEnumerable<AlbumResultViewModel> r
 
     #endregion Properties
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanGoBack))]
     private void GoBack()
     {
         OnGoBackRequested?.Invoke(this, EventArgs.Empty);

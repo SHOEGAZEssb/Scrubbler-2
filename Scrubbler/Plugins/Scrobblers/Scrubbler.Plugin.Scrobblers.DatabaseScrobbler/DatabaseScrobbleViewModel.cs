@@ -19,15 +19,19 @@ public enum SearchType
     Album
 }
 
-public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastfmClient lastfmClient) : ScrobbleMultipleViewModelBase<ScrobbableObjectViewModel>
+internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastfmClient lastfmClient) : ScrobbleMultipleViewModelBase<ScrobbableObjectViewModel>
 {
     #region Properties
 
     [ObservableProperty]
     private Database _selectedDatabase = Database.Lastfm;
 
+    public IReadOnlyList<Database> AvailableDatabases { get; } = Enum.GetValues<Database>();
+
     [ObservableProperty]
     private SearchType _selectedSearchType = SearchType.Artist;
+
+    public IReadOnlyList<SearchType> AvailableSearchTypes { get; } = Enum.GetValues<SearchType>();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSearch))]
@@ -50,7 +54,7 @@ public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastf
         throw new NotImplementedException();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSearch))]
     private async Task Search()
     {
         if (string.IsNullOrEmpty(SearchQuery))
@@ -67,6 +71,8 @@ public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastf
                 await SearchArtistAsync();
             else if (SelectedSearchType == SearchType.Album)
                 await SearchAlbumAsync();
+
+            _logger.Info($"Search for '{SearchQuery}' in database '{SelectedDatabase}' completed with {CurrentResultVM!.Results.Count()} results.");
         }
         catch (Exception ex)
         {
@@ -126,7 +132,7 @@ public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastf
         if (!response.IsSuccess || response.Data == null)
             throw new Exception($"Failed to search artist '{SearchQuery}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
-        return response.Data.Items.Select(a => new ArtistResultViewModel(a.Images.LastOrDefault().Value, a.Name));
+        return [.. response.Data.Items.Select(a => new ArtistResultViewModel(a.Images.LastOrDefault().Value, a.Name))];
     }
 
     #endregion Search Artist
@@ -170,17 +176,30 @@ public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastf
         if (!response.IsSuccess || response.Data == null)
             throw new Exception($"Failed to search album '{SearchQuery}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
-        return response.Data.Items.Select(a => new AlbumResultViewModel(a.Images.LastOrDefault().Value, a.Name, a.Artist!.Name));
+        return [.. response.Data.Items.Select(a => new AlbumResultViewModel(a.Images.LastOrDefault().Value, a.Name, a.Artist!.Name))];
     }
 
     #endregion Search Album
 
     private async void Result_OnClicked(object? sender, SearchResultViewModel e)
     {
-        if (e is ArtistResultViewModel)
-            await ArtistClickedAsync(e.Name);
-        else if (e is AlbumResultViewModel al)
-            await AlbumClickedAsync(al.Name, al.ArtistName);
+        IsBusy = true;
+
+        try
+        {
+            if (e is ArtistResultViewModel)
+                await ArtistClickedAsync(e.Name);
+            else if (e is AlbumResultViewModel al)
+                await AlbumClickedAsync(al.Name, al.ArtistName);
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     #region Artist Clicked
@@ -193,18 +212,6 @@ public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastf
 
         if (results.Any())
         {
-            // clean up old
-            if (CurrentResultVM != null)
-            {
-                foreach (var result in CurrentResultVM.Results)
-                {
-                    result.OnClicked -= Result_OnClicked;
-                }
-
-                if (CurrentResultVM is AlbumResultsViewModel albumResultsVM)
-                    albumResultsVM.OnGoBackRequested -= AlbumResults_GoBack;
-            }
-
             // connect new events
             foreach (var result in results)
             {
@@ -227,11 +234,23 @@ public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastf
         if (!response.IsSuccess || response.Data == null)
             throw new Exception($"Failed to get top albums for artist '{artist}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
-        return response.Data.Items.Select(a => new AlbumResultViewModel(a.Images.LastOrDefault().Value, a.Name, artist));
+        return [.. response.Data.Items.Select(a => new AlbumResultViewModel(a.Images.LastOrDefault().Value, a.Name, artist))];
     }
 
     private void AlbumResults_GoBack(object? sender, EventArgs e)
     {
+        // clean up old
+        if (CurrentResultVM != null)
+        {
+            foreach (var result in CurrentResultVM.Results)
+            {
+                result.OnClicked -= Result_OnClicked;
+            }
+
+            if (CurrentResultVM is AlbumResultsViewModel albumResultsVM)
+                albumResultsVM.OnGoBackRequested -= AlbumResults_GoBack;
+        }
+
         if (_previousArtistResults != null)
             CurrentResultVM = _previousArtistResults;
     }
@@ -255,7 +274,7 @@ public sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastf
         if (!response.IsSuccess || response.Data == null)
             throw new Exception($"Failed to get info for album '{album}' by artist '{artist}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
-        return response.Data.Tracks.Select(t => new ScrobbableObjectViewModel(t.Artist!.Name, t.Name, album, t.Album?.Artist?.Name));
+        return [.. response.Data.Tracks.Select(t => new ScrobbableObjectViewModel(t.Artist!.Name, t.Name, album, t.Album?.Artist?.Name))];
     }
 
     #endregion Album Clicked

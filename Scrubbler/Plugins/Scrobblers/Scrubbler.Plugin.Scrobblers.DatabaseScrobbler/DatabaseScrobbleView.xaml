@@ -1,0 +1,75 @@
+﻿<UserControl
+    x:Class="Scrubbler.Plugin.Scrobblers.DatabaseScrobbler.DatabaseScrobbleView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Scrubbler.Plugin.Scrobblers.DatabaseScrobbler"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="ArtistResultsDataTemplate"
+                  x:DataType="local:ArtistResultsViewModel">
+            <local:ArtistResultsView DataContext="{Binding CurrentResultVM}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AlbumResultsDataTemplate"
+                  x:DataType="local:AlbumResultsViewModel">
+            <local:AlbumResultsView DataContext="{Binding CurrentResultVM}"/>
+        </DataTemplate>
+
+        <local:ResultsTemplateSelector
+        x:Key="ResultsTemplateSelector"
+        ArtistTemplate="{StaticResource ArtistResultsDataTemplate}"
+        AlbumTemplate="{StaticResource AlbumResultsDataTemplate}" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Bar -->
+        <Grid Grid.Row="0" Padding="8" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Database selector -->
+            <ComboBox
+        Grid.Column="0"
+        MinWidth="120"
+        ItemsSource="{Binding AvailableDatabases}"
+        SelectedItem="{Binding SelectedDatabase, Mode=TwoWay}" />
+
+            <!-- Search type selector -->
+            <ComboBox
+        Grid.Column="1"
+        MinWidth="120"
+        ItemsSource="{Binding AvailableSearchTypes}"
+        SelectedItem="{Binding SelectedSearchType, Mode=TwoWay}" />
+
+            <!-- Search query -->
+            <TextBox
+        Grid.Column="2"
+        PlaceholderText="Search…"
+        Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <!-- Search button -->
+            <Button
+        Grid.Column="3"
+        Content="Search"
+        Command="{Binding SearchCommand}" />
+        </Grid>
+
+        <!-- Content -->
+        <ContentPresenter Grid.Row="1" Content="{Binding CurrentResultVM}" ContentTemplateSelector="{StaticResource ResultsTemplateSelector}" />
+
+    </Grid>
+</UserControl>
