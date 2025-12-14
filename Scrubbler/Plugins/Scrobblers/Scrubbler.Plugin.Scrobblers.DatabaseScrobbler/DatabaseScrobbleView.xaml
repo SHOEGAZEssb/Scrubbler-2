@@ -20,10 +20,15 @@
             <local:AlbumResultsView DataContext="{Binding CurrentResultVM}"/>
         </DataTemplate>
 
+        <DataTemplate x:Key="TrackResultsDataTemplate" x:DataType="local:DatabaseScrobbleViewModel">
+            <local:TrackResultsView DataContext="{Binding}"/>
+        </DataTemplate>
+
         <local:ResultsTemplateSelector
         x:Key="ResultsTemplateSelector"
         ArtistTemplate="{StaticResource ArtistResultsDataTemplate}"
-        AlbumTemplate="{StaticResource AlbumResultsDataTemplate}" />
+        AlbumTemplate="{StaticResource AlbumResultsDataTemplate}"
+        TrackTemplate="{StaticResource TrackResultsDataTemplate}"/>
     </UserControl.Resources>
 
     <Grid>

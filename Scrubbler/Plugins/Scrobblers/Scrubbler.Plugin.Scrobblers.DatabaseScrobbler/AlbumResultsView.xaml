@@ -19,12 +19,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="0" HorizontalAlignment="Left" Content="Back" Command="{Binding GoBackCommand}" Visibility="{Binding CanGoBack, Converter={StaticResource BoolToVisibilityConv}}"/>
+        <Button Grid.Row="0" HorizontalAlignment="Left" Content="Back to artists" Command="{Binding GoBackCommand}" Visibility="{Binding CanGoBack, Converter={StaticResource BoolToVisibilityConv}}"/>
 
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="2">
             <ItemsRepeater ItemsSource="{Binding TypedResults}">
                 <ItemsRepeater.Layout>
                     <FlowLayout Orientation="Horizontal" MinRowSpacing="8" MinColumnSpacing="8"/>

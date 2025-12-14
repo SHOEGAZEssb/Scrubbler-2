@@ -19,9 +19,9 @@ internal partial class FriendScrobbleViewModel(ILastfmClient lastfmClient) : Scr
 
     private readonly ILastfmClient _lastfmClient = lastfmClient;
 
-    public override Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
+    public override async Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
     {
-        return Task.Run(() => Scrobbles.Where(s => s.ToScrobble)
+        return await Task.Run(() => Scrobbles.Where(s => s.ToScrobble)
                                        .Select(s => new ScrobbleData(s.TrackName, s.ArtistName, s.Timestamp) { Album = s.AlbumName, AlbumArtist = s.AlbumArtistName }));
     }
 

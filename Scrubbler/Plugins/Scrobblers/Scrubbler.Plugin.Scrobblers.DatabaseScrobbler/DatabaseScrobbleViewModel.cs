@@ -19,7 +19,7 @@ public enum SearchType
     Album
 }
 
-internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastfmClient lastfmClient) : ScrobbleMultipleViewModelBase<ScrobbableObjectViewModel>
+internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILastfmClient lastfmClient) : ScrobbleMultipleTimeViewModelBase<ScrobbableObjectViewModel>, IResultsViewModel
 {
     #region Properties
 
@@ -40,9 +40,13 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
 
     private bool CanSearch => !string.IsNullOrEmpty(SearchQuery);
 
+    // satisfy interface
+    public IEnumerable<SearchResultViewModel> Results => [];
+
     [ObservableProperty]
     private IResultsViewModel? _currentResultVM;
     private ArtistResultsViewModel? _previousArtistResults;
+    private AlbumResultsViewModel? _previousAlbumResults;
 
     private readonly ILogService _logger = logger;
     private readonly ILastfmClient _lastfmClient = lastfmClient;
@@ -51,7 +55,11 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
 
     public override async Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
     {
-        throw new NotImplementedException();
+        return await Task.Run(() =>
+        {
+            var scrobbles = Scrobbles.Where(s => s.ToScrobble);
+            return ScrobbleData.FromMasterTimestamp(scrobbles, ScrobbleTimeVM.Timestamp);
+        });
     }
 
     [RelayCommand(CanExecute = nameof(CanSearch))]
@@ -102,7 +110,7 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
                     result.OnClicked -= Result_OnClicked;
                 }
             }
-            if (_previousArtistResults != null)
+            if (_previousArtistResults != null && CurrentResultVM != _previousArtistResults)
             {
                 foreach (var result in _previousArtistResults.Results)
                 {
@@ -155,6 +163,13 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
                     result.OnClicked -= Result_OnClicked;
                 }
             }
+            if (_previousAlbumResults != null && CurrentResultVM != _previousAlbumResults)
+            {
+                foreach (var result in _previousAlbumResults.Results)
+                {
+                    result.OnClicked -= Result_OnClicked;
+                }
+            }
 
             // connect new events
             foreach (var result in results)
@@ -162,7 +177,9 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
                 result.OnClicked += Result_OnClicked;
             }
 
-            CurrentResultVM = new AlbumResultsViewModel(results, canGoBack: false);
+            // cache results so we can go back after we click an artist
+            _previousAlbumResults = new AlbumResultsViewModel(results, canGoBack: false);
+            CurrentResultVM = _previousAlbumResults;
         }
         else
         {
@@ -220,6 +237,7 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
 
             var vm = new AlbumResultsViewModel(results, canGoBack: true);
             vm.OnGoBackRequested += AlbumResults_GoBack;
+            _previousAlbumResults = vm;
             CurrentResultVM = vm;
         }
         else
@@ -261,11 +279,12 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
 
     private async Task AlbumClickedAsync(string album, string artist)
     {
+        IEnumerable<ScrobbableObjectViewModel> results = [];
         if (SelectedDatabase == Database.Lastfm)
-        {
-            var scrobbles = await AlbumClickedLastfm(album, artist);
-            Scrobbles = new ObservableCollection<ScrobbableObjectViewModel>(scrobbles);
-        }
+            results = await AlbumClickedLastfm(album, artist);
+
+        Scrobbles = new ObservableCollection<ScrobbableObjectViewModel>(results);
+        CurrentResultVM = this;
     }
 
     private async Task<IEnumerable<ScrobbableObjectViewModel>> AlbumClickedLastfm(string album, string artist)
@@ -275,6 +294,12 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
             throw new Exception($"Failed to get info for album '{album}' by artist '{artist}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
         return [.. response.Data.Tracks.Select(t => new ScrobbableObjectViewModel(t.Artist!.Name, t.Name, album, t.Album?.Artist?.Name))];
+    }
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        CurrentResultVM = _previousAlbumResults;
     }
 
     #endregion Album Clicked

@@ -46,4 +46,16 @@
         <Generator>MSBuild:Compile</Generator>
       </Page>
     </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="TrackResultsView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="icon.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>
