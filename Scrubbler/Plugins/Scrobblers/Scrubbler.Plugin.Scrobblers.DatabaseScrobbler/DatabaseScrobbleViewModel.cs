@@ -100,38 +100,31 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
         if (SelectedDatabase == Database.Lastfm)
             results = await SearchArtistLastfm();
 
-        if (results.Any())
+        // clean up old
+        if (CurrentResultVM != null)
         {
-            // clean up old
-            if (CurrentResultVM != null)
+            foreach (var result in CurrentResultVM.Results)
             {
-                foreach (var result in CurrentResultVM.Results)
-                {
-                    result.OnClicked -= Result_OnClicked;
-                }
+                result.OnClicked -= Result_OnClicked;
             }
-            if (_previousArtistResults != null && CurrentResultVM != _previousArtistResults)
-            {
-                foreach (var result in _previousArtistResults.Results)
-                {
-                    result.OnClicked -= Result_OnClicked;
-                }
-            }
-
-            // connect new events
-            foreach (var result in results)
-            {
-                result.OnClicked += Result_OnClicked;
-            }
-
-            // cache results so we can go back after we click an artist
-            _previousArtistResults = new ArtistResultsViewModel(results);
-            CurrentResultVM = _previousArtistResults;
         }
-        else
+        if (_previousArtistResults != null && CurrentResultVM != _previousArtistResults)
         {
-            _logger.Info($"No results found for artist '{SearchQuery}' in database '{SelectedDatabase}'.");
+            foreach (var result in _previousArtistResults.Results)
+            {
+                result.OnClicked -= Result_OnClicked;
+            }
         }
+
+        // connect new events
+        foreach (var result in results)
+        {
+            result.OnClicked += Result_OnClicked;
+        }
+
+        // cache results so we can go back after we click an artist
+        _previousArtistResults = new ArtistResultsViewModel(results);
+        CurrentResultVM = _previousArtistResults;
     }
 
     private async Task<IEnumerable<ArtistResultViewModel>> SearchArtistLastfm()
@@ -153,38 +146,31 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
         if (SelectedDatabase == Database.Lastfm)
             results = await SearchAlbumLastfm();
 
-        if (results.Any())
+        // clean up old
+        if (CurrentResultVM != null)
         {
-            // clean up old
-            if (CurrentResultVM != null)
+            foreach (var result in CurrentResultVM.Results)
             {
-                foreach (var result in CurrentResultVM.Results)
-                {
-                    result.OnClicked -= Result_OnClicked;
-                }
+                result.OnClicked -= Result_OnClicked;
             }
-            if (_previousAlbumResults != null && CurrentResultVM != _previousAlbumResults)
-            {
-                foreach (var result in _previousAlbumResults.Results)
-                {
-                    result.OnClicked -= Result_OnClicked;
-                }
-            }
-
-            // connect new events
-            foreach (var result in results)
-            {
-                result.OnClicked += Result_OnClicked;
-            }
-
-            // cache results so we can go back after we click an artist
-            _previousAlbumResults = new AlbumResultsViewModel(results, canGoBack: false);
-            CurrentResultVM = _previousAlbumResults;
         }
-        else
+        if (_previousAlbumResults != null && CurrentResultVM != _previousAlbumResults)
         {
-            _logger.Info($"No results found for album '{SearchQuery}' in database '{SelectedDatabase}'.");
+            foreach (var result in _previousAlbumResults.Results)
+            {
+                result.OnClicked -= Result_OnClicked;
+            }
         }
+
+        // connect new events
+        foreach (var result in results)
+        {
+            result.OnClicked += Result_OnClicked;
+        }
+
+        // cache results so we can go back after we click an artist
+        _previousAlbumResults = new AlbumResultsViewModel(results, canGoBack: false);
+        CurrentResultVM = _previousAlbumResults;
     }
 
     private async Task<IEnumerable<AlbumResultViewModel>> SearchAlbumLastfm()
@@ -227,23 +213,16 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
         if (SelectedDatabase == Database.Lastfm)
             results = await ArtistClickedLastfm(artist);
 
-        if (results.Any())
+        // connect new events
+        foreach (var result in results)
         {
-            // connect new events
-            foreach (var result in results)
-            {
-                result.OnClicked += Result_OnClicked;
-            }
+            result.OnClicked += Result_OnClicked;
+        }
 
-            var vm = new AlbumResultsViewModel(results, canGoBack: true);
-            vm.OnGoBackRequested += AlbumResults_GoBack;
-            _previousAlbumResults = vm;
-            CurrentResultVM = vm;
-        }
-        else
-        {
-            _logger.Info($"No albums found for artist '{artist}' in database '{SelectedDatabase}'.");
-        }
+        var vm = new AlbumResultsViewModel(results, canGoBack: true);
+        vm.OnGoBackRequested += AlbumResults_GoBack;
+        _previousAlbumResults = vm;
+        CurrentResultVM = vm;
     }
 
     private async Task<IEnumerable<AlbumResultViewModel>> ArtistClickedLastfm(string artist)

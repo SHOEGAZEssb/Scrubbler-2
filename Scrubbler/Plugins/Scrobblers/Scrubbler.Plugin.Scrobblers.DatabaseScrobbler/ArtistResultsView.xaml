@@ -11,7 +11,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ScrollViewer>
+        <ScrollViewer x:Name="ScrollViewer">
+            <beh:Interaction.Behaviors>
+                <beh:DataTriggerBehavior Binding="{Binding TypedResults.Count}" Value="0">
+                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=ScrollViewer}"
+                                      PropertyName="Visibility" Value="Collapsed"/>
+                </beh:DataTriggerBehavior>
+            </beh:Interaction.Behaviors>
+
             <ItemsRepeater ItemsSource="{Binding TypedResults}">
                 <ItemsRepeater.Layout>
                     <FlowLayout Orientation="Horizontal" MinRowSpacing="8" MinColumnSpacing="8"/>
@@ -45,5 +52,14 @@
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
         </ScrollViewer>
+
+        <TextBlock x:Name="NoResultsText" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Text="No albums found">
+            <beh:Interaction.Behaviors>
+                <beh:DataTriggerBehavior Binding="{Binding TypedResults.Count}" Value="0" ComparisonCondition="GreaterThan">
+                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=NoResultsText}"
+                                      PropertyName="Visibility" Value="Collapsed"/>
+                </beh:DataTriggerBehavior>
+            </beh:Interaction.Behaviors>
+        </TextBlock>
     </Grid>
 </UserControl>
