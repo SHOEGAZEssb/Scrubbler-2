@@ -278,6 +278,7 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
     [RelayCommand]
     private void GoBack()
     {
+        Scrobbles = [];
         CurrentResultVM = _previousAlbumResults;
     }
 
