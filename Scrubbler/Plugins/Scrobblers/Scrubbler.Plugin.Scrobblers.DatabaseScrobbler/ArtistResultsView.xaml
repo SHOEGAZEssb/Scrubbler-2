@@ -35,11 +35,12 @@
 
                             <Border Padding="8" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="10">
                                 <StackPanel Orientation="Vertical" Width="128" Height="156" Spacing="10">
-                                    <Image Width="128" Height="128">
-                                        <Image.Source>
-                                            <BitmapImage UriSource="{Binding Image}" />
-                                        </Image.Source>
-                                    </Image>
+                                    <Image
+                                        Width="128"
+                                        Height="128"
+                                        Source="{Binding Image,
+                                                 TargetNullValue=ms-appx:///Assets/noartistimage.png}" />
+
                                     <TextBlock MaxWidth="128"
                                            Text="{Binding Name}"
                                            TextAlignment="Center"

@@ -51,7 +51,7 @@
                                 <StackPanel Orientation="Vertical" Width="128" Height="180" Spacing="10">
                                     <Image Width="128" Height="128">
                                         <Image.Source>
-                                            <BitmapImage UriSource="{Binding Image}" />
+                                            <BitmapImage UriSource="{Binding Image, TargetNullValue=ms-appx:///Assets/noartistimage.png}" />
                                         </Image.Source>
                                     </Image>
                                     <TextBlock MaxWidth="128"

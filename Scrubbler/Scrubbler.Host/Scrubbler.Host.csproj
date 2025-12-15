@@ -37,6 +37,10 @@
         <ProjectReference Include="..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="Assets\noartistimage.png" />
+    </ItemGroup>
+
     <!-- XAML pages -->
     <ItemGroup>
         <!-- App.xaml must be ApplicationDefinition so Main() gets generated -->
