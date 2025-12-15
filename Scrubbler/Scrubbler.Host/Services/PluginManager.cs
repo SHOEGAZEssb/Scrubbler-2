@@ -6,7 +6,6 @@ using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Helper;
-using Scrubbler.Host.Services.Logging;
 
 namespace Scrubbler.Host.Services;
 
@@ -14,7 +13,6 @@ internal class PluginManager : IPluginManager
 {
     #region Properties
 
-    private readonly HostLogService _hostLogService;
     private readonly ILogService _logService;
     private readonly ISettingsStore _settings;
     private readonly IWritableOptions<UserConfig> _config;
@@ -44,13 +42,12 @@ internal class PluginManager : IPluginManager
 
     #endregion Properties
 
-    public PluginManager(HostLogService hostLogService, ISettingsStore settings, IWritableOptions<UserConfig> config, IServiceProvider serviceProvider)
+    public PluginManager(IModuleLogServiceFactory logFactory, ISettingsStore settings, IWritableOptions<UserConfig> config, IServiceProvider serviceProvider)
     {
-        _hostLogService = hostLogService;
         _settings = settings;
         _config = config;
         _serviceProvider = serviceProvider;
-        _logService = new ModuleLogService(_hostLogService, "Plugin Manager");
+        _logService = logFactory.Create("Plugin Manager");
         if (Environment.GetEnvironmentVariable("SCRUBBLER_PLUGIN_MODE") == "Debug")
             _rootDir = Path.Combine(Environment.GetEnvironmentVariable("SOLUTIONDIR")!, "DebugPlugins");
         else
@@ -173,7 +170,6 @@ internal class PluginManager : IPluginManager
                     {
                         if (ActivatorUtilities.CreateInstance(_serviceProvider, pluginType) is IPlugin plugin)
                         {
-                            //plugin.LogService = new ModuleLogService(_hostLogService, plugin.Name);
                             _installed.Add((plugin, context));
                             if (plugin is IPersistentPlugin persistentPlugin)
                                 await persistentPlugin.LoadAsync();

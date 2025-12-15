@@ -14,6 +14,7 @@ internal partial class ScrobblePluginHostViewModel : PluginHostViewModelBase
     public bool ShowScrobbleBar => PluginViewModel.ReadyForScrobbling;
 
     private bool CanPreview => PluginViewModel.CanScrobble;
+
     private bool CanScrobble => PluginViewModel.CanScrobble && _pluginManager.IsAnyAccountPluginScrobbling;
 
     #endregion Properties

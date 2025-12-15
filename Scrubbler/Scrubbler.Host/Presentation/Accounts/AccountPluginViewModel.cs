@@ -11,14 +11,12 @@ public partial class AccountPluginViewModel : ObservableObject
 
     public string Name => _plugin.Name;
 
-    [ObservableProperty]
-    private string? _accountId;
+    public string? AccountId => _plugin.AccountId;
+
+    public bool IsAuthenticated => _plugin.IsAuthenticated;
 
     [ObservableProperty]
-    private bool _isAuthenticated;
-
-    [ObservableProperty]
-    private bool _isBusy;
+    public bool _isBusy;
 
     public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(_plugin);
     private ImageSource? _icon;
@@ -32,7 +30,7 @@ public partial class AccountPluginViewModel : ObservableObject
         get => _plugin.IsScrobblingEnabled;
         set
         {
-            if (_plugin.IsScrobblingEnabled != value)
+            if (IsScrobblingEnabled != value)
             {
                 _plugin.IsScrobblingEnabled = value;
                 OnPropertyChanged();
@@ -69,8 +67,11 @@ public partial class AccountPluginViewModel : ObservableObject
         get => _config.Value.AccountFunctionsPluginID == _plugin.Name;
         set
         {
-            RequestedIsUsingAccountFunctionsChange?.Invoke(this, value);
-            OnPropertyChanged();
+            if (IsUsingAccountFunctions != value)
+            {
+                RequestedIsUsingAccountFunctionsChange?.Invoke(this, value);
+                OnPropertyChanged();
+            }
         }
     }
 
@@ -79,13 +80,12 @@ public partial class AccountPluginViewModel : ObservableObject
 
     #endregion Properties
 
+    #region Construction
+
     public AccountPluginViewModel(IAccountPlugin plugin, IWritableOptions<UserConfig> config)
     {
         _plugin = plugin;
         _config = config;
-
-        AccountId = plugin.AccountId;
-        IsAuthenticated = plugin.IsAuthenticated;
 
         if (_plugin is IHaveScrobbleLimit scrobbleLimitPlugin)
         {
@@ -95,6 +95,8 @@ public partial class AccountPluginViewModel : ObservableObject
             };
         }
     }
+
+    #endregion Construction
 
     internal void UpdateIsUsingAccountFunctions()
     {
@@ -108,7 +110,7 @@ public partial class AccountPluginViewModel : ObservableObject
         {
             IsBusy = true;
             await _plugin.AuthenticateAsync();
-            UpdateState();
+            UpdateAuthenticationState();
         }
         finally
         {
@@ -123,7 +125,8 @@ public partial class AccountPluginViewModel : ObservableObject
         {
             IsBusy = true;
             await _plugin.LogoutAsync();
-            UpdateState();
+            IsUsingAccountFunctions = false;
+            UpdateAuthenticationState();
         }
         finally
         {
@@ -133,10 +136,10 @@ public partial class AccountPluginViewModel : ObservableObject
 
 
 
-    private void UpdateState()
+    private void UpdateAuthenticationState()
     {
-        AccountId = _plugin.AccountId;
-        IsAuthenticated = _plugin.IsAuthenticated;
+        OnPropertyChanged(nameof(AccountId));
+        OnPropertyChanged(nameof(IsAuthenticated));
     }
 }
 
