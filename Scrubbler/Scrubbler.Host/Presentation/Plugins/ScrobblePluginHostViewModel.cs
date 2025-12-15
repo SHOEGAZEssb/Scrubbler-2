@@ -4,12 +4,14 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal partial class ScrobblePluginHostViewModel : ScrobblePluginHostViewModelBase
+internal partial class ScrobblePluginHostViewModel : PluginHostViewModelBase
 {
     #region Properties
 
     [ObservableProperty]
     private IScrobblePluginViewModel _pluginViewModel;
+
+    public bool ShowScrobbleBar => PluginViewModel.ReadyForScrobbling;
 
     private bool CanPreview => PluginViewModel.CanScrobble;
     private bool CanScrobble => PluginViewModel.CanScrobble && _pluginManager.IsAnyAccountPluginScrobbling;
@@ -30,6 +32,8 @@ internal partial class ScrobblePluginHostViewModel : ScrobblePluginHostViewModel
                 ScrobbleCommand.NotifyCanExecuteChanged();
                 PreviewCommand.NotifyCanExecuteChanged();
             }
+            else if (e.PropertyName == nameof(IScrobblePluginViewModel.ReadyForScrobbling))
+                OnPropertyChanged(nameof(ShowScrobbleBar));
         };
 
         _pluginManager.IsAnyAccountPluginScrobblingChanged += (s, e) =>

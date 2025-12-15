@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <!-- Plugin or Page View -->
         <ContentPresenter Content="{Binding PluginViewModel}"
                               ContentTemplateSelector="{StaticResource ViewLocatorSelector}"
@@ -25,7 +25,8 @@
                         Grid.Row="1"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         Padding="12"
-                        Spacing="12">
+                        Spacing="12"
+                        Visibility="{Binding ShowScrobbleBar, Converter={StaticResource BoolToVis}}">
             <Button Content="Scrobble" Command="{Binding ScrobbleCommand}"/>
             <Button Content="Preview" Command="{Binding PreviewCommand}"/>
         </StackPanel>

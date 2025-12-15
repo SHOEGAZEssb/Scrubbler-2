@@ -5,7 +5,7 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal abstract class ScrobblePluginHostViewModelBase(IPlugin plugin, IPluginManager pluginManager, IUserFeedbackService userFeedbackService, IDialogService dialogService) : ObservableObject
+internal abstract class PluginHostViewModelBase(IPlugin plugin, IPluginManager pluginManager, IUserFeedbackService userFeedbackService, IDialogService dialogService) : ObservableObject
 {
     #region Properties
 

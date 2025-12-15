@@ -17,5 +17,10 @@ public interface IScrobblePluginViewModel : IPluginViewModel
     /// <summary>
     /// Gets a value indicating whether scrobbling can be performed (e.g., tracks are selected and account is authenticated).
     /// </summary>
-    bool CanScrobble {  get; }
+    bool CanScrobble { get; }
+
+    /// <summary>
+    /// Indicates if this ScrobblePluginViewModel is ready to show the scrobble bar.
+    /// </summary>
+    bool ReadyForScrobbling { get; }
 }

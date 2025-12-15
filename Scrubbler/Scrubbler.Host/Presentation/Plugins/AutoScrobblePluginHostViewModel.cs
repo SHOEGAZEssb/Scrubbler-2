@@ -4,7 +4,7 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal partial class AutoScrobblePluginHostViewModel : ScrobblePluginHostViewModelBase
+internal partial class AutoScrobblePluginHostViewModel : PluginHostViewModelBase
 {
     #region Properties
 

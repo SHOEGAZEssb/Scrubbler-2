@@ -82,7 +82,6 @@ internal partial class LogViewModel : ObservableObject, IHostedService
         {
             Modules.Add(module);
         }
-
     }
 
     private bool MatchesFilter(LogMessage entry)

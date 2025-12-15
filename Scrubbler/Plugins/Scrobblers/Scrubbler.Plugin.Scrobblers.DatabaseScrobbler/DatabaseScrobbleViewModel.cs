@@ -40,11 +40,15 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
 
     private bool CanSearch => !string.IsNullOrEmpty(SearchQuery);
 
+    public override bool ReadyForScrobbling => CurrentResultVM == this && Scrobbles.Any();
+
     // satisfy interface
     public IEnumerable<SearchResultViewModel> Results => [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ReadyForScrobbling))]
     private IResultsViewModel? _currentResultVM;
+
     private ArtistResultsViewModel? _previousArtistResults;
     private AlbumResultsViewModel? _previousAlbumResults;
 

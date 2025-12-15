@@ -17,6 +17,11 @@ public abstract partial class ScrobblePluginViewModelBase : PluginViewModelBase,
     public abstract bool CanScrobble { get; }
 
     /// <summary>
+    /// Indicates if this ScrobblePluginViewModel is ready to show the scrobble bar.
+    /// </summary>
+    public virtual bool ReadyForScrobbling => true;
+
+    /// <summary>
     /// Gets the collection of scrobbles that the user has selected or entered.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains the collection of <see cref="ScrobbleData"/> to be scrobbled.</returns>
