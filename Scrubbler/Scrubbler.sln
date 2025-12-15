@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F0A72B37
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Test.ManualScrobblerTest", "Plugins\Scrobblers\Tests\Scrubbler.Test.ManualScrobblerTest\Scrubbler.Test.ManualScrobblerTest.csproj", "{5BBFE50D-0FC3-4318-961D-1FFD9C6405E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobblers.DatabaseScrobbler", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobblers.DatabaseScrobbler\Scrubbler.Plugin.Scrobblers.DatabaseScrobbler.csproj", "{B6AAEFFB-6BEA-426B-A14B-D4E9390A271B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{5BBFE50D-0FC3-4318-961D-1FFD9C6405E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BBFE50D-0FC3-4318-961D-1FFD9C6405E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BBFE50D-0FC3-4318-961D-1FFD9C6405E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6AAEFFB-6BEA-426B-A14B-D4E9390A271B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6AAEFFB-6BEA-426B-A14B-D4E9390A271B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6AAEFFB-6BEA-426B-A14B-D4E9390A271B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6AAEFFB-6BEA-426B-A14B-D4E9390A271B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +109,7 @@ Global
 		{41889419-4A78-467F-A0C1-2BA6B78F72C5} = {FD46BF08-594F-4224-BD15-2DB872961D54}
 		{F0A72B37-6A77-4762-B7DF-44AD8478FA70} = {4536D109-4649-4376-B775-F791CE753B4A}
 		{5BBFE50D-0FC3-4318-961D-1FFD9C6405E4} = {F0A72B37-6A77-4762-B7DF-44AD8478FA70}
+		{B6AAEFFB-6BEA-426B-A14B-D4E9390A271B} = {4536D109-4649-4376-B775-F791CE753B4A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB28EE7E-5D57-4092-8B8A-1EE7C97A6790}

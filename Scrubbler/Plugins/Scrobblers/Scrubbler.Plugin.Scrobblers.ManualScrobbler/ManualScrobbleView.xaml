@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Scrubbler.Abstractions.Controls"
     mc:Ignorable="d"
     d:DesignHeight="350"
     d:DesignWidth="400">
@@ -22,9 +23,10 @@
         <TextBox Header="Album Artist Name" Text="{Binding AlbumArtistName, Mode=TwoWay}" />
 
         <!-- Timestamp -->
-        <StackPanel Orientation="Horizontal" Spacing="5">
+        <controls:ScrobbleTimeControl DataContext="{Binding ScrobbleTimeVM}"/>
+        <!--<StackPanel Orientation="Horizontal" Spacing="5">
             <DatePicker Date="{Binding PlayedAt, Mode=TwoWay}" />
             <TimePicker Time="{Binding PlayedAtTime, Mode=TwoWay}" />
-        </StackPanel>
+        </StackPanel>-->
     </StackPanel>
 </UserControl>

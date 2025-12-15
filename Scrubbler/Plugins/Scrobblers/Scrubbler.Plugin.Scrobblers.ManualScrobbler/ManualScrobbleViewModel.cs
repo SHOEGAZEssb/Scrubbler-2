@@ -29,9 +29,21 @@ public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
     [ObservableProperty]
     private TimeSpan _playedAtTime = DateTimeOffset.Now.TimeOfDay;
 
-    public override bool CanScrobble => !string.IsNullOrEmpty(ArtistName) && !string.IsNullOrEmpty(TrackName);
+    public override bool CanScrobble => !string.IsNullOrEmpty(ArtistName) && !string.IsNullOrEmpty(TrackName) && ScrobbleTimeVM.IsTimeValid;
+
+    public ScrobbleTimeViewModel ScrobbleTimeVM { get; }
 
     #endregion Properties
+
+    #region Construction
+
+    public ManualScrobbleViewModel()
+    {
+        ScrobbleTimeVM = new ScrobbleTimeViewModel();
+        ScrobbleTimeVM.PropertyChanged += ScrobbleTimeVM_PropertyChanged;
+    }
+
+    #endregion Construction
 
     public override async Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
     {
@@ -51,5 +63,10 @@ public partial class ManualScrobbleViewModel : ScrobblePluginViewModelBase
         {
             IsBusy = false;
         }
+    }
+
+    private void ScrobbleTimeVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(CanScrobble));
     }
 }

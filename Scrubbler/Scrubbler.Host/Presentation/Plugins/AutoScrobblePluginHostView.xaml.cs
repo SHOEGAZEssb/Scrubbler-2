@@ -6,6 +6,6 @@ public sealed partial class AutoScrobblePluginHostView : UserControl
 {
     public AutoScrobblePluginHostView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

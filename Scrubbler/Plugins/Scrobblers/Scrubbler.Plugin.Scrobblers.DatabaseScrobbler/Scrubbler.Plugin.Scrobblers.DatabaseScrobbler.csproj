@@ -1,0 +1,61 @@
+﻿<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net10.0</TargetFrameworks>
+        <UnoSingleProject>true</UnoSingleProject>
+        <OutputType>Library</OutputType>
+        <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
+        <GenerateLibraryLayout>true</GenerateLibraryLayout>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- Enables Uno XAML codegen and build logic -->
+        <UseUnoXaml>true</UseUnoXaml>
+        <EnableDefaultXamlItems>true</EnableDefaultXamlItems>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Shoegaze.LastFM" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="ArtistResultsView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="environment.env">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="ArtistResultsView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="DatabaseScrobbleView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="AlbumResultsView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="TrackResultsView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="icon.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+</Project>

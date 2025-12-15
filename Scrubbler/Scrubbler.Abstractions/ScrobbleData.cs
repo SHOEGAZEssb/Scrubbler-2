@@ -46,4 +46,16 @@ public class ScrobbleData(string track, string artist, DateTimeOffset timestamp)
     public ScrobbleData(string track, string artist, DateTime playedAt, TimeSpan playedAtTime)
         : this(track, artist, playedAt.Date + playedAtTime)
     { }
+
+    public static IEnumerable<ScrobbleData> FromMasterTimestamp(IEnumerable<IScrobbableObjectViewModel> scrobbles, DateTimeOffset masterTimestamp, int secondsToSubtract = 180)
+    {
+        var results = new List<ScrobbleData>();
+        foreach (var scrobble in scrobbles)
+        {
+            results.Add(new ScrobbleData(scrobble.TrackName, scrobble.ArtistName, masterTimestamp) { Album = scrobble.AlbumName, AlbumArtist = scrobble.AlbumArtistName });
+            masterTimestamp = masterTimestamp.Subtract(TimeSpan.FromSeconds(secondsToSubtract));
+        }
+
+        return results;
+    }
 }

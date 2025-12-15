@@ -1,0 +1,99 @@
+﻿<UserControl
+    x:Class="Scrubbler.Plugin.Scrobblers.DatabaseScrobbler.TrackResultsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Scrubbler.Plugin.Scrobblers.DatabaseScrobbler"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Scrubbler.Abstractions.Controls"
+    xmlns:tv="using:WinUI.TableView"
+    xmlns:beh="using:Microsoft.Xaml.Interactivity"
+    xmlns:actions="using:Microsoft.Xaml.Interactions.Core"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" Content="Back to albums" Command="{Binding GoBackCommand}"/>
+
+        <Grid Grid.Row="2" x:Name="ScrobbleGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <beh:Interaction.Behaviors>
+                <beh:DataTriggerBehavior Binding="{Binding Scrobbles.Count}" Value="0">
+                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=ScrobbleGrid}"
+                                      PropertyName="Visibility" Value="Collapsed"/>
+                </beh:DataTriggerBehavior>
+            </beh:Interaction.Behaviors>
+
+            <controls:ScrobbleMultipleSelectorControl Grid.Row="0"/>
+
+            <controls:ScrobbableObjectTableView Grid.Row="2"
+            ItemsSource="{Binding Scrobbles}"
+            AutoGenerateColumns="False"
+            SelectionMode="Extended"
+            CanSortColumns="True"
+            Margin="8"
+            RowHeight="40"
+            HeaderRowHeight="32" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                <controls:ScrobbableObjectTableView.Columns>
+                    <tv:TableViewTemplateColumn Header="Scrobble">
+                        <tv:TableViewTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding ToScrobble, Mode=TwoWay}"/>
+                            </DataTemplate>
+                        </tv:TableViewTemplateColumn.CellTemplate>
+                    </tv:TableViewTemplateColumn>
+
+                    <tv:TableViewTextColumn
+                    Header="Track"
+                    Binding="{Binding TrackName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                    <tv:TableViewTextColumn
+                    Header="Artist"
+                    Binding="{Binding ArtistName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                    <tv:TableViewTextColumn
+                    Header="Album"
+                    Binding="{Binding AlbumName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                    <tv:TableViewTextColumn
+                    Header="Album Artist"
+                    Binding="{Binding AlbumArtistName}"
+                    CanSort="True"
+                    Width="*"/>
+                </controls:ScrobbableObjectTableView.Columns>
+            </controls:ScrobbableObjectTableView>
+
+            <controls:ScrobbleTimeControl DataContext="{Binding ScrobbleTimeVM}" Grid.Row="4"/>
+        </Grid>
+
+        <TextBlock x:Name="NoResultsText" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Text="No albums found">
+            <beh:Interaction.Behaviors>
+                <beh:DataTriggerBehavior Binding="{Binding Scrobbles.Count}" Value="0" ComparisonCondition="GreaterThan">
+                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=NoResultsText}"
+                                      PropertyName="Visibility" Value="Collapsed"/>
+                </beh:DataTriggerBehavior>
+            </beh:Interaction.Behaviors>
+        </TextBlock>
+    </Grid>
+</UserControl>
