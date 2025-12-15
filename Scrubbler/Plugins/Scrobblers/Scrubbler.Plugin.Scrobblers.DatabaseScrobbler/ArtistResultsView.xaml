@@ -53,7 +53,7 @@
             </ItemsRepeater>
         </ScrollViewer>
 
-        <TextBlock x:Name="NoResultsText" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Text="No albums found">
+        <TextBlock x:Name="NoResultsText" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Text="No artists found">
             <beh:Interaction.Behaviors>
                 <beh:DataTriggerBehavior Binding="{Binding TypedResults.Count}" Value="0" ComparisonCondition="GreaterThan">
                     <actions:ChangePropertyAction TargetObject="{Binding ElementName=NoResultsText}"

@@ -32,6 +32,14 @@ public class UserFeedbackService : IUserFeedbackService
         Show(message, InfoBarSeverity.Error, duration ?? TimeSpan.FromSeconds(5));
 
     /// <summary>
+    /// Displays a warning message to the user.
+    /// </summary>
+    /// <param name="message">The error message to display.</param>
+    /// <param name="duration">The duration to show the message. If <c>null</c>, defaults to 5 seconds.</param>
+    public void ShowWarning(string message, TimeSpan? duration = null) =>
+        Show(message, InfoBarSeverity.Warning, duration ?? TimeSpan.FromSeconds(5));
+
+    /// <summary>
     /// Displays an informational message to the user.
     /// </summary>
     /// <param name="message">The informational message to display.</param>
@@ -50,13 +58,14 @@ public class UserFeedbackService : IUserFeedbackService
 
         await dispatcher.EnqueueAsync(() =>
         {
+            _infoBar.Title = severity.ToString();
             _infoBar.Message = message;
             _infoBar.Severity = severity;
             _infoBar.IsOpen = true;
         });
 
         await Task.Delay(duration);
-        
+
         await dispatcher.EnqueueAsync(() =>
         {
             _infoBar.IsOpen = false;

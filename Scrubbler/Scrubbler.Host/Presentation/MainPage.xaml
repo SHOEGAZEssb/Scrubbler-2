@@ -47,24 +47,22 @@
         <!-- ALL MAIN UI CONTENT GOES HERE -->
         <NavigationView.Content>
             <Grid>
-                <Grid.RowDefinitions>
+                <!--<Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                </Grid.RowDefinitions>-->
+
+                <!-- Page or Plugin View -->
+                <ContentPresenter Content="{Binding CurrentViewModel}"
+                                  ContentTemplateSelector="{StaticResource ViewLocatorSelector}" />
 
                 <!-- Global InfoBar -->
                 <InfoBar x:Name="GlobalInfoBar"
-                         Title="Notification"
                          IsOpen="False"
                          HorizontalAlignment="Center"
                          VerticalAlignment="Top"
                          Margin="16"
-                         IsClosable="False" />
-
-                <!-- Page or Plugin View -->
-                <ContentPresenter Grid.Row="1"
-                                  Content="{Binding CurrentViewModel}"
-                                  ContentTemplateSelector="{StaticResource ViewLocatorSelector}" />
+                         IsClosable="True"/>
             </Grid>
         </NavigationView.Content>
     </NavigationView>

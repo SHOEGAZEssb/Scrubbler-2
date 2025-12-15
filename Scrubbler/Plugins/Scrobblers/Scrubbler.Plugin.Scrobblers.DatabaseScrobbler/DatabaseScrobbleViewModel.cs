@@ -197,7 +197,7 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
         }
         catch (Exception ex)
         {
-
+            _logger.Error("Error fetching results through artist or album", ex);
         }
         finally
         {

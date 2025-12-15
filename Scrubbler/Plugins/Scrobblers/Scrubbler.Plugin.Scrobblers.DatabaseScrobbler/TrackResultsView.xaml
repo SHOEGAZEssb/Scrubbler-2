@@ -87,7 +87,7 @@
             <controls:ScrobbleTimeControl DataContext="{Binding ScrobbleTimeVM}" Grid.Row="4"/>
         </Grid>
 
-        <TextBlock x:Name="NoResultsText" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Text="No albums found">
+        <TextBlock x:Name="NoResultsText" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Text="No tracks found">
             <beh:Interaction.Behaviors>
                 <beh:DataTriggerBehavior Binding="{Binding Scrobbles.Count}" Value="0" ComparisonCondition="GreaterThan">
                     <actions:ChangePropertyAction TargetObject="{Binding ElementName=NoResultsText}"

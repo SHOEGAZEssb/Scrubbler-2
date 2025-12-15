@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
+using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
 
 namespace Scrubbler.Host.Presentation.Logging;
@@ -22,15 +23,18 @@ internal partial class LogViewModel : ObservableObject, IHostedService
     [ObservableProperty]
     private string _searchText = string.Empty;
 
+    private readonly IUserFeedbackService _userFeedbackService;
+
     private const string ALLMODULE = "All";
 
     #endregion Properties
 
     #region Construction
 
-    public LogViewModel(HostLogService hostLogService)
+    public LogViewModel(HostLogService hostLogService, IUserFeedbackService userFeedbackService)
     {
         hostLogService.MessageLogged += Add;
+        _userFeedbackService = userFeedbackService;
 
         foreach (LogLevel level in Enum.GetValues<LogLevel>())
         {
@@ -119,6 +123,11 @@ internal partial class LogViewModel : ObservableObject, IHostedService
 
         if (MatchesFilter(entry))
             FilteredEntries.Add(entry);
+
+        if (entry.Level == LogLevel.Error || entry.Level == LogLevel.Critical)
+            _userFeedbackService.ShowError($"{entry.Message} | error: {entry.Exception?.Message ?? "Unknown Error"}");
+        else if (entry.Level == LogLevel.Warning)
+            _userFeedbackService.ShowWarning(entry.Message);
     }
 
     partial void OnSelectedModuleChanged(string value)
