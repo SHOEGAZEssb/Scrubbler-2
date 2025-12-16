@@ -2,105 +2,107 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Scrubbler.Abstractions.Plugin;
 
-public partial class ScrobbleTimeViewModel : ObservableObject
+public partial class ScrobbleTimeViewModel : ObservableObject, IDisposable
 {
-    #region Properties
+    private readonly TimeProvider _timeProvider;
+    private readonly CancellationTokenSource _cts = new();
+
+    private DateTimeOffset _date;
+    private TimeSpan _time;
+    private bool _useCurrentTime;
 
     public DateTimeOffset Date
     {
-        get => UseCurrentTime ? DateTime.Now.Date : _date;
+        get => UseCurrentTime ? _timeProvider.GetLocalNow().Date : _date;
         set
         {
             if (Date != value)
             {
                 _date = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(Timestamp));
             }
         }
     }
-    private DateTimeOffset _date;
 
-    /// <summary>
-    /// The selected time.
-    /// </summary>
     public TimeSpan Time
     {
-        get => UseCurrentTime ? DateTime.Now.TimeOfDay : _time;
+        get => UseCurrentTime ? _timeProvider.GetLocalNow().TimeOfDay : _time;
         set
         {
             if (Time != value)
             {
                 _time = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(Timestamp));
             }
         }
     }
-    private TimeSpan _time;
 
-    /// <summary>
-    /// If <see cref="DateTime.Now"/> should be used
-    /// for <see cref="Time"/>.
-    /// </summary>
     public bool UseCurrentTime
     {
-        get { return _useCurrentTime; }
+        get => _useCurrentTime;
         set
         {
-            if (UseCurrentTime != value)
+            if (_useCurrentTime != value)
             {
                 if (!value)
-                    Time = DateTime.Now.TimeOfDay;
+                    _time = _timeProvider.GetLocalNow().TimeOfDay;
 
                 _useCurrentTime = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Time));
+                OnPropertyChanged(nameof(Date));
+                OnPropertyChanged(nameof(Timestamp));
             }
         }
     }
-    private bool _useCurrentTime;
 
     public DateTimeOffset Timestamp => Date + Time;
 
-    /// <summary>
-    /// Gets if the selected <see cref="Time"/>
-    /// is valid for a last.fm scrobble.
-    /// </summary>
-    /// <returns>True if time is "newer" than <see cref="MainViewModel.MinimumDateTime"/>,
-    /// otherwise false.</returns>
-    public bool IsTimeValid => Timestamp >= DateTime.Now.Subtract(TimeSpan.FromDays(14)) && Timestamp < DateTime.Now.AddDays(1);
-
-    #endregion Properties
-
-    #region Construction
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public ScrobbleTimeViewModel()
+    public bool IsTimeValid
     {
-        UseCurrentTime = true;
-        _ = UpdateCurrentTimeAsync();
+        get
+        {
+            var now = _timeProvider.GetLocalNow();
+            return Timestamp >= now.AddDays(-14) && Timestamp < now.AddDays(1);
+        }
     }
 
-    #endregion Construction
-
-    /// <summary>
-    /// Task for notifying the UI that
-    /// the <see cref="Time"/> has changed.
-    /// </summary>
-    /// <returns>Task.</returns>
-    private async Task UpdateCurrentTimeAsync()
+    public ScrobbleTimeViewModel(TimeProvider? timeProvider = null)
     {
-        while (true)
-        {
-            if (UseCurrentTime)
-            {
-                OnPropertyChanged(nameof(Time));
-                OnPropertyChanged(nameof(Date));
-            }
+        _timeProvider = timeProvider ?? TimeProvider.System;
+        UseCurrentTime = true;
 
-            OnPropertyChanged(nameof(IsTimeValid));
-            await Task.Delay(1000);
+        _ = UpdateLoopAsync(_cts.Token);
+    }
+
+    private async Task UpdateLoopAsync(CancellationToken ct)
+    {
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                if (UseCurrentTime)
+                {
+                    OnPropertyChanged(nameof(Time));
+                    OnPropertyChanged(nameof(Date));
+                    OnPropertyChanged(nameof(Timestamp));
+                }
+
+                OnPropertyChanged(nameof(IsTimeValid));
+                await Task.Delay(1000, ct);
+            }
         }
+        catch (OperationCanceledException)
+        {
+            // expected
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
     }
 }

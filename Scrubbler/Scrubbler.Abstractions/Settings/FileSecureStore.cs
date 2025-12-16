@@ -6,7 +6,6 @@ namespace Scrubbler.Abstractions.Settings;
 /// <summary>
 /// Very simple file-based secure store.
 /// Uses AES encryption with a local key.
-/// On real platforms (Windows native, Android/iOS), swap out for DPAPI/Keychain/Keystore.
 /// </summary>
 public class FileSecureStore : ISecureStore
 {

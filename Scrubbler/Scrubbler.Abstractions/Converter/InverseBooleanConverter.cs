@@ -27,5 +27,5 @@ public class InverseBooleanConverter : IValueConverter
     /// <param name="language">The language (unused).</param>
     /// <returns>The inverted boolean value, or the original value if it is not a boolean.</returns>
     public object ConvertBack(object value, Type targetType, object parameter, string language)
-        => value is bool b ? !b : value;
+        => Convert(value, targetType, parameter, language);
 }
