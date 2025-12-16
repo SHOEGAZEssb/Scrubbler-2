@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Services;
 
@@ -40,6 +41,7 @@ internal class InstalledPluginsViewModel : ObservableObject
         {
             var vm = new InstalledPluginViewModel(plugin, HasPluginUpdate(plugin));
             vm.UninstallRequested += OnUninstallRequested;
+            vm.UpdateRequested += OnUpdateRequested;
             Plugins.Add(vm);
         }
     }
@@ -56,6 +58,17 @@ internal class InstalledPluginsViewModel : ObservableObject
     private async void OnUninstallRequested(object? sender, IPlugin plugin)
     {
         await _manager.UninstallAsync(plugin);
+        Refresh();
+    }
+
+    private async void OnUpdateRequested(object? sender, IPlugin e)
+    {
+        var pluginManifest = _manager.AvailablePlugins.Where(p => p.Name == e.Name).FirstOrDefault();
+        if (pluginManifest == null)
+            return;
+
+        Plugins.Remove((sender as InstalledPluginViewModel)!);
+        await _manager.UpdateAsync(e, pluginManifest);
         Refresh();
     }
 }

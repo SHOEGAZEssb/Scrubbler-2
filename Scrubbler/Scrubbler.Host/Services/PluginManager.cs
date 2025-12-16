@@ -39,6 +39,7 @@ internal class PluginManager : IPluginManager
     public event EventHandler<bool>? IsFetchingPluginsChanged;
     public event EventHandler? PluginInstalled;
     public event EventHandler? PluginUninstalled;
+    public event EventHandler<IPlugin>? PluginUnloading;
 
     #endregion Properties
 
@@ -98,28 +99,11 @@ internal class PluginManager : IPluginManager
         if (entry.Plugin == null)
             return;
 
-        _installed.Remove(entry);
-
         var pluginName = plugin.Name;
         var pluginLocation = plugin.GetType().Assembly.Location;
-        PluginIconHelper.UnloadPluginIcon(plugin);
-
-        // unload
-        entry.Context.Unload();
-        // todo: dispose plugin
-        entry.Plugin = null!;
         plugin = null!;
+        await UnloadPlugin(entry);
         _logService.Info($"Unloaded plugin: {pluginName}");
-
-        // force GC to reclaim
-        await Task.Run(() =>
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-            }
-        });
 
         try
         {
@@ -138,6 +122,47 @@ internal class PluginManager : IPluginManager
         {
             _logService.Error($"Failed to remove plugin files: {ex.Message}");
         }
+    }
+
+    private async Task UnloadPlugin((IPlugin plugin, PluginLoadContext context) entry)
+    {
+        PluginUnloading?.Invoke(this, entry.plugin);
+
+        var plugin = entry.plugin;
+        var alcWeakRef = new WeakReference(entry.context);
+
+        // 1. detach EVERYTHING first
+        if (plugin is IAccountPlugin accountPlugin)
+            accountPlugin.IsScrobblingEnabledChanged -= AccountPlugin_IsScrobblingEnabledChanged;
+
+        PluginIconHelper.UnloadPluginIcon(plugin);
+
+        // 2. dispose while assembly is still valid
+        if (plugin is IDisposable d)
+            d.Dispose();
+
+        // 3. remove from internal lists
+        _installed.Remove(entry);
+
+        // 4. clear strong refs
+        entry.plugin = null!;
+
+        // 5. unload context LAST
+        entry.context.Unload();
+
+        // 6. force collection
+        await Task.Run(() =>
+        {
+            for (var i = 0; i < 3; i++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            }
+        });
+
+        if (alcWeakRef.IsAlive)
+            _logService.Warn("Plugin ALC still alive after unload");
     }
 
     private async Task DiscoverInstalledPlugins()
@@ -247,6 +272,58 @@ internal class PluginManager : IPluginManager
                 _logService.Warn($"Failed to save {plugin.Name}: {ex}");
             }
         }
+    }
+
+    public async Task UpdateAsync(IPlugin plugin, PluginManifestEntry manifest)
+    {
+        // find existing plugin entry
+        var entry = _installed.FirstOrDefault(x => x.Plugin == plugin);
+        if (entry.Plugin == null)
+        {
+            _logService.Warn("Plugin to update was not found among installed plugins.");
+            return;
+        }
+
+        _logService.Info($"Updating plugin '{plugin.Name}'");
+
+        // 1. persist plugin state if supported
+        if (plugin is IPersistentPlugin persistentPlugin)
+        {
+            try
+            {
+                await persistentPlugin.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                _logService.Warn($"Failed to save plugin state before update: {ex}");
+            }
+        }
+
+        // keep folder path before unloading
+        var pluginAssemblyPath = plugin.GetType().Assembly.Location;
+        var pluginFolder = Path.GetDirectoryName(pluginAssemblyPath);
+
+        plugin = null!;
+        await UnloadPlugin(entry);
+
+        // 5. replace plugin files
+        if (!string.IsNullOrEmpty(pluginFolder) && Directory.Exists(pluginFolder))
+        {
+            try
+            {
+                Directory.Delete(pluginFolder, recursive: true);
+            }
+            catch (Exception ex)
+            {
+                _logService.Error($"Failed to remove old plugin files: {ex.Message}");
+                return;
+            }
+        }
+
+        // 6. install new version
+        await InstallAsync(manifest);
+
+        _logService.Info($"Plugin '{manifest.Id}' updated successfully.");
     }
 
     public void UpdateAccountFunctionsReceiver()

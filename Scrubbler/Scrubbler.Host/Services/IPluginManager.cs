@@ -48,6 +48,11 @@ public interface IPluginManager
     event EventHandler? PluginUninstalled;
 
     /// <summary>
+    /// Event that is raised when a plugin is about to be unloaded.
+    /// </summary>
+    event EventHandler<IPlugin>? PluginUnloading;
+
+    /// <summary>
     /// Event that is raised when <see cref="IsAnyAccountPluginScrobbling"/> changes.
     /// </summary>
     event EventHandler? IsAnyAccountPluginScrobblingChanged;
@@ -67,6 +72,8 @@ public interface IPluginManager
     /// <param name="plugin">The <see cref="IPlugin"/> instance to uninstall.</param>
     /// <returns>A task that represents the asynchronous uninstallation operation.</returns>
     Task UninstallAsync(IPlugin plugin);
+
+    Task UpdateAsync(IPlugin plugin, PluginManifestEntry manifest);
 
     void UpdateAccountFunctionsReceiver();
 }

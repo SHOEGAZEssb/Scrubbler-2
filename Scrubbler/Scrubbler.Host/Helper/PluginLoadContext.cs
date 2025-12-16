@@ -5,7 +5,7 @@ namespace Scrubbler.Host.Helper;
 
 internal class PluginLoadContext(string mainAssemblyPath) : AssemblyLoadContext(isCollectible: true)
 {
-    private readonly AssemblyDependencyResolver _resolver = new AssemblyDependencyResolver(mainAssemblyPath);
+    private readonly AssemblyDependencyResolver _resolver = new(mainAssemblyPath);
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
@@ -14,7 +14,7 @@ internal class PluginLoadContext(string mainAssemblyPath) : AssemblyLoadContext(
             .FirstOrDefault(a => string.Equals(a.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
 
         if (existing != null)
-            return existing;
+            return null;
 
         // otherwise resolve from plugin folder
         var path = _resolver.ResolveAssemblyToPath(assemblyName);

@@ -51,6 +51,7 @@ internal partial class MainViewModel : ObservableObject
         // plugins
         _pluginManager = services.GetRequiredService<IPluginManager>();
         _pluginManager.PluginInstalled += PluginManager_PluginInstalled;
+        _pluginManager.PluginUnloading += PluginManager_PluginUnloading;
         _userFeedbackService = services.GetRequiredService<IUserFeedbackService>();
         _dialogService = services.GetRequiredService<IDialogService>();
         RefreshPluginList();
@@ -60,6 +61,13 @@ internal partial class MainViewModel : ObservableObject
         Items.Add(new MenuNavigationItemViewModel("Logs", new SymbolIconSource() { Symbol = Symbol.Document }, services.GetRequiredService<LogViewModel>()));
 
         SelectedItem = Items.FirstOrDefault();
+    }
+
+    private void PluginManager_PluginUnloading(object? sender, IPlugin e)
+    {
+        var nav = _pluginGroup.Children.Where(n => n .Title == e.Name).FirstOrDefault();
+        if (nav != null)
+            _pluginGroup.Children.Remove(nav);
     }
 
     private void PluginManager_PluginInstalled(object? sender, EventArgs e)
