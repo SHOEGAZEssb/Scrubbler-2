@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
@@ -33,7 +34,9 @@ internal class InstalledPluginsViewModel : ObservableObject
     public void Refresh()
     {
         foreach (var plugin in Plugins)
-            plugin.UninstallRequested -= OnUninstallRequested;
+        {
+            plugin.Dispose();
+        }
 
         Plugins.Clear();
 
@@ -55,20 +58,36 @@ internal class InstalledPluginsViewModel : ObservableObject
         return new Version(pluginManifest.Version) > plugin.Version;
     }
 
-    private async void OnUninstallRequested(object? sender, IPlugin plugin)
+    private async void OnUninstallRequested(object? sender, string name) // todo: replace name with ID
     {
-        await _manager.UninstallAsync(plugin);
+        await _manager.UninstallAsync(_manager.InstalledPlugins.Where(p => p.Name == name).First());
         Refresh();
     }
 
-    private async void OnUpdateRequested(object? sender, IPlugin e)
+    private async void OnUpdateRequested(object? sender, string name) // todo: replace name with ID
     {
-        var pluginManifest = _manager.AvailablePlugins.Where(p => p.Name == e.Name).FirstOrDefault();
+        var pluginManifest = _manager.AvailablePlugins.Where(p => p.Name == name).FirstOrDefault();
         if (pluginManifest == null)
             return;
 
-        Plugins.Remove((sender as InstalledPluginViewModel)!);
-        await _manager.UpdateAsync(e, pluginManifest);
+        if (sender is InstalledPluginViewModel vm)
+        {
+            vm.Dispose();
+            Plugins.Remove(vm);
+        }
+
+        var pluginFolder = await _manager.UpdateAsync(pluginManifest);
+        if (pluginFolder == null)
+            return;
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        Directory.Delete(pluginFolder, recursive: true);
+        await _manager.InstallAsync(pluginManifest);
+
+
         Refresh();
     }
 }

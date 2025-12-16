@@ -19,7 +19,7 @@ internal static class PluginIconHelper
             return null;
 
         // Return cached if present
-        if (_iconCache.TryGetValue(filePath, out var cached))
+        if (_iconCache.TryGetValue(plugin.Name, out var cached)) // todo: replace name with ID
             return cached;
 
         try
@@ -40,14 +40,14 @@ internal static class PluginIconHelper
 
     public static void UnloadPluginIcon(IPlugin plugin)
     {
+        UnloadPluginIcon(plugin.Name); // todo: replace with id
+    }
+
+    public static void UnloadPluginIcon(string id)
+    {
         try
         {
-            var filePath = Path.Combine(
-                Path.GetDirectoryName(plugin.GetType().Assembly.Location)!,
-                "icon.png"
-            );
-
-            if (_iconCache.TryRemove(filePath, out var icon))
+            if (_iconCache.TryRemove(id, out var icon))
                 icon.Dispose();
         }
         catch

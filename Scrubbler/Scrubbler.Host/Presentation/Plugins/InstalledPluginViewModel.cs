@@ -5,47 +5,58 @@ using Scrubbler.Host.Helper;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal partial class InstalledPluginViewModel(IPlugin plugin, bool canBeUpdated) : ObservableObject
+internal partial class InstalledPluginViewModel : ObservableObject, IDisposable
 {
     #region Properties
 
-    public event EventHandler<IPlugin>? UninstallRequested;
-    public event EventHandler<IPlugin>? UpdateRequested;
+    public event EventHandler<string>? UninstallRequested;
+    public event EventHandler<string>? UpdateRequested;
 
-    public string Name => _plugin.Name;
-    public string Description => _plugin.Description;
-    public Version Version => _plugin.Version;
-    public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(_plugin);
-    private ImageSource? _icon;
+    public string Name { get; }
+    public string Description { get; }
+    public Version Version { get; }
+    public ImageSource? Icon { get; private set; }
 
-    public bool CanBeUpdated { get; } = canBeUpdated;
+    public bool CanBeUpdated { get; }
 
-    public string PluginType
-    {
-        get
-        {
-            if (_plugin is IAccountPlugin)
-                return "Account Plugin";
-            if (_plugin is IScrobblePlugin || _plugin is IAutoScrobblePlugin)
-                return "Scrobble Plugin";
-
-            return "Plugin";
-        }
-    }
-
-    private readonly IPlugin _plugin = plugin;
+    public string PluginType { get; }
 
     #endregion Properties
+
+    #region Construction
+
+    // do not use primary constructor to avoid caching the IPlugin reference
+#pragma warning disable IDE0290 // Use primary constructor
+    public InstalledPluginViewModel(IPlugin plugin, bool canBeUpdated)
+#pragma warning restore IDE0290 // Use primary constructor
+    {
+        Name = plugin.Name;
+        Description = plugin.Description;
+        Version = plugin.Version;
+        Icon = PluginIconHelper.LoadPluginIcon(plugin);
+        CanBeUpdated = canBeUpdated;
+        PluginType = plugin.ResolvePluginType();
+    }
+
+    #endregion Construction
 
     [RelayCommand]
     private void Uninstall()
     {
-        UninstallRequested?.Invoke(this, _plugin);
+        UninstallRequested?.Invoke(this, Name);
     }
 
     [RelayCommand(CanExecute = nameof(CanBeUpdated))]
     private void Update()
     {
-        UpdateRequested?.Invoke(this, _plugin);
+        UpdateRequested?.Invoke(this, Name);
+    }
+
+    public void Dispose()
+    {
+        PluginIconHelper.UnloadPluginIcon(Name);
+        Icon = null;
+        UninstallRequested = null;
+        UpdateRequested = null;
     }
 }

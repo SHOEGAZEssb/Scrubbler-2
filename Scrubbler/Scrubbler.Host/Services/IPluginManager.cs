@@ -73,7 +73,7 @@ public interface IPluginManager
     /// <returns>A task that represents the asynchronous uninstallation operation.</returns>
     Task UninstallAsync(IPlugin plugin);
 
-    Task UpdateAsync(IPlugin plugin, PluginManifestEntry manifest);
+    Task<string?> UpdateAsync(PluginManifestEntry manifest);
 
     void UpdateAccountFunctionsReceiver();
 }
