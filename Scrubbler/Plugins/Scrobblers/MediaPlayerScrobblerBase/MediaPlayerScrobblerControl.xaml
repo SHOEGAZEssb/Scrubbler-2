@@ -80,7 +80,7 @@
             <Border BorderBrush="Black" BorderThickness="1" Width="150" Height="150" VerticalAlignment="Top">
                 <Image Stretch="UniformToFill">
                     <Image.Source>
-                        <BitmapImage UriSource="{Binding CurrentAlbumArtwork, TargetNullValue=ms-appx:///Assets/noartistimage.png}"}" />
+                        <BitmapImage UriSource="{Binding CurrentAlbumArtwork, TargetNullValue=ms-appx:///Assets/noartistimage.png}" />
                     </Image.Source>
                 </Image>
             </Border>
