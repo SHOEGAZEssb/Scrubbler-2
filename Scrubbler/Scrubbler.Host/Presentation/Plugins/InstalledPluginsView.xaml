@@ -8,7 +8,7 @@
         <ListView ItemsSource="{Binding Plugins, Mode=OneWay}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="vm:InstalledPluginViewModel">
-                    <Grid ColumnDefinitions="Auto,*,Auto" Padding="8" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" Padding="8" Margin="0,0,0,8">
                         <!-- Icon -->
                         <ImageIcon Source="{Binding Icon}" Width="64" Height="64" VerticalAlignment="Center"/> "
 
@@ -29,6 +29,12 @@
                                 Content="Uninstall"
                                 Command="{x:Bind UninstallCommand}"
                                 VerticalAlignment="Center"/>
+
+                        <Button Grid.Column="3"
+                                Content="Update"
+                                Command="{x:Bind UpdateCommand}"
+                                VerticalAlignment="Center"
+                                Visibility="{Binding CanBeUpdated, Converter={StaticResource BoolToVis}}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

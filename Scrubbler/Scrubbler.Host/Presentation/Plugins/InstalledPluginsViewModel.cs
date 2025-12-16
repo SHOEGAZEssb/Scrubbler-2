@@ -14,7 +14,14 @@ internal class InstalledPluginsViewModel : ObservableObject
     {
         _manager = manager;
         _manager.PluginInstalled += Manager_PluginInstalled;
+        _manager.IsFetchingPluginsChanged += Manager_IsFetchingPluginsChanged;
         Refresh();
+    }
+
+    private void Manager_IsFetchingPluginsChanged(object? sender, bool e)
+    {
+        if (!e)
+            Refresh();
     }
 
     private void Manager_PluginInstalled(object? sender, EventArgs e)
@@ -31,10 +38,19 @@ internal class InstalledPluginsViewModel : ObservableObject
 
         foreach (var plugin in _manager.InstalledPlugins)
         {
-            var vm = new InstalledPluginViewModel(plugin);
+            var vm = new InstalledPluginViewModel(plugin, HasPluginUpdate(plugin));
             vm.UninstallRequested += OnUninstallRequested;
             Plugins.Add(vm);
         }
+    }
+
+    private bool HasPluginUpdate(IPlugin plugin)
+    {
+        var pluginManifest = _manager.AvailablePlugins.Where(p => p.Name == plugin.Name).FirstOrDefault();
+        if (pluginManifest == null)
+            return false;
+
+        return new Version(pluginManifest.Version) > plugin.Version;
     }
 
     private async void OnUninstallRequested(object? sender, IPlugin plugin)

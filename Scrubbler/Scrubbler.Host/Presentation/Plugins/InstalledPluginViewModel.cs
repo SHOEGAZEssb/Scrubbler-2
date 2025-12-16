@@ -5,17 +5,20 @@ using Scrubbler.Host.Helper;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal partial class InstalledPluginViewModel(IPlugin plugin) : ObservableObject
+internal partial class InstalledPluginViewModel(IPlugin plugin, bool canBeUpdated) : ObservableObject
 {
     #region Properties
 
     public event EventHandler<IPlugin>? UninstallRequested;
+    public event EventHandler<IPlugin>? UpdateRequested;
 
     public string Name => _plugin.Name;
     public string Description => _plugin.Description;
     public Version Version => _plugin.Version;
     public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(_plugin);
     private ImageSource? _icon;
+
+    public bool CanBeUpdated { get; } = canBeUpdated;
 
     public string PluginType
     {
@@ -38,5 +41,11 @@ internal partial class InstalledPluginViewModel(IPlugin plugin) : ObservableObje
     private void Uninstall()
     {
         UninstallRequested?.Invoke(this, _plugin);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanBeUpdated))]
+    private void Update()
+    {
+        UpdateRequested?.Invoke(this, _plugin);
     }
 }

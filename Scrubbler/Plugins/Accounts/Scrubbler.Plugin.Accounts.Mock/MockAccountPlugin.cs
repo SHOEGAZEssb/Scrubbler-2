@@ -15,7 +15,19 @@ public class MockAccountPlugin(IModuleLogServiceFactory logFactory) : PluginBase
 
     public bool IsAuthenticated { get; private set; }
 
-    public bool IsScrobblingEnabled { get; set; }
+    public bool IsScrobblingEnabled
+    {
+        get => _isScrobblingEnabled;
+        set
+        {
+            if (!IsScrobblingEnabled != value)
+            {
+                _isScrobblingEnabled = value;
+                IsScrobblingEnabledChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+    }
+    private bool _isScrobblingEnabled;
 
     public event EventHandler? IsScrobblingEnabledChanged;
 
