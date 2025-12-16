@@ -78,8 +78,7 @@ class Program
                 foreach (var type in pluginTypes)
                 {
                     var id = type.FullName?.ToLowerInvariant() ?? Path.GetFileNameWithoutExtension(dll).ToLowerInvariant();
-                    var rawVersion = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-                                     ?? asm.GetName().Version?.ToString()
+                    var rawVersion = asm.GetName().Version?.ToString()
                                      ?? "0.0.0";
 
                     // trim off build metadata (e.g. +sha)
