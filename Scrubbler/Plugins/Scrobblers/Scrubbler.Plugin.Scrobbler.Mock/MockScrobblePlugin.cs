@@ -8,7 +8,7 @@ namespace Scrubbler.Plugin.Scrobbler.Mock;
     Name = "Test Plugin",
     Description = "Just for testing purposes",
     SupportedPlatforms = PlatformSupport.All)]
-public class MockScrobblePlugin : PluginBase
+public class MockScrobblePlugin : PluginBase, IScrobblePlugin
 {
     #region Properties
 
