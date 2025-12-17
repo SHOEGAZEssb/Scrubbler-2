@@ -29,7 +29,7 @@ internal static class PluginIconHelper
             var bmp = new BitmapImage();
             bmp.SetSource(fs.AsRandomAccessStream());
 
-            _iconCache[filePath] = bmp;
+            _iconCache[plugin.Id] = bmp;
             return bmp;
         }
         catch
