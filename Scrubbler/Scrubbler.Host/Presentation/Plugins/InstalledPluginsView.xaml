@@ -10,7 +10,7 @@
                 <DataTemplate x:DataType="vm:InstalledPluginViewModel">
                     <Grid ColumnDefinitions="Auto,*,Auto,Auto" Padding="8" Margin="0,0,0,8">
                         <!-- Icon -->
-                        <ImageIcon Source="{Binding Icon}" Width="64" Height="64" VerticalAlignment="Center"/> "
+                        <Image Source="{Binding Icon}" Width="64" Height="64" VerticalAlignment="Center"/>
 
                         <!-- Info -->
                         <StackPanel Grid.Column="1" Margin="12,0,0,0">

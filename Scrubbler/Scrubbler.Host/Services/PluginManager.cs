@@ -316,13 +316,9 @@ internal class PluginManager : IPluginManager
     {
         PluginUnloading?.Invoke(this, entry.Plugin);
 
-        var alcWeakRef = new WeakReference(entry.Context);
-
         // detach EVERYTHING first
         if (entry.Plugin is IAccountPlugin accountPlugin)
             accountPlugin.IsScrobblingEnabledChanged -= AccountPlugin_IsScrobblingEnabledChanged;
-
-        PluginIconHelper.UnloadPluginIcon(entry.Plugin);
 
         // dispose while assembly is still valid
         if (entry.Plugin is IDisposable d)
@@ -343,9 +339,6 @@ internal class PluginManager : IPluginManager
 
         // best-effort cleanup of shadow copy
         TryDeleteDirectory(entry.ShadowFolder);
-
-        if (alcWeakRef.IsAlive)
-            _logService.Warn("Plugin ALC still alive after unload");
     }
 
     #endregion Private load/unload

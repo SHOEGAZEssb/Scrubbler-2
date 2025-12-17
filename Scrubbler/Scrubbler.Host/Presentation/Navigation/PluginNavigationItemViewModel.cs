@@ -8,8 +8,7 @@ namespace Scrubbler.Host.Presentation.Navigation;
 internal sealed class PluginNavigationItemViewModel(IPlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
     : NavigationItemViewModelBase(plugin.Name, MakeHostViewModel(plugin, manager, feedbackService, dialogService))
 {
-    public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(plugin);
-    private ImageSource? _icon;
+    public Uri? Icon => plugin.IconUri;
 
     private static PluginHostViewModelBase MakeHostViewModel(IPlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
     {

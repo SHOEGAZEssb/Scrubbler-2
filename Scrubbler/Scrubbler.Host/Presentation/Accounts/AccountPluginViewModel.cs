@@ -20,8 +20,7 @@ public partial class AccountPluginViewModel : ObservableObject
     [ObservableProperty]
     public bool _isBusy;
 
-    public ImageSource? Icon => _icon ??= PluginIconHelper.LoadPluginIcon(_plugin);
-    private ImageSource? _icon;
+    public Uri? Icon => _plugin.IconUri;
 
     public bool HasScrobbleLimit => _plugin is IHaveScrobbleLimit;
 

@@ -15,7 +15,7 @@ internal partial class InstalledPluginViewModel : ObservableObject, IDisposable
     public string Name { get; }
     public string Description { get; }
     public Version Version { get; }
-    public ImageSource? Icon { get; private set; }
+    public Uri? Icon { get; }
 
     public bool CanBeUpdated { get; }
 
@@ -36,7 +36,7 @@ internal partial class InstalledPluginViewModel : ObservableObject, IDisposable
         _id = plugin.Id;
         Description = plugin.Description;
         Version = plugin.Version;
-        Icon = PluginIconHelper.LoadPluginIcon(plugin);
+        Icon = plugin.IconUri;
         CanBeUpdated = canBeUpdated;
         PluginType = plugin.ResolvePluginType();
     }
@@ -57,8 +57,6 @@ internal partial class InstalledPluginViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        PluginIconHelper.UnloadPluginIcon(_id);
-        Icon = null;
         UninstallRequested = null;
         UpdateRequested = null;
     }

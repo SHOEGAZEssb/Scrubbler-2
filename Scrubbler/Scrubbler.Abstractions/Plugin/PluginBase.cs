@@ -14,6 +14,8 @@ public abstract class PluginBase : IPlugin
 
     public string Description { get; }
 
+	public Uri? IconUri { get; }
+
     public PlatformSupport SupportedPlatforms { get; }
 
     public Version Version => GetType().Assembly.GetName().Version!;
@@ -31,7 +33,8 @@ public abstract class PluginBase : IPlugin
         Name = attribute.Name;
         Id = GetType().FullName!.ToLowerInvariant();
         Description = attribute.Description;
-        SupportedPlatforms = attribute.SupportedPlatforms;
+		IconUri = new Uri(Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location)!, "icon.png"));
+		SupportedPlatforms = attribute.SupportedPlatforms;
         _logService = logFactory.Create(Name);
     }
 

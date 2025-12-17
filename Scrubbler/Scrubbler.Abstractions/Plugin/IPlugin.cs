@@ -52,6 +52,11 @@ public interface IPlugin
     Version Version { get; }
 
     /// <summary>
+    /// Gets the icon uri of the plugin.
+    /// </summary>
+    Uri? IconUri { get; }
+
+    /// <summary>
     /// Gets the platforms this plugin supports.
     /// </summary>
     PlatformSupport SupportedPlatforms { get; }
