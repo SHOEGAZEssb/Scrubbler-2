@@ -22,8 +22,6 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     [ObservableProperty]
     private bool _autoConnect;
 
-    public ObservableCollection<TagViewModel> CurrentTrackTags { get; } = [];
-
     protected readonly ILogService _logger = logger;
 
     [ObservableProperty]
@@ -83,7 +81,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
     [ObservableProperty]
     protected bool _currentTrackScrobbled;
 
-    //public ObservableCollection<TagViewModel> CurrentTrackTags { get; } // todo
+    public ObservableCollection<TagViewModel> CurrentTrackTags { get; } = [];
 
     [ObservableProperty]
     protected Uri? _currentAlbumArtwork;

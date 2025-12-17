@@ -57,7 +57,7 @@ internal class AccountsViewModel : ObservableObject
     {
         if (sender is AccountPluginViewModel vm)
         {
-            var newSetting = e ? vm.Name : null;
+            var newSetting = e ? vm.PluginId : null;
 
             // update setting
             await _config.UpdateAsync(current =>

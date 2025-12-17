@@ -19,7 +19,7 @@ internal static class PluginIconHelper
             return null;
 
         // Return cached if present
-        if (_iconCache.TryGetValue(plugin.Name, out var cached)) // todo: replace name with ID
+        if (_iconCache.TryGetValue(plugin.Id, out var cached))
             return cached;
 
         try
@@ -40,7 +40,7 @@ internal static class PluginIconHelper
 
     public static void UnloadPluginIcon(IPlugin plugin)
     {
-        UnloadPluginIcon(plugin.Name); // todo: replace with id
+        UnloadPluginIcon(plugin.Id);
     }
 
     public static void UnloadPluginIcon(string id)

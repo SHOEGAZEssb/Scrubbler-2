@@ -402,7 +402,7 @@ internal class PluginManager : IPluginManager
     {
         var plugin = InstalledPlugins
             .OfType<IAccountPlugin>()
-            .FirstOrDefault(p => p.Name == _config.Value.AccountFunctionsPluginID);
+            .FirstOrDefault(p => p.Id == _config.Value.AccountFunctionsPluginID);
 
         if (plugin == null && _config.Value.AccountFunctionsPluginID != null)
         {
@@ -452,20 +452,12 @@ internal class PluginManager : IPluginManager
 
     #region Nested entry type
 
-    private sealed class InstalledPluginEntry
+    private sealed class InstalledPluginEntry(IPlugin plugin, PluginLoadContext context, string originalFolder, string shadowFolder)
     {
-        public IPlugin Plugin { get; }
-        public PluginLoadContext Context { get; }
-        public string OriginalFolder { get; }
-        public string ShadowFolder { get; }
-
-        public InstalledPluginEntry(IPlugin plugin, PluginLoadContext context, string originalFolder, string shadowFolder)
-        {
-            Plugin = plugin;
-            Context = context;
-            OriginalFolder = originalFolder;
-            ShadowFolder = shadowFolder;
-        }
+        public IPlugin Plugin { get; } = plugin;
+        public PluginLoadContext Context { get; } = context;
+        public string OriginalFolder { get; } = originalFolder;
+        public string ShadowFolder { get; } = shadowFolder;
     }
 
     #endregion Nested entry type

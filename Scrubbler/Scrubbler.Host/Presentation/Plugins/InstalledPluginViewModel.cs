@@ -21,6 +21,8 @@ internal partial class InstalledPluginViewModel : ObservableObject, IDisposable
 
     public string PluginType { get; }
 
+    private readonly string _id;
+
     #endregion Properties
 
     #region Construction
@@ -31,6 +33,7 @@ internal partial class InstalledPluginViewModel : ObservableObject, IDisposable
 #pragma warning restore IDE0290 // Use primary constructor
     {
         Name = plugin.Name;
+        _id = plugin.Id;
         Description = plugin.Description;
         Version = plugin.Version;
         Icon = PluginIconHelper.LoadPluginIcon(plugin);
@@ -43,18 +46,18 @@ internal partial class InstalledPluginViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void Uninstall()
     {
-        UninstallRequested?.Invoke(this, Name);
+        UninstallRequested?.Invoke(this, _id);
     }
 
     [RelayCommand(CanExecute = nameof(CanBeUpdated))]
     private void Update()
     {
-        UpdateRequested?.Invoke(this, Name);
+        UpdateRequested?.Invoke(this, _id);
     }
 
     public void Dispose()
     {
-        PluginIconHelper.UnloadPluginIcon(Name);
+        PluginIconHelper.UnloadPluginIcon(_id);
         Icon = null;
         UninstallRequested = null;
         UpdateRequested = null;

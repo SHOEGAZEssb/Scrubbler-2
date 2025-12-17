@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Scrubbler.Abstractions.Services;
 
 namespace Scrubbler.Abstractions.Plugin;
@@ -8,6 +9,8 @@ public abstract class PluginBase : IPlugin
     #region Properties
 
     public string Name { get; }
+
+    public string Id { get; }
 
     public string Description { get; }
 
@@ -23,11 +26,10 @@ public abstract class PluginBase : IPlugin
 
     protected PluginBase(IModuleLogServiceFactory logFactory)
     {
-        var attribute = GetType().GetCustomAttribute<PluginMetadataAttribute>();
-        if (attribute == null)
-            throw new InvalidOperationException($"{GetType().Name} must have [PluginMetadata] attribute.");
+        var attribute = GetType().GetCustomAttribute<PluginMetadataAttribute>() ?? throw new InvalidOperationException($"{GetType().Name} must have [PluginMetadata] attribute.");
 
         Name = attribute.Name;
+        Id = GetType().FullName!.ToLowerInvariant();
         Description = attribute.Description;
         SupportedPlatforms = attribute.SupportedPlatforms;
         _logService = logFactory.Create(Name);

@@ -58,15 +58,15 @@ internal class InstalledPluginsViewModel : ObservableObject
         return new Version(pluginManifest.Version) > plugin.Version;
     }
 
-    private async void OnUninstallRequested(object? sender, string name) // todo: replace name with ID
+    private async void OnUninstallRequested(object? sender, string pluginID)
     {
-        await _manager.UninstallAsync(_manager.InstalledPlugins.Where(p => p.Name == name).First());
+        await _manager.UninstallAsync(_manager.InstalledPlugins.Where(p => p.Id == pluginID).First());
         Refresh();
     }
 
-    private async void OnUpdateRequested(object? sender, string name) // todo: replace name with ID
+    private async void OnUpdateRequested(object? sender, string pluginID)
     {
-        var pluginManifest = _manager.AvailablePlugins.Where(p => p.Name == name).FirstOrDefault();
+        var pluginManifest = _manager.AvailablePlugins.Where(p => p.Id == pluginID).FirstOrDefault();
         if (pluginManifest == null)
             return;
 

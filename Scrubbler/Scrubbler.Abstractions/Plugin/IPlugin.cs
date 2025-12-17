@@ -37,6 +37,11 @@ public interface IPlugin
     string Name { get; }
 
     /// <summary>
+    /// Unique ID of the plugin.
+    /// </summary>
+    string Id { get; }
+
+    /// <summary>
     /// Gets a description of what the plugin does.
     /// </summary>
     string Description { get; }

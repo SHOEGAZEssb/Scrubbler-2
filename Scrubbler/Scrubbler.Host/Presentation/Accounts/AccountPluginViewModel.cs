@@ -11,6 +11,8 @@ public partial class AccountPluginViewModel : ObservableObject
 
     public string Name => _plugin.Name;
 
+    public string PluginId => _plugin.Id;
+
     public string? AccountId => _plugin.AccountId;
 
     public bool IsAuthenticated => _plugin.IsAuthenticated;
@@ -64,7 +66,7 @@ public partial class AccountPluginViewModel : ObservableObject
 
     public bool IsUsingAccountFunctions
     {
-        get => _config.Value.AccountFunctionsPluginID == _plugin.Name;
+        get => _config.Value.AccountFunctionsPluginID == _plugin.Id;
         set
         {
             if (IsUsingAccountFunctions != value)
@@ -133,8 +135,6 @@ public partial class AccountPluginViewModel : ObservableObject
             IsBusy = false;
         }
     }
-
-
 
     private void UpdateAuthenticationState()
     {
