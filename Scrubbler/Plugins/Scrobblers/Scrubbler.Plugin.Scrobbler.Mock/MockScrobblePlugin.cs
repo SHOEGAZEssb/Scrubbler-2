@@ -8,12 +8,13 @@ namespace Scrubbler.Plugin.Scrobbler.Mock;
     Name = "Test Plugin",
     Description = "Just for testing purposes",
     SupportedPlatforms = PlatformSupport.All)]
-public class MockScrobblePlugin : PluginBase, IScrobblePlugin
+public class MockScrobblePlugin : PluginBase, IScrobblePlugin, IPersistentPlugin
 {
     #region Properties
 
     private readonly ISettingsStore _settingsStore;
     private PluginSettings _settings = new();
+    private readonly TestViewModel _vm;
 
     #endregion Properties
 
@@ -23,11 +24,12 @@ public class MockScrobblePlugin : PluginBase, IScrobblePlugin
         var settingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Scrubbler", "Plugins", Name);
         Directory.CreateDirectory(settingsDir);
         _settingsStore = new JsonSettingsStore(Path.Combine(settingsDir, "settings.json"));
+        _vm = new TestViewModel();
     }
 
     public override IPluginViewModel GetViewModel()
     {
-        return null!;
+        return _vm;
     }
 
     public async Task LoadAsync()
