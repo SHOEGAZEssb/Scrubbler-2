@@ -3,18 +3,16 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace Scrubbler.Plugin.Scrobblers.DatabaseScrobbler;
 
-internal abstract partial class SearchResultViewModel : ObservableObject
+internal abstract partial class SearchResultViewModel(Uri image, string name) : ObservableObject
 {
-    public Uri Image { get; }
-    public string Name { get; }
+    #region Properties
+
+    public Uri Image { get; } = image;
+    public string Name { get; } = name;
 
     public event EventHandler<SearchResultViewModel>? OnClicked;
 
-    protected SearchResultViewModel(Uri image, string name)
-    {
-        Image = image;
-        Name = name;
-    }
+    #endregion Properties
 
     [RelayCommand]
     private void Clicked()
@@ -23,20 +21,15 @@ internal abstract partial class SearchResultViewModel : ObservableObject
     }
 }
 
-internal sealed class ArtistResultViewModel : SearchResultViewModel
+internal sealed class ArtistResultViewModel(Uri artistImage, string artistName) : SearchResultViewModel(artistImage, artistName)
 {
-    public ArtistResultViewModel(Uri artistImage, string artistName)
-        : base(artistImage, artistName) { }
 }
 
-internal sealed class AlbumResultViewModel : SearchResultViewModel
+internal sealed class AlbumResultViewModel(Uri albumImage, string albumName, string artistName) : SearchResultViewModel(albumImage, albumName)
 {
-    public string ArtistName { get; }
+    #region Properties
 
-    public AlbumResultViewModel(Uri albumImage, string albumName, string artistName)
-        : base(albumImage, albumName)
-    {
-        ArtistName = artistName;
-    }
+    public string ArtistName { get; } = artistName;
+
+    #endregion Properties
 }
-
