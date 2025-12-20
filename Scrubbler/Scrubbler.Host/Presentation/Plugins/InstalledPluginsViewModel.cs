@@ -87,7 +87,6 @@ internal class InstalledPluginsViewModel : ObservableObject
         Directory.Delete(pluginFolder, recursive: true);
         await _manager.InstallAsync(pluginManifest);
 
-
         Refresh();
     }
 }
