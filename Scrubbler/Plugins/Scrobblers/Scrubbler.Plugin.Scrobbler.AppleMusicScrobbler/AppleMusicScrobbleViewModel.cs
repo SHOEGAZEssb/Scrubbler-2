@@ -1,4 +1,5 @@
 using System.Timers;
+using MediaPlayerScrobblerBase;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Plugins.Scrobblers.MediaPlayerScrobbleBase;
@@ -7,7 +8,7 @@ using SystemTimer = System.Timers.Timer;
 
 namespace Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler;
 
-internal partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILogService logger, IAppleMusicAutomation automation) : MediaPlayerScrobblePluginViewModelBase(lastfmClient, logger)
+internal partial class AppleMusicScrobbleViewModel : MediaPlayerScrobblePluginViewModelBase
 {
     #region Properties
 
@@ -31,18 +32,30 @@ internal partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, I
     /// </summary>
     public override int CurrentTrackLength => _currentSong?.SongDuration ?? 0;
 
-    private readonly IAppleMusicAutomation _automation = automation;
+    private readonly IAppleMusicAutomation _automation;
     private AppleMusicInfo? _currentSong;
     private int _currentSongPlayedSeconds = -1;
 
-    /// <summary>
-    /// Timer to refresh current playing song.
-    /// </summary>
-    private SystemTimer? _refreshTimer;
-
-    private SystemTimer? _countTimer;
+    private readonly ITickSource _refreshTicks;
+    private readonly ITickSource _countTicks;
 
     #endregion Properties
+
+    #region Construction
+
+    public AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILogService logger, IAppleMusicAutomation automation,
+                                       ITickSource refreshTicks, ITickSource countTicks)
+        : base(lastfmClient, logger)
+    {
+        _automation = automation;
+        _refreshTicks = refreshTicks;
+        _countTicks = countTicks;
+
+        _refreshTicks.Tick += OnRefreshTick;
+        _countTicks.Tick += OnCountTick;
+    }
+
+    #endregion Construction
 
     /// <summary>
     /// <inheritdoc/>
@@ -62,13 +75,8 @@ internal partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, I
             _currentSong = null;
             UpdateCurrentTrackInfo();
 
-            _countTimer = new SystemTimer(1000);
-            _countTimer.Elapsed += CountTimer_Elapsed;
-            _countTimer.Start();
-
-            _refreshTimer = new SystemTimer(1000);
-            _refreshTimer.Elapsed += RefreshTimer_Elapsed;
-            _refreshTimer.Start();
+            _refreshTicks.Start();
+            _countTicks.Start();
         }
         catch (Exception ex)
         {
@@ -87,8 +95,8 @@ internal partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, I
     /// </summary>
     protected override async Task Disconnect()
     {
-        _refreshTimer?.Stop();
-        _countTimer?.Stop();
+        _refreshTicks.Stop();
+        _countTicks.Stop();
 
         _automation.Disconnect();
 
@@ -97,7 +105,7 @@ internal partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, I
         IsConnected = false;
     }
 
-    private void RefreshTimer_Elapsed(object? sender, ElapsedEventArgs e)
+    private void OnRefreshTick(object? sender, EventArgs e)
     {
         try
         {
@@ -120,10 +128,11 @@ internal partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, I
         }
         catch (Exception ex)
         {
-            _logger.Error($"Error while getting Apple Music info", ex);
+            _logger.Error("Error while getting Apple Music info", ex);
             _ = Disconnect();
         }
     }
+
 
 
     /// <summary>
@@ -131,7 +140,7 @@ internal partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, I
     /// </summary>
     /// <param name="sender">Ignored.</param>
     /// <param name="e">Ignored.</param>
-    private void CountTimer_Elapsed(object? sender, ElapsedEventArgs e)
+    private void OnCountTick(object? sender, EventArgs e)
     {
         if (_currentSong == null)
             return;
@@ -140,7 +149,6 @@ internal partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, I
         if (current < 0)
             return;
 
-        // detect playback progress (not paused)
         if (_currentSongPlayedSeconds != -1 &&
             current != _currentSongPlayedSeconds)
         {

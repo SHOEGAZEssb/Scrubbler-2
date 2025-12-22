@@ -1,3 +1,4 @@
+using MediaPlayerScrobblerBase;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Plugin.Account;
@@ -17,7 +18,7 @@ public class AppleMusicScrobblePlugin : PluginBase, IAutoScrobblePlugin, IPersis
 
     private readonly ApiKeyStorage _apiKeyStorage;
     private readonly AppleMusicScrobbleViewModel _vm;
-    private readonly ISettingsStore _settingsStore;
+    private readonly JsonSettingsStore _settingsStore;
     private PluginSettings _settings = new();
 
     #endregion Properties
@@ -33,7 +34,8 @@ public class AppleMusicScrobblePlugin : PluginBase, IAutoScrobblePlugin, IPersis
         var settingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Scrubbler", "Plugins", Name);
         Directory.CreateDirectory(settingsDir);
         _settingsStore = new JsonSettingsStore(Path.Combine(settingsDir, "settings.json"));
-        _vm = new AppleMusicScrobbleViewModel(new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret), _logService, new FlaUiAppleMusicAutomation());
+        _vm = new AppleMusicScrobbleViewModel(new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret), _logService,
+                                              new FlaUiAppleMusicAutomation(), new TimerTickSource(1000), new TimerTickSource(1000));
     }
 
     /// <summary>
