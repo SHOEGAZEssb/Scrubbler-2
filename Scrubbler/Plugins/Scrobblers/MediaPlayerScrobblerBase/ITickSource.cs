@@ -2,7 +2,7 @@ namespace MediaPlayerScrobblerBase;
 
 public interface ITickSource : IDisposable
 {
-    event EventHandler Tick;
+    event EventHandler? Tick;
 
     void Start();
     void Stop();
