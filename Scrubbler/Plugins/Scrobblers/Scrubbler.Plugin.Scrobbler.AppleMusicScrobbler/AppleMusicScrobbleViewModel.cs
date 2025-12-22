@@ -205,7 +205,7 @@ public partial class AppleMusicScrobbleViewModel(ILastfmClient lastfmClient, ILo
         var current = (int)s.Patterns.RangeValue.Pattern.Value.Value;
         if (_currentSongPlayedSeconds != -1 && current != _currentSongPlayedSeconds)
         {
-            //UpdateNowPlaying().Forget();
+            _ = UpdateNowPlaying();
             //UpdateRichPresence("applemusic", "Apple Music");
 
             if (++CountedSeconds == CurrentTrackLengthToScrobble && CurrentTrackScrobbled == false)

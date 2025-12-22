@@ -178,7 +178,7 @@ public abstract partial class MediaPlayerScrobblePluginViewModelBase(ILastfmClie
         UpdateCurrentTrackInfo();
     }
 
-    private async Task UpdateNowPlaying()
+    protected async Task UpdateNowPlaying()
     {
         if (UpdateNowPlayingObject == null || string.IsNullOrEmpty(CurrentTrackName) || string.IsNullOrEmpty(CurrentArtistName) || string.IsNullOrEmpty(CurrentAlbumName))
             return;

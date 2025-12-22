@@ -137,7 +137,7 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
         if (!response.IsSuccess || response.Data == null)
             throw new Exception($"Failed to search artist '{SearchQuery}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
-        return [.. response.Data.Items.Select(a => new ArtistResultViewModel(a.Images.LastOrDefault().Value, a.Name))];
+        return [.. response.Data.Items.Select(a => new ArtistResultViewModel(a.Images.GetLargestOrDefault(), a.Name))];
     }
 
     #endregion Search Artist
@@ -183,7 +183,7 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
         if (!response.IsSuccess || response.Data == null)
             throw new Exception($"Failed to search album '{SearchQuery}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
-        return [.. response.Data.Items.Select(a => new AlbumResultViewModel(a.Images.LastOrDefault().Value, a.Name, a.Artist!.Name))];
+        return [.. response.Data.Items.Select(a => new AlbumResultViewModel(a.Images.GetLargestOrDefault(), a.Name, a.Artist!.Name))];
     }
 
     #endregion Search Album
@@ -235,7 +235,7 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
         if (!response.IsSuccess || response.Data == null)
             throw new Exception($"Failed to get top albums for artist '{artist}' on Last.fm: {response.ErrorMessage} | {response.LastFmStatus}");
 
-        return [.. response.Data.Items.Select(a => new AlbumResultViewModel(a.Images.LastOrDefault().Value, a.Name, artist))];
+        return [.. response.Data.Items.Select(a => new AlbumResultViewModel(a.Images.GetLargestOrDefault(), a.Name, artist))];
     }
 
     private void AlbumResults_GoBack(object? sender, EventArgs e)
