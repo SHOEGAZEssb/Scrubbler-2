@@ -33,7 +33,7 @@ public class AppleMusicScrobblePlugin : PluginBase, IAutoScrobblePlugin, IPersis
         var settingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Scrubbler", "Plugins", Name);
         Directory.CreateDirectory(settingsDir);
         _settingsStore = new JsonSettingsStore(Path.Combine(settingsDir, "settings.json"));
-        _vm = new AppleMusicScrobbleViewModel(new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret), _logService);
+        _vm = new AppleMusicScrobbleViewModel(new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret), _logService, new FlaUiAppleMusicAutomation());
     }
 
     /// <summary>
