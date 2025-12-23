@@ -1,10 +1,8 @@
-using System.Timers;
 using MediaPlayerScrobblerBase;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Plugins.Scrobblers.MediaPlayerScrobbleBase;
 using Shoegaze.LastFM;
-using SystemTimer = System.Timers.Timer;
 
 namespace Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler;
 

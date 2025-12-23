@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace Scrubbler.Abstractions.Plugin;
 
 /// <summary>

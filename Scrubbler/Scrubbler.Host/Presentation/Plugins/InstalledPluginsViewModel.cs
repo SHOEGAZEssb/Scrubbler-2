@@ -1,7 +1,5 @@
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Scrubbler.Abstractions.Plugin;
-using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;

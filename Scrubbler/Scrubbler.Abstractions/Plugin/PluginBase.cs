@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Scrubbler.Abstractions.Services;
 
 namespace Scrubbler.Abstractions.Plugin;

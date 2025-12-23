@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Moq;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Services;
