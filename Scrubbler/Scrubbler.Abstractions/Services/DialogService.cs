@@ -1,10 +1,10 @@
-namespace Scrubbler.Host.Services;
+namespace Scrubbler.Abstractions.Services;
 
-internal sealed class DialogService : IDialogService
+public sealed class DialogService : IDialogService
 {
     private FrameworkElement? _rootElement;
 
-    internal void InitializeXamlRoot(FrameworkElement rootElement)
+    public void InitializeXamlRoot(FrameworkElement rootElement)
     {
         _rootElement = rootElement;
     }

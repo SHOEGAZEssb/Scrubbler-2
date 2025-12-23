@@ -1,0 +1,21 @@
+<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net10.0;net10.0-ios;net10.0-android;net10.0-windows10.0.26100;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+        <UnoSingleProject>true</UnoSingleProject>
+        <OutputType>Library</OutputType>
+        <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
+        <GenerateLibraryLayout>true</GenerateLibraryLayout>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- Enables Uno XAML codegen and build logic -->
+        <UseUnoXaml>true</UseUnoXaml>
+        <EnableDefaultXamlItems>true</EnableDefaultXamlItems>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="CsvHelper" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+    </ItemGroup>
+</Project>
