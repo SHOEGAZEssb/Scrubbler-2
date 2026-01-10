@@ -1,6 +1,6 @@
-<Project Sdk="Uno.Sdk">
+﻿<Project Sdk="Uno.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net10.0;net10.0-ios;net10.0-android;net10.0-windows10.0.26100;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+        <TargetFrameworks>net10.0</TargetFrameworks>
         <UnoSingleProject>true</UnoSingleProject>
         <OutputType>Library</OutputType>
         <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
@@ -17,5 +17,23 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="FileParseScrobbleView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="Parser\CSV\CsvFileParserConfigurationEditView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="Parser\CSV\CsvFileParserConfigurationEditView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="FileParseScrobbleView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
     </ItemGroup>
 </Project>

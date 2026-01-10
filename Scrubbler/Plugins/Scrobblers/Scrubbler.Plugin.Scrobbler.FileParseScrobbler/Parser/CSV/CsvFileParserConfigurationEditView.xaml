@@ -1,0 +1,97 @@
+﻿<ContentDialog
+    x:Class="Scrubbler.Plugin.Scrobbler.FileParseScrobbler.Parser.CSV.CsvFileParserConfigurationEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Scrubbler.Plugin.Scrobbler.FileParseScrobbler.Parser.CSV"
+    Title="CSV Parser Configuration"
+    PrimaryButtonText="OK"
+    SecondaryButtonText="Cancel"
+    DefaultButton="Primary"
+    Style="{ThemeResource DefaultContentDialogStyle}">
+
+    <ScrollViewer>
+        <StackPanel Spacing="16" Padding="0,8">
+
+            <!-- Encoding -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Encoding" FontWeight="SemiBold"/>
+                <NumberBox
+                    Value="{Binding EncodingCodePage, Mode=TwoWay}"
+                    SpinButtonPlacementMode="Inline"
+                    Minimum="1"
+                    PlaceholderText="e.g. 65001 (UTF-8)" />
+            </StackPanel>
+
+            <!-- CSV Basics -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="CSV Layout" FontWeight="SemiBold"/>
+
+                <TextBox
+                    Header="Field delimiter"
+                    Text="{Binding Delimiter, Mode=TwoWay}"
+                    PlaceholderText="; , \t tab" />
+
+                <NumberBox
+                    Header="Timestamp field index"
+                    Value="{Binding TimestampFieldIndex, Mode=TwoWay}"
+                    SpinButtonPlacementMode="Inline"
+                    Minimum="0" />
+
+                <NumberBox
+                    Header="Track field index"
+                    Value="{Binding TrackFieldIndex, Mode=TwoWay}"
+                    SpinButtonPlacementMode="Inline"
+                    Minimum="0" />
+
+                <NumberBox
+                    Header="Artist field index"
+                    Value="{Binding ArtistFieldIndex, Mode=TwoWay}"
+                    SpinButtonPlacementMode="Inline"
+                    Minimum="0" />
+            </StackPanel>
+
+            <!-- Optional Fields -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Optional Fields" FontWeight="SemiBold"/>
+
+                <NumberBox
+                    Header="Album field index"
+                    Value="{Binding AlbumFieldIndex, Mode=TwoWay}"
+                    SpinButtonPlacementMode="Inline"
+                    Minimum="-1"
+                    PlaceholderText="-1 to disable" />
+
+                <NumberBox
+                    Header="Album artist field index"
+                    Value="{Binding AlbumArtistFieldIndex, Mode=TwoWay}"
+                    SpinButtonPlacementMode="Inline"
+                    Minimum="-1"
+                    PlaceholderText="-1 to disable" />
+
+                <NumberBox
+                    Header="Milliseconds played field index"
+                    Value="{Binding MillisecondsPlayedFieldIndex, Mode=TwoWay}"
+                    SpinButtonPlacementMode="Inline"
+                    Minimum="-1"
+                    PlaceholderText="-1 to disable" />
+            </StackPanel>
+
+            <!-- Filters -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Filters" FontWeight="SemiBold"/>
+
+                <CheckBox
+                    Content="Filter short played songs"
+                    IsChecked="{Binding FilterShortPlayedSongs, Mode=TwoWay}" />
+
+                <NumberBox
+                    Header="Minimum play duration (ms)"
+                    Value="{Binding MillisecondsPlayedThreshold, Mode=TwoWay}"
+                    SpinButtonPlacementMode="Inline"
+                    Minimum="0"
+                    IsEnabled="{Binding FilterShortPlayedSongs}" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>

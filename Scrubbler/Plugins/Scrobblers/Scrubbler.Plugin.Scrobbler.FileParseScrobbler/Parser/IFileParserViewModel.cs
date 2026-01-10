@@ -1,15 +1,12 @@
 using System.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 
 namespace Scrubbler.Plugin.Scrobbler.FileParseScrobbler.Parser;
 
-internal interface IFileParserViewModel<T> : INotifyPropertyChanged where T : IFileParserConfiguration
+internal interface IFileParserViewModel : INotifyPropertyChanged
 {
     string Name { get; }
 
-    T Config { get; }
+    IReadOnlyList<string> SupportedExtensions { get; }
 
-    IRelayCommand OpenSettingsCommand { get; }
-
-    FileParseResult Parse(string file);
+    FileParseResult Parse(string file, ScrobbleMode mode);
 }

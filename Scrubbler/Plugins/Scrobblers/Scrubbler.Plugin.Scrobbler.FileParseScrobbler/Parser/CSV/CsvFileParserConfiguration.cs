@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Scrubbler.Plugin.Scrobbler.FileParseScrobbler.Parser.CSV;
 
@@ -7,6 +8,8 @@ namespace Scrubbler.Plugin.Scrobbler.FileParseScrobbler.Parser.CSV;
 /// </summary>
 internal sealed record CsvFileParserConfiguration : IFileParserConfiguration
 {
+    #region Properties
+
     /// <summary>
     /// Encoding code page used to read the CSV file.
     /// </summary>
@@ -31,7 +34,19 @@ internal sealed record CsvFileParserConfiguration : IFileParserConfiguration
     /// <summary>
     /// Resolved text encoding.
     /// </summary>
+    [JsonIgnore]
     public Encoding Encoding => Encoding.GetEncoding(EncodingCodePage);
+
+    public static CsvFileParserConfiguration Default => new()
+    {
+        EncodingCodePage = Encoding.Unicode.CodePage,
+        Delimiter = ";",
+        TimestampFieldIndex = 0,
+        TrackFieldIndex = 1,
+        ArtistFieldIndex = 2,
+    };
+
+    #endregion Properties
 
     /// <summary>
     /// Validates configuration consistency.

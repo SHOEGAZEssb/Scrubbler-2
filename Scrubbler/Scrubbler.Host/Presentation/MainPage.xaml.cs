@@ -23,5 +23,9 @@ public sealed partial class MainPage : Page
         var dialogService = app.Host?.Services.GetRequiredService<IDialogService>();
         if (dialogService is DialogService dImpl)
             dImpl.InitializeXamlRoot(this);
+
+        var windowProvider = app.Host?.Services.GetRequiredService<IWindowHandleProvider>();
+        if (windowProvider is WindowHandleProvider winImpl)
+            winImpl.SetWindow(app.MainWindow!);
     }
 }
