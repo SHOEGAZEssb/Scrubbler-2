@@ -1,6 +1,6 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
 using Scrubbler.Abstractions;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Abstractions.Services;
@@ -25,6 +25,8 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
     [ObservableProperty]
     private IEnumerable<IFileParserViewModel> _availableParsers;
 
+    public ScrobbleMode[] AvailableScrobbleModes { get; } = Enum.GetValues<ScrobbleMode>();
+
     [ObservableProperty]
     private ScrobbleMode _selectedScrobbleMode = ScrobbleMode.Import;
 
@@ -32,7 +34,7 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
     [NotifyCanExecuteChangedFor(nameof(ParseCommand))]
     private string _selectedFilePath = string.Empty;
 
-    private bool CanParse => !string.IsNullOrEmpty(SelectedFilePath) && File.Exists(SelectedFilePath);
+    private bool CanParse => File.Exists(SelectedFilePath);
 
     private readonly ILogService _logService;
     private readonly IDialogService _dialogService;
@@ -63,9 +65,16 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
 
     #endregion Construction
 
-    public override Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
+    public override async Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
     {
-        throw new NotImplementedException();
+        return await Task.Run(() =>
+        {
+            var scrobbles = Scrobbles.Where(s => s.ToScrobble);
+            if (SelectedScrobbleMode == ScrobbleMode.Import)
+                return ScrobbleData.FromMasterTimestamp(scrobbles, ScrobbleTimeVM.Timestamp);
+            else
+                return scrobbles.Select(s => new ScrobbleData(s.TrackName, s.ArtistName, s.Timestamp) { Album = s.AlbumName, AlbumArtist = s.AlbumArtistName });
+        });
     }
 
     [RelayCommand]
@@ -92,10 +101,13 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
 
             if (result.Errors.Any())
             {
+                var errorCount = result.Errors.Count();
                 var dialog = new ContentDialog
                 {
                     Title = "Parsing Errors",
-                    Content = "There were errors during parsing. Do you want to save a file containing the error information?",
+                    Content = $"Parsing completed with {errorCount} " +
+                              $"error{(errorCount == 1 ? "" : "s")}. " +
+                              "Do you want to save a file with the error details?",
                     PrimaryButtonText = "Yes",
                     SecondaryButtonText = "No",
                     DefaultButton = ContentDialogButton.Primary
@@ -105,7 +117,7 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
                 if (res == ContentDialogResult.Primary)
                 {
                     var file = await _filePicker.SaveFileAsync(
-                                                "scrobbles",
+                                                "parse_errors",
                                                 new Dictionary<string, IReadOnlyList<string>>
                                                 {
                                                     { "Text file", _textFiles }
@@ -117,11 +129,7 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
                 }
             }
 
-            Scrobbles.Clear();
-            foreach (var scrobble in result.Scrobbles)
-            {
-                Scrobbles.Add(new ParsedScrobbleViewModel(scrobble));
-            }
+            Scrobbles = new ObservableCollection<ParsedScrobbleViewModel>(result.Scrobbles.Select(s => new ParsedScrobbleViewModel(s)));
         }
         catch (Exception ex)
         {
@@ -131,5 +139,11 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
         {
             IsBusy = false;
         }
+    }
+
+    partial void OnSelectedScrobbleModeChanged(ScrobbleMode value)
+    {
+        if (Scrobbles.Any())
+            Scrobbles = [];
     }
 }

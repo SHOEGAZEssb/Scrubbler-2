@@ -56,6 +56,9 @@ public sealed class FileParseScrobblePlugin : PluginBase, IScrobblePlugin, IPers
     public async Task SaveAsync()
     {
         _logService.Debug("Saving settings...");
+        var csvParser = _vm?.AvailableParsers.OfType<CsvFileParserViewModel>().FirstOrDefault();
+        if (csvParser is not null)
+            _settings.CsvConfig = csvParser.Config;
 
         await _settingsStore.SetAsync(Name, _settings);
     }
