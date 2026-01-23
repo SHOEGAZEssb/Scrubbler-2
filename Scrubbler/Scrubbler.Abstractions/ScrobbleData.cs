@@ -58,10 +58,13 @@ public class ScrobbleData
         : this(track, artist, playedAt.Date + playedAtTime)
     { }
 
-    public static IEnumerable<ScrobbleData> FromMasterTimestamp(IEnumerable<IScrobbableObjectViewModel> scrobbles, DateTimeOffset masterTimestamp, int secondsToSubtract = 180)
+    public static IEnumerable<ScrobbleData> FromMasterTimestamp(IEnumerable<IScrobbableObjectViewModel> scrobbles, DateTimeOffset masterTimestamp, bool reverse, int secondsToSubtract = 180)
     {
         var results = new List<ScrobbleData>();
-        foreach (var scrobble in scrobbles)
+        if (reverse)
+            scrobbles = scrobbles.Reverse();
+
+        foreach (var scrobble in scrobbles.ToList())
         {
             results.Add(new ScrobbleData(scrobble.TrackName, scrobble.ArtistName, masterTimestamp) { Album = scrobble.AlbumName, AlbumArtist = scrobble.AlbumArtistName });
             masterTimestamp = masterTimestamp.Subtract(TimeSpan.FromSeconds(secondsToSubtract));

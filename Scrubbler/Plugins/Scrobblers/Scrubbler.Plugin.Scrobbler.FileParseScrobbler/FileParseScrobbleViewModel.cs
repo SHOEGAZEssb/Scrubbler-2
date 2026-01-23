@@ -71,7 +71,7 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
         {
             var scrobbles = Scrobbles.Where(s => s.ToScrobble);
             if (SelectedScrobbleMode == ScrobbleMode.Import)
-                return ScrobbleData.FromMasterTimestamp(scrobbles, ScrobbleTimeVM.Timestamp);
+                return ScrobbleData.FromMasterTimestamp(scrobbles, ScrobbleTimeVM.Timestamp, reverse: false);
             else
                 return scrobbles.Select(s => new ScrobbleData(s.TrackName, s.ArtistName, s.Timestamp) { Album = s.AlbumName, AlbumArtist = s.AlbumArtistName });
         });

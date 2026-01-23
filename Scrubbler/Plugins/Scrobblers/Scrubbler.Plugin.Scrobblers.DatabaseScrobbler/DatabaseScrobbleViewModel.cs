@@ -62,7 +62,7 @@ internal sealed partial class DatabaseScrobbleViewModel(ILogService logger, ILas
         return await Task.Run(() =>
         {
             var scrobbles = Scrobbles.Where(s => s.ToScrobble);
-            return ScrobbleData.FromMasterTimestamp(scrobbles, ScrobbleTimeVM.Timestamp);
+            return ScrobbleData.FromMasterTimestamp(scrobbles, ScrobbleTimeVM.Timestamp, reverse: true);
         });
     }
 
