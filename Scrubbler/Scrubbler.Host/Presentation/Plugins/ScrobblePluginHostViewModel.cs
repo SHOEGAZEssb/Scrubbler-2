@@ -9,8 +9,9 @@ internal partial class ScrobblePluginHostViewModel : PluginHostViewModelBase
 {
     #region Properties
 
-    [ObservableProperty]
-    private IScrobblePluginViewModel _pluginViewModel;
+    public override bool IsBusy => base.IsBusy || PluginViewModel.IsBusy;
+
+    public IScrobblePluginViewModel PluginViewModel { get; }
 
     public bool ShowScrobbleBar => PluginViewModel.ReadyForScrobbling;
 
@@ -25,9 +26,9 @@ internal partial class ScrobblePluginHostViewModel : PluginHostViewModelBase
     public ScrobblePluginHostViewModel(IScrobblePlugin plugin, IPluginManager manager, IUserFeedbackService feedbackService, IDialogService dialogService)
         : base(plugin, manager, feedbackService, dialogService)
     {
-        _pluginViewModel = (_plugin.GetViewModel() as IScrobblePluginViewModel)!; // todo: log in case this is ever null (should not happen)
+        PluginViewModel = (_plugin.GetViewModel() as IScrobblePluginViewModel)!; // todo: log in case this is ever null (should not happen)
 
-        _pluginViewModel.PropertyChanged += (s, e) =>
+        PluginViewModel.PropertyChanged += (s, e) =>
         {
             if (e.PropertyName == nameof(IScrobblePluginViewModel.CanScrobble))
             {
@@ -36,6 +37,8 @@ internal partial class ScrobblePluginHostViewModel : PluginHostViewModelBase
             }
             else if (e.PropertyName == nameof(IScrobblePluginViewModel.ReadyForScrobbling))
                 OnPropertyChanged(nameof(ShowScrobbleBar));
+            else if (e.PropertyName == nameof(IScrobblePluginViewModel.IsBusy))
+                OnPropertyChanged(nameof(IsBusy));
         };
 
         _pluginManager.IsAnyAccountPluginScrobblingChanged += (s, e) =>

@@ -31,7 +31,7 @@
             <Button Content="Preview" Command="{Binding PreviewCommand}"/>
         </StackPanel>
 
-        <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding PluginViewModel.IsBusy, Converter={StaticResource BoolToVis}}" Background="#80000000" IsHitTestVisible="True">
+        <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" Background="#80000000" IsHitTestVisible="True">
             <ProgressRing IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
     </Grid>
