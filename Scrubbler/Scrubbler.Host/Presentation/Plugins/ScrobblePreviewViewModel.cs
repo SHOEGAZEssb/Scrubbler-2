@@ -6,5 +6,5 @@ namespace Scrubbler.Host.Presentation.Plugins;
 public sealed partial class ScrobblePreviewViewModel(IEnumerable<ScrobbleData> scrobbles) : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<ScrobbleData> _scrobbles = new ObservableCollection<ScrobbleData>(scrobbles);
+    private ObservableCollection<ScrobbleData> _scrobbles = new(scrobbles);
 }

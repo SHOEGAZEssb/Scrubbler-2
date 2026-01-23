@@ -1,0 +1,39 @@
+﻿<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net10.0</TargetFrameworks>
+        <UnoSingleProject>true</UnoSingleProject>
+        <OutputType>Library</OutputType>
+        <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
+        <GenerateLibraryLayout>true</GenerateLibraryLayout>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- Enables Uno XAML codegen and build logic -->
+        <UseUnoXaml>true</UseUnoXaml>
+        <EnableDefaultXamlItems>true</EnableDefaultXamlItems>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="CsvHelper" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="FileParseScrobbleView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="Parser\CSV\CsvFileParserConfigurationEditView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="Parser\CSV\CsvFileParserConfigurationEditView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="FileParseScrobbleView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+</Project>

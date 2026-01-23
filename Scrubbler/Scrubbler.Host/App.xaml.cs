@@ -19,7 +19,7 @@ public partial class App : Application
         InitializeComponent();
     }
 
-    protected Window? MainWindow { get; private set; }
+    internal Window? MainWindow { get; private set; }
     public IHost? Host { get; private set; }
 
     public event EventHandler? Ready;
@@ -75,6 +75,9 @@ public partial class App : Application
                     services.AddSingleton<IPluginManager, PluginManager>();
                     services.AddSingleton<ILinkOpenerService, LinkOpenerService>();
                     services.AddSingleton<IModuleLogServiceFactory, ModuleLogServiceFactory>();
+                    services.AddSingleton<IWindowHandleProvider, WindowHandleProvider>();
+                    services.AddSingleton<IFilePickerService, FilePickerService>();
+                    services.AddSingleton<IFileStorageService, FileStorageService>();
                     services.AddTransient<AccountsViewModel>();
                     services.AddTransient<PluginManagerViewModel>();
                 })

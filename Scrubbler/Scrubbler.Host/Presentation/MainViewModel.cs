@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Navigation;

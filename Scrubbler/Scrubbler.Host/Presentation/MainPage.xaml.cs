@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation;
@@ -22,5 +23,9 @@ public sealed partial class MainPage : Page
         var dialogService = app.Host?.Services.GetRequiredService<IDialogService>();
         if (dialogService is DialogService dImpl)
             dImpl.InitializeXamlRoot(this);
+
+        var windowProvider = app.Host?.Services.GetRequiredService<IWindowHandleProvider>();
+        if (windowProvider is WindowHandleProvider winImpl)
+            winImpl.SetWindow(app.MainWindow!);
     }
 }

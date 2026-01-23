@@ -29,7 +29,7 @@ public class Tests
     {
         _lastfmClient = new Mock<ILastfmClient>();
         _logger = new Mock<ILogService>();
-        _automation = new Mock<IAppleMusicAutomation>();
+        _automation = new Mock<IAppleMusicAutomation>(MockBehavior.Strict);
 
         _refreshTicks = new ManualTickSource();
         _countTicks = new ManualTickSource();

@@ -1,0 +1,114 @@
+﻿<UserControl
+    x:Class="Scrubbler.Plugin.Scrobbler.FileParseScrobbler.FileParseScrobbleView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Scrubbler.Plugin.Scrobbler.FileParseScrobbler"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:Scrubbler.Abstractions.Controls;assembly=Scrubbler.Abstractions"
+    xmlns:tv="using:WinUI.TableView"
+    d:DataContext="{d:DesignInstance Type=local:FileParseScrobbleViewModel}"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0" Header="File to parse" Text="{Binding SelectedFilePath, Mode=TwoWay}"/>
+            <Button Grid.Column="2" Content=" ... " Command="{Binding OpenFileCommand}"/>
+
+            <ComboBox Grid.Column="4" Header="File Type" ItemsSource="{Binding AvailableParsers}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedParser, Mode=TwoWay}"/>
+            <Button Grid.Column="6" Content="Parse" Command="{Binding ParseCommand}"/>
+            <Button Grid.Column="8" Content="Settings" Command="{Binding SelectedParser.OpenSettingsCommand}"/>
+
+            <StackPanel Grid.Row="2" Grid.ColumnSpan="9" Orientation="Horizontal" Spacing="5">
+                <TextBlock Text="Scrobble Mode:" VerticalAlignment="Center"/>
+                <ComboBox Header="Scrobble Mode" HorizontalAlignment="Right" ItemsSource="{Binding AvailableScrobbleModes}" SelectedItem="{Binding SelectedScrobbleMode, Mode=TwoWay}"/> "
+            </StackPanel>
+        </Grid>
+
+        <controls:ScrobbleMultipleSelectorControl Grid.Row="2" VerticalAlignment="Stretch"/>
+
+        <controls:ScrobbableObjectTableView Grid.Row="4"
+            ItemsSource="{Binding Scrobbles}"
+            AutoGenerateColumns="False"
+            SelectionMode="Extended"
+            CanSortColumns="True"
+            Margin="8"
+            RowHeight="40"
+            HeaderRowHeight="32" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+            <controls:ScrobbableObjectTableView.Columns>
+                <tv:TableViewTemplateColumn Header="Scrobble">
+                    <tv:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding ToScrobble, Mode=TwoWay}"
+                                      IsEnabled="{Binding CanBeScrobbled}" />
+                        </DataTemplate>
+                    </tv:TableViewTemplateColumn.CellTemplate>
+                </tv:TableViewTemplateColumn>
+
+                <tv:TableViewTextColumn
+                    Header="Track"
+                    Binding="{Binding TrackName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                <tv:TableViewTextColumn
+                    Header="Artist"
+                    Binding="{Binding ArtistName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                <tv:TableViewTextColumn
+                    Header="Album"
+                    Binding="{Binding AlbumName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                <tv:TableViewTextColumn
+                    Header="Album Artist"
+                    Binding="{Binding AlbumArtistName}"
+                    CanSort="True"
+                    Width="*"/>
+
+                <tv:TableViewTextColumn
+                    Header="Played At"
+                    Binding="{Binding Timestamp}"
+                    CanSort="True"
+                    Width="*"
+                    IsReadOnly="True"/>
+
+            </controls:ScrobbableObjectTableView.Columns>
+        </controls:ScrobbableObjectTableView>
+
+        <controls:ScrobbleTimeControl Grid.Row="6" DataContext="{Binding ScrobbleTimeVM}"/>
+    </Grid>
+</UserControl>

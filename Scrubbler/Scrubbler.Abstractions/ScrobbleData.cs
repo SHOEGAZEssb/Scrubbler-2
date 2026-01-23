@@ -6,20 +6,17 @@ namespace Scrubbler.Abstractions;
 /// <remarks>
 /// Initializes a new instance of the <see cref="ScrobbleData"/> class.
 /// </remarks>
-/// <param name="track">The track name.</param>
-/// <param name="artist">The track artist name.</param>
-/// <param name="timestamp">The date and time the track was played.</param>
-public class ScrobbleData(string track, string artist, DateTimeOffset timestamp)
+public class ScrobbleData
 {
     /// <summary>
     /// Gets or sets the track name.
     /// </summary>
-    public string Track { get; set; } = track;
+    public string Track { get; set; }
 
     /// <summary>
     /// Gets or sets the track artist name.
     /// </summary>
-    public string Artist { get; set; } = artist;
+    public string Artist { get; set; }
 
     /// <summary>
     /// Gets or sets the album name, if available.
@@ -34,7 +31,21 @@ public class ScrobbleData(string track, string artist, DateTimeOffset timestamp)
     /// <summary>
     /// Gets the timestamp (UTC) the track was played.
     /// </summary>
-    public DateTimeOffset Timestamp { get; } = timestamp;
+    public DateTimeOffset Timestamp { get; }
+    /// <param name="track">The track name.</param>
+    /// <param name="artist">The track artist name.</param>
+    /// <param name="timestamp">The date and time the track was played.</param>
+    public ScrobbleData(string track, string artist, DateTimeOffset timestamp)
+    {
+        if (string.IsNullOrEmpty(track))
+            throw new ArgumentException("Track name cannot be null or empty.", nameof(track));
+        if (string.IsNullOrEmpty(artist))
+            throw new ArgumentException("Artist name cannot be null or empty.", nameof(artist));
+
+        Track = track;
+        Artist = artist;
+        Timestamp = timestamp;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScrobbleData"/> class.
@@ -47,10 +58,13 @@ public class ScrobbleData(string track, string artist, DateTimeOffset timestamp)
         : this(track, artist, playedAt.Date + playedAtTime)
     { }
 
-    public static IEnumerable<ScrobbleData> FromMasterTimestamp(IEnumerable<IScrobbableObjectViewModel> scrobbles, DateTimeOffset masterTimestamp, int secondsToSubtract = 180)
+    public static IEnumerable<ScrobbleData> FromMasterTimestamp(IEnumerable<IScrobbableObjectViewModel> scrobbles, DateTimeOffset masterTimestamp, bool reverse, int secondsToSubtract = 180)
     {
         var results = new List<ScrobbleData>();
-        foreach (var scrobble in scrobbles)
+        if (reverse)
+            scrobbles = scrobbles.Reverse();
+
+        foreach (var scrobble in scrobbles.ToList())
         {
             results.Add(new ScrobbleData(scrobble.TrackName, scrobble.ArtistName, masterTimestamp) { Album = scrobble.AlbumName, AlbumArtist = scrobble.AlbumArtistName });
             masterTimestamp = masterTimestamp.Subtract(TimeSpan.FromSeconds(secondsToSubtract));
