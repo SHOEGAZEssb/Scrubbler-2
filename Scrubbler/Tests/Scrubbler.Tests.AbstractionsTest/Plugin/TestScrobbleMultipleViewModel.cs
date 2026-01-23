@@ -8,7 +8,7 @@ internal sealed class TestScrobbleMultipleViewModel
     : ScrobbleMultipleViewModelBase<IScrobbableObjectViewModel>
 {
     public override Task<IEnumerable<ScrobbleData>> GetScrobblesAsync()
-        => Task.FromResult<IEnumerable<ScrobbleData>>(Array.Empty<ScrobbleData>());
+        => Task.FromResult<IEnumerable<ScrobbleData>>([]);
 
     public void SetScrobbles(IEnumerable<IScrobbableObjectViewModel> scrobbles)
     {

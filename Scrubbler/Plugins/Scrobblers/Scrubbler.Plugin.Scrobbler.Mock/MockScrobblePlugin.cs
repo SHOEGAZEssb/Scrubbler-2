@@ -12,7 +12,7 @@ public class MockScrobblePlugin : PluginBase, IScrobblePlugin, IPersistentPlugin
 {
     #region Properties
 
-    private readonly ISettingsStore _settingsStore;
+    private readonly JsonSettingsStore _settingsStore;
     private PluginSettings _settings = new();
     private readonly TestViewModel _vm;
 

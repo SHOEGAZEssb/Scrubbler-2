@@ -37,8 +37,11 @@ internal class ApiKeyStorageTest
             apiSecretDefault: "API_SECRET",
             envFile: _envFilePath);
 
-        Assert.That(storage.ApiKey, Is.EqualTo("my-key"));
-        Assert.That(storage.ApiSecret, Is.EqualTo("my-secret"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(storage.ApiKey, Is.EqualTo("my-key"));
+            Assert.That(storage.ApiSecret, Is.EqualTo("my-secret"));
+        }
     }
 
     [Test]
@@ -49,8 +52,11 @@ internal class ApiKeyStorageTest
             apiSecretDefault: "default-secret",
             envFile: _envFilePath);
 
-        Assert.That(storage.ApiKey, Is.EqualTo("default-key"));
-        Assert.That(storage.ApiSecret, Is.EqualTo("default-secret"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(storage.ApiKey, Is.EqualTo("default-key"));
+            Assert.That(storage.ApiSecret, Is.EqualTo("default-secret"));
+        }
     }
 
     [Test]
@@ -67,8 +73,11 @@ internal class ApiKeyStorageTest
             apiSecretDefault: "fallback-secret",
             envFile: _envFilePath);
 
-        Assert.That(storage.ApiKey, Is.EqualTo("fallback-key"));
-        Assert.That(storage.ApiSecret, Is.EqualTo("fallback-secret"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(storage.ApiKey, Is.EqualTo("fallback-key"));
+            Assert.That(storage.ApiSecret, Is.EqualTo("fallback-secret"));
+        }
     }
 
     [Test]
@@ -86,8 +95,11 @@ internal class ApiKeyStorageTest
             apiSecretDefault: "API_SECRET",
             envFile: _envFilePath);
 
-        Assert.That(storage.ApiKey, Is.EqualTo("lowercase-key"));
-        Assert.That(storage.ApiSecret, Is.EqualTo("lowercase-secret"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(storage.ApiKey, Is.EqualTo("lowercase-key"));
+            Assert.That(storage.ApiSecret, Is.EqualTo("lowercase-secret"));
+        }
     }
 
     [Test]
@@ -107,8 +119,11 @@ internal class ApiKeyStorageTest
             apiSecretDefault: "API_SECRET",
             envFile: _envFilePath);
 
-        Assert.That(storage.ApiKey, Is.EqualTo("key"));
-        Assert.That(storage.ApiSecret, Is.EqualTo("secret"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(storage.ApiKey, Is.EqualTo("key"));
+            Assert.That(storage.ApiSecret, Is.EqualTo("secret"));
+        }
     }
 
     [Test]

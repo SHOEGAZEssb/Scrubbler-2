@@ -11,8 +11,11 @@ internal class ScrobbleTimeViewModelTest
         var time = new FakeTimeProvider(DateTimeOffset.Parse("2025-01-01T10:00:00"));
         using var vm = new ScrobbleTimeViewModel(time);
 
-        Assert.That(vm.UseCurrentTime, Is.True);
-        Assert.That(vm.Time, Is.EqualTo(TimeSpan.FromHours(10)));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.UseCurrentTime, Is.True);
+            Assert.That(vm.Time, Is.EqualTo(TimeSpan.FromHours(10)));
+        }
     }
 
     [Test]

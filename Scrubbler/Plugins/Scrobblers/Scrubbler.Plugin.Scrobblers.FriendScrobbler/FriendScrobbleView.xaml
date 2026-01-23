@@ -8,7 +8,8 @@
     xmlns:controls="clr-namespace:Scrubbler.Abstractions.Controls;assembly=Scrubbler.Abstractions"
     xmlns:conv="using:Scrubbler.Abstractions.Converter"
     xmlns:tv="using:WinUI.TableView"
-    xmlns:abstractions="using:Scrubbler.Abstractions" d:DataContext="{d:DesignInstance Type=abstractions:FetchedScrobbleViewModel}"
+    xmlns:abstractions="using:Scrubbler.Abstractions"
+    d:DataContext="{d:DesignInstance Type=local:FriendScrobbleViewModel}"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">

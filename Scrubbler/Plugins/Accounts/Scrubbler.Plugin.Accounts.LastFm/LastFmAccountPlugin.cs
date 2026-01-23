@@ -22,8 +22,8 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
 
     public string? Username => _secureStore.GetAsync(AccountIdKey).GetAwaiter().GetResult() ?? null;
 
-    private readonly ISecureStore _secureStore;
-    private readonly ISettingsStore _settingsStore;
+    private readonly FileSecureStore _secureStore;
+    private readonly JsonSettingsStore _settingsStore;
     private PluginSettings _settings = new();
 
     /// <summary>
@@ -84,7 +84,7 @@ public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimi
 
 
     private readonly ApiKeyStorage _apiKeyStorage;
-    private ILastfmClient? _lastfmClient;
+    private LastfmClient? _lastfmClient;
     private readonly ILinkOpenerService _linkOpener;
     private const string LASTFMMUSICBASEURL = "https://www.last.fm/music/";
     private const string LASTFMTAGBASEURL = "https://www.last.fm/tag/";

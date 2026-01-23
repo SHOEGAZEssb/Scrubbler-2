@@ -104,9 +104,12 @@ public class Tests
 
         _refreshTicks.Fire(); // song changed
 
-        Assert.That(_vm.CountedSeconds, Is.EqualTo(0));
-        Assert.That(_vm.CurrentTrackScrobbled, Is.False);
-        Assert.That(_vm.CurrentTrackName, Is.EqualTo("Other"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_vm.CountedSeconds, Is.Zero);
+            Assert.That(_vm.CurrentTrackScrobbled, Is.False);
+            Assert.That(_vm.CurrentTrackName, Is.EqualTo("Other"));
+        }
     }
 
     [Test]

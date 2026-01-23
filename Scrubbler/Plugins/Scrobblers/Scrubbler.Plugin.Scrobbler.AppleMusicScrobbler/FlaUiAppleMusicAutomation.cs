@@ -6,16 +6,23 @@ using FlaUI.UIA3;
 
 namespace Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler;
 
-internal sealed class FlaUiAppleMusicAutomation(bool composerAsArtist = false) : IAppleMusicAutomation
+internal sealed partial class FlaUiAppleMusicAutomation(bool composerAsArtist = false) : IAppleMusicAutomation
 {
+    #region Properties
+
     private UIA3Automation? _automation;
     private AutomationElement? _songPanel;
 
+    [GeneratedRegex(@"By\s.*?\s\u2014", RegexOptions.Compiled)]
+    private static partial Regex ComposerPerformerRegexFunc();
+
     private static readonly Regex ComposerPerformerRegex =
-        new(@"By\s.*?\s\u2014", RegexOptions.Compiled);
+        ComposerPerformerRegexFunc();
 
     private static readonly string[] Separator = [" \u2014 "];
     private readonly bool _composerAsArtist = composerAsArtist;
+
+    #endregion Properties
 
     public void Connect()
     {

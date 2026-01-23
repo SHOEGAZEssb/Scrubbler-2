@@ -11,9 +11,15 @@ namespace Scrubbler.Abstractions.Settings;
 /// </remarks>
 public class JsonSettingsStore : ISettingsStore
 {
+    #region Properties
+
     private readonly string _filePath;
     private readonly SemaphoreSlim _lock = new(1, 1);
     private readonly Dictionary<string, JsonElement> _settings = [];
+
+    private static readonly JsonSerializerOptions _serializerSettings = new() { WriteIndented = true };
+
+    #endregion Properties
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSettingsStore"/> class.
@@ -96,8 +102,7 @@ public class JsonSettingsStore : ISettingsStore
 
     private async Task SaveAsync(CancellationToken ct)
     {
-        var opts = new JsonSerializerOptions { WriteIndented = true };
-        var json = JsonSerializer.Serialize(_settings, opts);
+        var json = JsonSerializer.Serialize(_settings, _serializerSettings);
         await File.WriteAllTextAsync(_filePath, json, ct);
     }
 }

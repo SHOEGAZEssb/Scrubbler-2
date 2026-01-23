@@ -18,6 +18,8 @@ record PluginManifestEntry(
 
 class Program
 {
+    #region Properties
+
     // map of plugin marker interfaces → human-friendly type labels
     private static readonly Dictionary<Type, string> _pluginTypes = new()
     {
@@ -26,6 +28,14 @@ class Program
         { typeof(IAutoScrobblePlugin), "Scrobble Plugin" }
         // add more here as you introduce new plugin kinds
     };
+
+    private static readonly JsonSerializerOptions _serializerSettings = new()
+    {
+        WriteIndented = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
+    #endregion Properties
 
     static async Task Main(string[] args)
     {
@@ -87,10 +97,7 @@ class Program
                     // resolve type label dynamically
                     var pluginTypeLabel = ResolvePluginType(type);
 
-                    var meta = type.GetCustomAttribute<PluginMetadataAttribute>();
-                    if (meta == null)
-                        throw new InvalidOperationException($"Plugin {type.FullName} has no PluginMetadata attribute");
-
+                    var meta = type.GetCustomAttribute<PluginMetadataAttribute>() ?? throw new InvalidOperationException($"Plugin {type.FullName} has no PluginMetadata attribute");
                     var entry = new PluginManifestEntry(
                         Id: id,
                         Name: meta.Name,
@@ -117,13 +124,7 @@ class Program
             }
         }
 
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        await File.WriteAllTextAsync(outputPath, JsonSerializer.Serialize(entries, options));
+        await File.WriteAllTextAsync(outputPath, JsonSerializer.Serialize(entries, _serializerSettings));
         Console.WriteLine($"Wrote {entries.Count} entries to {outputPath}");
     }
 

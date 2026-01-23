@@ -14,10 +14,13 @@ internal class ScrobbableObjectViewModelTest
             albumName: "Album",
             albumArtistName: "AlbumArtist");
 
-        Assert.That(vm.ArtistName, Is.EqualTo("Artist"));
-        Assert.That(vm.TrackName, Is.EqualTo("Track"));
-        Assert.That(vm.AlbumName, Is.EqualTo("Album"));
-        Assert.That(vm.AlbumArtistName, Is.EqualTo("AlbumArtist"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.ArtistName, Is.EqualTo("Artist"));
+            Assert.That(vm.TrackName, Is.EqualTo("Track"));
+            Assert.That(vm.AlbumName, Is.EqualTo("Album"));
+            Assert.That(vm.AlbumArtistName, Is.EqualTo("AlbumArtist"));
+        }
     }
 
     [Test]
@@ -56,8 +59,11 @@ internal class ScrobbableObjectViewModelTest
 
         vm.UpdateToScrobbleSilent(true);
 
-        Assert.That(vm.ToScrobble, Is.True);
-        Assert.That(raised, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.ToScrobble, Is.True);
+            Assert.That(raised, Is.False);
+        }
     }
 
     [Test]
@@ -70,16 +76,20 @@ internal class ScrobbableObjectViewModelTest
 
         vm.UpdateIsSelectedSilent(true);
 
-        Assert.That(vm.IsSelected, Is.True);
-        Assert.That(raised, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.IsSelected, Is.True);
+            Assert.That(raised, Is.False);
+        }
     }
 
     [Test]
     public void ArtistName_DoesNotChange_WhenEmptyOrWhitespace()
     {
-        var vm = new ScrobbableObjectViewModel("Artist", "Track");
-
-        vm.ArtistName = "";
+        var vm = new ScrobbableObjectViewModel("Artist", "Track")
+        {
+            ArtistName = ""
+        };
         Assert.That(vm.ArtistName, Is.EqualTo("Artist"));
 
         vm.ArtistName = "   ";
@@ -89,9 +99,10 @@ internal class ScrobbableObjectViewModelTest
     [Test]
     public void TrackName_DoesNotChange_WhenEmptyOrWhitespace()
     {
-        var vm = new ScrobbableObjectViewModel("Artist", "Track");
-
-        vm.TrackName = "";
+        var vm = new ScrobbableObjectViewModel("Artist", "Track")
+        {
+            TrackName = ""
+        };
         Assert.That(vm.TrackName, Is.EqualTo("Track"));
 
         vm.TrackName = "   ";
@@ -101,9 +112,10 @@ internal class ScrobbableObjectViewModelTest
     [Test]
     public void AlbumName_AllowsNullAndChange()
     {
-        var vm = new ScrobbableObjectViewModel("Artist", "Track");
-
-        vm.AlbumName = "Album";
+        var vm = new ScrobbableObjectViewModel("Artist", "Track")
+        {
+            AlbumName = "Album"
+        };
         Assert.That(vm.AlbumName, Is.EqualTo("Album"));
 
         vm.AlbumName = null;
@@ -113,9 +125,10 @@ internal class ScrobbableObjectViewModelTest
     [Test]
     public void AlbumArtistName_AllowsNullAndChange()
     {
-        var vm = new ScrobbableObjectViewModel("Artist", "Track");
-
-        vm.AlbumArtistName = "AlbumArtist";
+        var vm = new ScrobbableObjectViewModel("Artist", "Track")
+        {
+            AlbumArtistName = "AlbumArtist"
+        };
         Assert.That(vm.AlbumArtistName, Is.EqualTo("AlbumArtist"));
 
         vm.AlbumArtistName = null;

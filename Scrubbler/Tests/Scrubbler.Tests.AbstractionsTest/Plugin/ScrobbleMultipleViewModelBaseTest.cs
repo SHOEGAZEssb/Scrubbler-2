@@ -81,8 +81,11 @@ internal class ScrobbleMultipleViewModelBaseTest
 
         vm.CheckAllCommand.Execute(null);
 
-        Assert.That(vm.Scrobbles.All(s => s.ToScrobble), Is.True);
-        Assert.That(vm.ToScrobbleCount, Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.Scrobbles.All(s => s.ToScrobble), Is.True);
+            Assert.That(vm.ToScrobbleCount, Is.EqualTo(2));
+        }
     }
 
     [Test]
@@ -97,8 +100,11 @@ internal class ScrobbleMultipleViewModelBaseTest
 
         vm.UncheckAllCommand.Execute(null);
 
-        Assert.That(vm.Scrobbles.All(s => !s.ToScrobble), Is.True);
-        Assert.That(vm.ToScrobbleCount, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.Scrobbles.All(s => !s.ToScrobble), Is.True);
+            Assert.That(vm.ToScrobbleCount, Is.Zero);
+        }
     }
 
     [Test]
@@ -112,8 +118,11 @@ internal class ScrobbleMultipleViewModelBaseTest
 
         vm.CheckSelectedCommand.Execute(null);
 
-        Assert.That(selected.Object.ToScrobble, Is.True);
-        Assert.That(notSelected.Object.ToScrobble, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(selected.Object.ToScrobble, Is.True);
+            Assert.That(notSelected.Object.ToScrobble, Is.False);
+        }
     }
 
     [Test]
@@ -127,8 +136,11 @@ internal class ScrobbleMultipleViewModelBaseTest
 
         vm.UncheckSelectedCommand.Execute(null);
 
-        Assert.That(selected.Object.ToScrobble, Is.False);
-        Assert.That(notSelected.Object.ToScrobble, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(selected.Object.ToScrobble, Is.False);
+            Assert.That(notSelected.Object.ToScrobble, Is.True);
+        }
     }
 
     [Test]

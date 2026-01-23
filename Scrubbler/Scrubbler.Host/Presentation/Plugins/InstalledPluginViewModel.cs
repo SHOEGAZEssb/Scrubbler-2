@@ -26,9 +26,11 @@ internal partial class InstalledPluginViewModel : ObservableObject, IDisposable
     #region Construction
 
     // do not use primary constructor to avoid caching the IPlugin reference
+#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0290 // Use primary constructor
     public InstalledPluginViewModel(IPlugin plugin, bool canBeUpdated)
 #pragma warning restore IDE0290 // Use primary constructor
+#pragma warning restore IDE0079 // Remove unnecessary suppression
     {
         Name = plugin.Name;
         _id = plugin.Id;
