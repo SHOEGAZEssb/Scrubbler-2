@@ -1,9 +1,11 @@
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Plugins;
+using Scrubbler.Host.Presentation.Settings;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
 
@@ -80,11 +82,17 @@ public partial class App : Application
                     services.AddSingleton<IFileStorageService, FileStorageService>();
                     services.AddTransient<AccountsViewModel>();
                     services.AddTransient<PluginManagerViewModel>();
+                    services.AddTransient<SettingsViewModel>();
                 })
 
                 .UseNavigation(RegisterRoutes)
             );
         MainWindow = builder.Window;
+
+        var version = Package.Current.Id.Version;
+        var versionString =
+            $"{version.Major}.{version.Minor}.{version.Build}";
+        MainWindow.Title = $"Scrubbler 2 v{versionString}";
 
 #if DEBUG
         MainWindow.UseStudio();

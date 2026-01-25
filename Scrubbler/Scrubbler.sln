@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobbler.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Test.FileParseScrobblerTest", "Plugins\Scrobblers\Tests\Scrubbler.Test.FileParseScrobblerTest\Scrubbler.Test.FileParseScrobblerTest.csproj", "{B1D59C00-3710-465F-818C-AD629BD5CE46}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Updater", "Scrubbler.Updater\Scrubbler.Updater.csproj", "{8122D28B-6F64-4ADC-BE82-9BC8E917893F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,6 +134,10 @@ Global
 		{B1D59C00-3710-465F-818C-AD629BD5CE46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1D59C00-3710-465F-818C-AD629BD5CE46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1D59C00-3710-465F-818C-AD629BD5CE46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8122D28B-6F64-4ADC-BE82-9BC8E917893F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8122D28B-6F64-4ADC-BE82-9BC8E917893F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8122D28B-6F64-4ADC-BE82-9BC8E917893F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8122D28B-6F64-4ADC-BE82-9BC8E917893F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
