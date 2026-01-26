@@ -7,7 +7,7 @@ namespace Scrubbler.Host.Updates;
 /// <summary>
 /// Coordinates update check, download, verification, and handoff to the external updater.
 /// </summary>
-internal sealed class UpdateManager
+public sealed class UpdateManager
 {
     private readonly HttpClient _http;
     private readonly IUpdateSource _source;
@@ -137,7 +137,7 @@ internal sealed class UpdateManager
 /// <summary>
 /// Configures how <see cref="UpdateManager"/> locates paths and names.
 /// </summary>
-internal sealed class UpdateManagerOptions
+public sealed class UpdateManagerOptions
 {
     /// <summary>
     /// Folder relative to the app directory where the updater lives.
@@ -187,7 +187,7 @@ public sealed record UpdateInfo(Version Version, Uri PackageUri, string Sha256, 
 /// <summary>
 /// Update source abstraction (GitHub Releases, static JSON, local folder, etc.).
 /// </summary>
-internal interface IUpdateSource
+public interface IUpdateSource
 {
     /// <summary>
     /// Gets the latest available update for the given runtime identifier, or null if none is available.

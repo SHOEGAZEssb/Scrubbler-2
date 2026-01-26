@@ -57,8 +57,8 @@ internal partial class SettingsViewModel : ObservableObject
         var d = new UpdateDialog(update);
         if (await _dialogService.ShowDialogAsync(d) == ContentDialogResult.Primary)
         {
-            // apply (will exit the app if it starts the updater)
-            await updateManager.ApplyUpdateAndRestartAsync(update, CancellationToken.None);
+            var updateProgress = new UpdateInProgressDialog(updateManager, update);
+            await _dialogService.ShowDialogAsync(updateProgress);
         }
     }
 }
