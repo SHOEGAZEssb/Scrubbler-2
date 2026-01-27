@@ -13,7 +13,9 @@
         <EnableDefaultXamlItems>true</EnableDefaultXamlItems>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="Shoegaze.LastFM" />
+        <PackageReference Include="Shoegaze.LastFM" />
+        <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.WinUI.Managed" />
+        <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.Interactivity.WinUI" />
     </ItemGroup>
 
     <ItemGroup>
@@ -28,41 +30,41 @@
 
 
     <ItemGroup>
-      <None Update="ArtistResultsView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </None>
-      <None Update="environment.env">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="ArtistResultsView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </None>
+        <None Update="environment.env">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="ArtistResultsView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+        <Page Update="ArtistResultsView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="DatabaseScrobbleView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+        <Page Update="DatabaseScrobbleView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="AlbumResultsView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+        <Page Update="AlbumResultsView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="TrackResultsView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+        <Page Update="TrackResultsView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="icon.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+        <Content Include="icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 </Project>

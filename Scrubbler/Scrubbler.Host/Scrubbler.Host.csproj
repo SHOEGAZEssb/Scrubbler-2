@@ -107,6 +107,7 @@
         <PRIResource Remove="Presentation\Controls\**" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" />
         <PackageReference Include="Microsoft.Extensions.Http" />
         <PackageReference Include="SkiaSharp" />
     </ItemGroup>

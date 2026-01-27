@@ -1,4 +1,3 @@
-using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
@@ -20,7 +19,7 @@ internal partial class AboutSettingsCategoryViewModel : SettingsCategoryViewMode
         {
             if (CheckForUpdatesOnStartup != value)
             {
-                _ = _config.UpdateAsync(current =>
+                _config.UpdateAsync(current =>
                 {
                     var updated = current with
                     {
@@ -28,7 +27,7 @@ internal partial class AboutSettingsCategoryViewModel : SettingsCategoryViewMode
                     };
 
                     return updated;
-                }).GetResultOrDefault();
+                }).Wait();
 
                 OnPropertyChanged();
             }

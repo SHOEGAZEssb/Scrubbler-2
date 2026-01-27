@@ -15,6 +15,8 @@
 
     <ItemGroup>
         <PackageReference Include="Shoegaze.LastFM" />
+        <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.WinUI.Managed" />
+        <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.Interactivity.WinUI" />
     </ItemGroup>
 
     <ItemGroup>
@@ -22,12 +24,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="MediaPlayerScrobblerControl.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+        <Page Update="MediaPlayerScrobblerControl.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="noartistimage.png"/>
+        <Content Update="noartistimage.png" />
     </ItemGroup>
 </Project>
