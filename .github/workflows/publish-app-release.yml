@@ -126,9 +126,18 @@ jobs:
       - name: Create checksums.txt
         shell: bash
         run: |
-          cd dist
-          find . -type f -name "*.zip" -print0 | sort -z | xargs -0 sha256sum > checksums.txt
-          cat checksums.txt
+            cd dist
+
+            : > checksums.txt
+
+            # iterate zip files, regardless of subfolder
+            find . -type f -name "*.zip" | sort | while read -r file; do
+            sha=$(sha256sum "$file" | awk '{print $1}')
+            name=$(basename "$file")
+            echo "$sha  $name" >> checksums.txt
+            done
+
+            cat checksums.txt
 
       - name: Upload assets to GitHub Release
         env:
