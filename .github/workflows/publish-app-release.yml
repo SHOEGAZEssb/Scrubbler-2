@@ -41,7 +41,7 @@ jobs:
         working-directory: Scrubbler
         run: |
           dotnet restore Scrubbler.Updater/Scrubbler.Updater.csproj
-          dotnet restore Scrubbler.Host/Scrubbler.Host.csproj -f net10.0-desktop
+          dotnet restore Scrubbler.Host/Scrubbler.Host.csproj
 
       - name: Publish updater
         working-directory: Scrubbler
