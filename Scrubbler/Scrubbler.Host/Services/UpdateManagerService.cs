@@ -1,27 +1,20 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
-using System.Text.Json;
+using Scrubbler.Host.Updates;
 
-namespace Scrubbler.Host.Updates;
+namespace Scrubbler.Host.Services;
 
 /// <summary>
 /// Coordinates update check, download, verification, and handoff to the external updater.
 /// </summary>
-public sealed class UpdateManager
+/// <remarks>
+/// Creates a new instance of <see cref="UpdateManagerService"/>.
+/// </remarks>
+public sealed class UpdateManagerService(HttpClient http, IUpdateSource source, UpdateManagerOptions? options = null) : IUpdateManagerService
 {
-    private readonly HttpClient _http;
-    private readonly IUpdateSource _source;
-    private readonly UpdateManagerOptions _options;
-
-    /// <summary>
-    /// Creates a new instance of <see cref="UpdateManager"/>.
-    /// </summary>
-    public UpdateManager(HttpClient http, IUpdateSource source, UpdateManagerOptions? options = null)
-    {
-        _http = http ?? throw new ArgumentNullException(nameof(http));
-        _source = source ?? throw new ArgumentNullException(nameof(source));
-        _options = options ?? new UpdateManagerOptions();
-    }
+    private readonly HttpClient _http = http ?? throw new ArgumentNullException(nameof(http));
+    private readonly IUpdateSource _source = source ?? throw new ArgumentNullException(nameof(source));
+    private readonly UpdateManagerOptions _options = options ?? new UpdateManagerOptions();
 
     /// <summary>
     /// Checks if an update is available for the current app.
@@ -39,8 +32,7 @@ public sealed class UpdateManager
     /// </summary>
     public async Task ApplyUpdateAndRestartAsync(UpdateInfo update, CancellationToken ct)
     {
-        if (update is null)
-            throw new ArgumentNullException(nameof(update));
+        ArgumentNullException.ThrowIfNull(update);
 
         var appDir = _options.AppDirectoryProvider();
         var entryPath = _options.EntryPathProvider();
@@ -135,7 +127,7 @@ public sealed class UpdateManager
 }
 
 /// <summary>
-/// Configures how <see cref="UpdateManager"/> locates paths and names.
+/// Configures how <see cref="UpdateManagerService"/> locates paths and names.
 /// </summary>
 public sealed class UpdateManagerOptions
 {
@@ -158,7 +150,7 @@ public sealed class UpdateManagerOptions
     /// Provides the current app version used for comparison.
     /// </summary>
     public Func<Version> CurrentVersionProvider { get; init; } =
-        () => typeof(UpdateManager).Assembly.GetName().Version ?? new Version(0, 0, 0);
+        () => typeof(UpdateManagerService).Assembly.GetName().Version ?? new Version(0, 0, 0);
 
     /// <summary>
     /// Provides the runtime identifier key used in the manifest (e.g. win-x64, linux-x64, osx-x64).
@@ -177,79 +169,4 @@ public sealed class UpdateManagerOptions
     /// </summary>
     public Func<string> EntryPathProvider { get; init; } =
         () => Environment.ProcessPath ?? throw new InvalidOperationException("ProcessPath is null");
-}
-
-/// <summary>
-/// Latest update info resolved for the current runtime.
-/// </summary>
-public sealed record UpdateInfo(Version Version, Uri PackageUri, string Sha256, string? Notes = null);
-
-/// <summary>
-/// Update source abstraction (GitHub Releases, static JSON, local folder, etc.).
-/// </summary>
-public interface IUpdateSource
-{
-    /// <summary>
-    /// Gets the latest available update for the given runtime identifier, or null if none is available.
-    /// </summary>
-    Task<UpdateInfo?> GetLatestAsync(Version currentVersion, string rid, CancellationToken ct);
-}
-
-/// <summary>
-/// Simple JSON-manifest update source (supports http(s) and file URIs).
-/// </summary>
-internal sealed class JsonManifestUpdateSource : IUpdateSource
-{
-    private readonly Uri _manifestUri;
-    private readonly HttpClient _http;
-
-    private static readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
-    /// <summary>
-    /// Creates a new instance of <see cref="JsonManifestUpdateSource"/>.
-    /// </summary>
-    public JsonManifestUpdateSource(Uri manifestUri, HttpClient http)
-    {
-        _manifestUri = manifestUri ?? throw new ArgumentNullException(nameof(manifestUri));
-        _http = http ?? throw new ArgumentNullException(nameof(http));
-    }
-
-    /// <inheritdoc />
-    public async Task<UpdateInfo?> GetLatestAsync(Version currentVersion, string rid, CancellationToken ct)
-    {
-        var json = await ReadManifestJsonAsync(ct).ConfigureAwait(false);
-
-        var manifest = JsonSerializer.Deserialize<UpdateManifest>(json, _jsonOptions)
-                       ?? throw new InvalidOperationException("invalid manifest json");
-
-        var latest = Version.Parse(manifest.Version);
-        if (latest <= currentVersion)
-            return null;
-
-        if (!manifest.Artifacts.TryGetValue(rid, out var artifact))
-            return null;
-
-        var packageUri = new Uri(_manifestUri, artifact.Url);
-
-        return new UpdateInfo(
-            Version: latest,
-            PackageUri: packageUri,
-            Sha256: artifact.Sha256,
-            Notes: manifest.Notes);
-    }
-
-    private async Task<string> ReadManifestJsonAsync(CancellationToken ct)
-    {
-        if (_manifestUri.Scheme.Equals("file", StringComparison.OrdinalIgnoreCase))
-            return await File.ReadAllTextAsync(_manifestUri.LocalPath, ct).ConfigureAwait(false);
-
-        return await _http.GetStringAsync(_manifestUri, ct).ConfigureAwait(false);
-    }
-
-    private sealed record UpdateManifest(string Version, string? Notes, Dictionary<string, UpdateArtifact> Artifacts);
-
-    private sealed record UpdateArtifact(string Url, string Sha256);
 }

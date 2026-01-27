@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Services;
-using Scrubbler.Host.Presentation.Plugins;
-using Scrubbler.Host.Updates;
+using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Settings;
 
@@ -18,12 +16,12 @@ internal partial class SettingsViewModel : ObservableObject
 
     #region Construction
 
-    public SettingsViewModel(IWritableOptions<UserConfig> userConfigOptions, IDialogService dialogService)
+    public SettingsViewModel(IWritableOptions<UserConfig> userConfigOptions, IUpdateManagerService updateManager, IDialogService dialogService)
     {
         _userConfigOptions = userConfigOptions;
         Categories =
         [
-            new AboutSettingsCategoryViewModel(_userConfigOptions, dialogService)
+            new AboutSettingsCategoryViewModel(_userConfigOptions, updateManager, dialogService)
         ];
     }
 

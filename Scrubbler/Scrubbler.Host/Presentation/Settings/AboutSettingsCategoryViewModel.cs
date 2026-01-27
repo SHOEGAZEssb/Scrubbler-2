@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Services;
-using Scrubbler.Host.Updates;
+using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Settings;
 
@@ -44,15 +41,17 @@ internal partial class AboutSettingsCategoryViewModel : SettingsCategoryViewMode
     [NotifyCanExecuteChangedFor(nameof(CheckForUpdatesCommand))]
     private bool _isCheckingForUpdates;
 
+    private readonly IUpdateManagerService _manager;
     private readonly IDialogService _dialogService;
 
     #endregion Properties
 
     #region Construction
 
-    public AboutSettingsCategoryViewModel(IWritableOptions<UserConfig> config, IDialogService dialogService)
+    public AboutSettingsCategoryViewModel(IWritableOptions<UserConfig> config, IUpdateManagerService manager, IDialogService dialogService)
         : base(config)
     {
+        _manager = manager;
         _dialogService = dialogService;
         var version = Package.Current.Id.Version;
         CurrentVersion = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
@@ -70,13 +69,8 @@ internal partial class AboutSettingsCategoryViewModel : SettingsCategoryViewMode
 
         try
         {
-            var http = new HttpClient();
-            var source = new JsonManifestUpdateSource(new Uri("http://localhost:8000/manifest.json"), http);
-
-            var updateManager = new UpdateManager(http, source);
-
             // check
-            var update = await updateManager.CheckForUpdateAsync(CancellationToken.None);
+            var update = await _manager.CheckForUpdateAsync(CancellationToken.None);
             if (update is null)
             {
                 if (!_config.Value.CheckForUpdatesOnStartup)
@@ -97,7 +91,7 @@ internal partial class AboutSettingsCategoryViewModel : SettingsCategoryViewMode
             var d = new UpdateDialog(update);
             if (await _dialogService.ShowDialogAsync(d) == ContentDialogResult.Primary)
             {
-                var updateProgress = new UpdateInProgressDialog(updateManager, update);
+                var updateProgress = new UpdateInProgressDialog(_manager, update);
                 await _dialogService.ShowDialogAsync(updateProgress);
             }
         }

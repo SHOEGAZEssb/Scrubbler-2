@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Abstractions.Settings;
@@ -8,8 +7,10 @@ using Scrubbler.Host.Presentation.Plugins;
 using Scrubbler.Host.Presentation.Settings;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
+using Scrubbler.Host.Updates;
 
 namespace Scrubbler.Host;
+
 public partial class App : Application
 {
     /// <summary>
@@ -66,6 +67,9 @@ public partial class App : Application
 
                 .ConfigureServices((context, services) =>
                 {
+                    services.AddHttpClient();
+                    services.AddSingleton(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient());
+
                     services.AddSingleton<HostLogService>();
                     services.AddHostedService<HostLogInitializer>();
                     services.AddSingleton<LogViewModel>();
@@ -80,6 +84,30 @@ public partial class App : Application
                     services.AddSingleton<IWindowHandleProvider, WindowHandleProvider>();
                     services.AddSingleton<IFilePickerService, FilePickerService>();
                     services.AddSingleton<IFileStorageService, FileStorageService>();
+
+                    if (Environment.GetEnvironmentVariable("SCRUBBLER_UPDATE_MODE") == "JSON")
+                    {
+                        services.AddSingleton<IUpdateSource>(sp =>
+                                                         new JsonManifestUpdateSource(new Uri("http://localhost:8000/manifest.json"),
+                                                         sp.GetRequiredService<HttpClient>()));
+                    }
+                    else
+                    {
+                        services.AddSingleton<IUpdateSource>(sp =>
+                        {
+                            // todo: inject token
+                            return new GitHubReleasesUpdateSource(
+                                sp.GetRequiredService<HttpClient>(),
+                                new GitHubReleasesOptions
+                                {
+                                    Owner = "SHOEGAZEssb",
+                                    Repo = "Scrubbler-2",
+                                    UserAgent = "Scrubbler/2"
+                                });
+                        });
+                    }
+
+                    services.AddSingleton<IUpdateManagerService, UpdateManagerService>();
                     services.AddTransient<AccountsViewModel>();
                     services.AddTransient<PluginManagerViewModel>();
                     services.AddTransient<SettingsViewModel>();

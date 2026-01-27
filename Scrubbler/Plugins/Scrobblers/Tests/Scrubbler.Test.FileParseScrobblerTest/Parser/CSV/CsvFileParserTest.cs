@@ -1,9 +1,4 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
-using NUnit.Framework;
-using Scrubbler.Abstractions;
 using Scrubbler.Plugin.Scrobbler.FileParseScrobbler;
 using Scrubbler.Plugin.Scrobbler.FileParseScrobbler.Parser;
 using Scrubbler.Plugin.Scrobbler.FileParseScrobbler.Parser.CSV;
