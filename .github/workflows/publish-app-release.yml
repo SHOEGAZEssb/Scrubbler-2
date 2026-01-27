@@ -40,8 +40,8 @@ jobs:
         shell: bash
         working-directory: Scrubbler
         run: |
-          dotnet restore Scrubbler.Updater/Scrubbler.Updater.csproj
-          dotnet restore Scrubbler.Host/Scrubbler.Host.csproj
+          dotnet restore Scrubbler.Updater/Scrubbler.Updater.csproj -r ${{ matrix.rid }}
+          dotnet restore Scrubbler.Host/Scrubbler.Host.csproj -r ${{ matrix.rid }}
 
       - name: Publish updater
         working-directory: Scrubbler
