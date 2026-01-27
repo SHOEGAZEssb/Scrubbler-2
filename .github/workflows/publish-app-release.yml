@@ -36,29 +36,26 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Restore
-        run: dotnet restore Scrubbler.sln
+      - name: Restore (host + updater only)
+        shell: bash
         working-directory: Scrubbler
+        run: |
+          dotnet restore Scrubbler.Updater/Scrubbler.Updater.csproj
+          dotnet restore Scrubbler.Host/Scrubbler.Host.csproj -f net10.0-desktop
 
-      # publish updater for this RID
       - name: Publish updater
-        run: dotnet publish Scrubbler.Updater/Scrubbler.Updater.csproj -c Release -r ${{ matrix.rid }}
         working-directory: Scrubbler
+        run: dotnet publish Scrubbler.Updater/Scrubbler.Updater.csproj -c Release -f net10.0 -r ${{ matrix.rid }} --no-restore
 
-      # publish host for this RID (adjust csproj path if different)
       - name: Publish host
-        run: dotnet publish Scrubbler.Host/Scrubbler.Host.csproj -c Release -r ${{ matrix.rid }}
         working-directory: Scrubbler
+        run: dotnet publish Scrubbler.Host/Scrubbler.Host.csproj -c Release -f net10.0-desktop -r ${{ matrix.rid }} --no-restore
 
-      # create staging folder that will be zipped:
-      # - host publish output
-      # - Updater/ folder containing updater publish output
       - name: Assemble portable folder (windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           $rid = "${{ matrix.rid }}"
-          $tag = "${{ github.event.release.tag_name }}"
 
           $hostPub = "Scrubbler\Scrubbler.Host\bin\Release\net10.0-desktop\$rid\publish"
           $updPub  = "Scrubbler\Scrubbler.Updater\bin\Release\net10.0\$rid\publish"
@@ -80,8 +77,6 @@ jobs:
           if (Test-Path $outZip) { Remove-Item $outZip -Force }
 
           Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $outZip -Force
-
-          Get-FileHash -Algorithm SHA256 $outZip | Format-List
           "ZIP_PATH=$outZip" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Assemble portable folder (linux/macos)
@@ -141,6 +136,4 @@ jobs:
         shell: bash
         run: |
           tag="${{ github.event.release.tag_name }}"
-
-          # upload all zips + checksums.txt to the existing release
           gh release upload "$tag" dist/**/*.zip dist/checksums.txt --clobber
