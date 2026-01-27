@@ -66,9 +66,7 @@ internal sealed class GitHubReleasesUpdateSource : IUpdateSource
         if (asset is null)
             return null;
 
-        // sha is not provided by github releases api.
-        // easiest: ship a companion "checksums.txt" asset or put sha256 in release body.
-        var sha256 = await ResolveSha256Async(release, asset, ct).ConfigureAwait(false);
+        var sha256 = TryGetSha256(asset);
         if (string.IsNullOrWhiteSpace(sha256))
             throw new InvalidOperationException("could not resolve sha256 for release asset");
 
@@ -108,44 +106,16 @@ internal sealed class GitHubReleasesUpdateSource : IUpdateSource
             a.Name.EndsWith(assetFileExtension, StringComparison.OrdinalIgnoreCase));
     }
 
-    private async Task<string?> ResolveSha256Async(GitHubRelease release, GitHubAsset asset, CancellationToken ct)
+    private static string? TryGetSha256(GitHubAsset asset)
     {
-        // approach: look for a "checksums.txt" asset and parse it.
-        // format: "<SHA256>  <FILENAME>"
-        // this avoids stuffing hashes into the release description and scales well.
-
-        var checksums = release.Assets.FirstOrDefault(a =>
-            string.Equals(a.Name, _options.ChecksumsAssetName, StringComparison.OrdinalIgnoreCase));
-
-        if (checksums is null)
+        if (string.IsNullOrWhiteSpace(asset.Digest))
             return null;
 
-        var content = await _http.GetStringAsync(checksums.BrowserDownloadUrl, ct).ConfigureAwait(false);
-        using var sr = new StringReader(content);
+        const string prefix = "sha256:";
+        if (!asset.Digest.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            return null;
 
-        while (true)
-        {
-            var line = await sr.ReadLineAsync(ct).ConfigureAwait(false);
-            if (line is null)
-                break;
-
-            line = line.Trim();
-            if (line.Length == 0)
-                continue;
-
-            // very forgiving parse: split on whitespace, last token = filename
-            var parts = line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 2)
-                continue;
-
-            var sha = parts[0];
-            var file = parts[^1];
-
-            if (string.Equals(file, asset.Name, StringComparison.OrdinalIgnoreCase))
-                return sha;
-        }
-
-        return null;
+        return asset.Digest[prefix.Length..];
     }
 
     private sealed record GitHubRelease(
@@ -155,7 +125,8 @@ internal sealed class GitHubReleasesUpdateSource : IUpdateSource
 
     private sealed record GitHubAsset(
         [property: JsonPropertyName("name")] string Name,
-        [property: JsonPropertyName("browser_download_url")] string BrowserDownloadUrl);
+        [property: JsonPropertyName("browser_download_url")] string BrowserDownloadUrl,
+        [property: JsonPropertyName("digest")] string? Digest);
 }
 
 internal sealed class GitHubReleasesOptions
