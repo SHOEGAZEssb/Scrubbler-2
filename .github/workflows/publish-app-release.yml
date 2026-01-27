@@ -1,0 +1,146 @@
+name: Publish App Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build-zips:
+    name: Build ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            zip_name: Scrubbler-win-x64-${{ github.event.release.tag_name }}.zip
+          - os: ubuntu-latest
+            rid: linux-x64
+            zip_name: Scrubbler-linux-x64-${{ github.event.release.tag_name }}.zip
+          - os: macos-latest
+            rid: osx-x64
+            zip_name: Scrubbler-osx-x64-${{ github.event.release.tag_name }}.zip
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore Scrubbler.sln
+        working-directory: Scrubbler
+
+      # publish updater for this RID
+      - name: Publish updater
+        run: dotnet publish Scrubbler.Updater/Scrubbler.Updater.csproj -c Release -r ${{ matrix.rid }}
+        working-directory: Scrubbler
+
+      # publish host for this RID (adjust csproj path if different)
+      - name: Publish host
+        run: dotnet publish Scrubbler.Host/Scrubbler.Host.csproj -c Release -r ${{ matrix.rid }}
+        working-directory: Scrubbler
+
+      # create staging folder that will be zipped:
+      # - host publish output
+      # - Updater/ folder containing updater publish output
+      - name: Assemble portable folder (windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $rid = "${{ matrix.rid }}"
+          $tag = "${{ github.event.release.tag_name }}"
+
+          $hostPub = "Scrubbler\Scrubbler.Host\bin\Release\net10.0-desktop\$rid\publish"
+          $updPub  = "Scrubbler\Scrubbler.Updater\bin\Release\net10.0\$rid\publish"
+
+          if (!(Test-Path $hostPub)) { throw "Host publish folder not found: $hostPub" }
+          if (!(Test-Path $updPub))  { throw "Updater publish folder not found: $updPub" }
+
+          $stage = Join-Path $env:RUNNER_TEMP "scrubbler_stage_$rid"
+          if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
+          New-Item -ItemType Directory -Path $stage | Out-Null
+
+          Copy-Item "$hostPub\*" $stage -Recurse -Force
+
+          $updStage = Join-Path $stage "Updater"
+          New-Item -ItemType Directory -Path $updStage | Out-Null
+          Copy-Item "$updPub\*" $updStage -Recurse -Force
+
+          $outZip = Join-Path $env:RUNNER_TEMP "${{ matrix.zip_name }}"
+          if (Test-Path $outZip) { Remove-Item $outZip -Force }
+
+          Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $outZip -Force
+
+          Get-FileHash -Algorithm SHA256 $outZip | Format-List
+          "ZIP_PATH=$outZip" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Assemble portable folder (linux/macos)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          rid="${{ matrix.rid }}"
+
+          hostPub="Scrubbler/Scrubbler.Host/bin/Release/net10.0-desktop/${rid}/publish"
+          updPub="Scrubbler/Scrubbler.Updater/bin/Release/net10.0/${rid}/publish"
+
+          test -d "$hostPub" || (echo "Host publish folder not found: $hostPub" && exit 1)
+          test -d "$updPub"  || (echo "Updater publish folder not found: $updPub" && exit 1)
+
+          stage="$RUNNER_TEMP/scrubbler_stage_${rid}"
+          rm -rf "$stage"
+          mkdir -p "$stage"
+
+          cp -R "$hostPub"/. "$stage"/
+
+          mkdir -p "$stage/Updater"
+          cp -R "$updPub"/. "$stage/Updater"/
+
+          outZip="$RUNNER_TEMP/${{ matrix.zip_name }}"
+          rm -f "$outZip"
+          (cd "$stage" && zip -r "$outZip" .)
+
+          echo "ZIP_PATH=$outZip" >> "$GITHUB_ENV"
+
+      - name: Upload zip artifact (to workflow)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ matrix.rid }}
+          path: ${{ env.ZIP_PATH }}
+
+  upload-release-assets:
+    name: Upload release assets + checksums
+    runs-on: ubuntu-latest
+    needs: build-zips
+
+    steps:
+      - name: Download all zips
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Create checksums.txt
+        shell: bash
+        run: |
+          cd dist
+          find . -type f -name "*.zip" -print0 | sort -z | xargs -0 sha256sum > checksums.txt
+          cat checksums.txt
+
+      - name: Upload assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          tag="${{ github.event.release.tag_name }}"
+
+          # upload all zips + checksums.txt to the existing release
+          gh release upload "$tag" dist/**/*.zip dist/checksums.txt --clobber
