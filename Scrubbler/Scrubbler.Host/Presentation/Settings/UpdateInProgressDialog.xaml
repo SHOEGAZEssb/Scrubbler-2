@@ -1,0 +1,21 @@
+﻿<ContentDialog
+    x:Class="Scrubbler.Host.Presentation.Settings.UpdateInProgressDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Scrubbler.Host.Presentation.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Update in progress"
+    Style="{ThemeResource DefaultContentDialogStyle}"
+    IsPrimaryButtonEnabled="False"
+    PrimaryButtonText="OK">
+
+    <Grid>
+        <StackPanel x:Name="ProgressStackPanel" Grid.Row="0" Spacing="10" Orientation="Vertical">
+            <ProgressRing IsIndeterminate="True" IsActive="True" HorizontalAlignment="Center"/>
+            <TextBlock Text="Update in progress..." HorizontalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel x:Name="ErrorStackPanel" Grid.Row="0" Spacing="10" Orientation="Vertical" Visibility="Collapsed">
+            <TextBlock x:Name="ErrorText" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</ContentDialog>

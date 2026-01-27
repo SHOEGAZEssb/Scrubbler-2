@@ -4,10 +4,13 @@ using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Plugins;
+using Scrubbler.Host.Presentation.Settings;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
+using Scrubbler.Host.Updates;
 
 namespace Scrubbler.Host;
+
 public partial class App : Application
 {
     /// <summary>
@@ -64,6 +67,9 @@ public partial class App : Application
 
                 .ConfigureServices((context, services) =>
                 {
+                    services.AddHttpClient();
+                    services.AddSingleton(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient());
+
                     services.AddSingleton<HostLogService>();
                     services.AddHostedService<HostLogInitializer>();
                     services.AddSingleton<LogViewModel>();
@@ -78,13 +84,43 @@ public partial class App : Application
                     services.AddSingleton<IWindowHandleProvider, WindowHandleProvider>();
                     services.AddSingleton<IFilePickerService, FilePickerService>();
                     services.AddSingleton<IFileStorageService, FileStorageService>();
+
+                    if (Environment.GetEnvironmentVariable("SCRUBBLER_UPDATE_MODE") == "JSON")
+                    {
+                        services.AddSingleton<IUpdateSource>(sp =>
+                                                         new JsonManifestUpdateSource(new Uri("http://localhost:8000/manifest.json"),
+                                                         sp.GetRequiredService<HttpClient>()));
+                    }
+                    else
+                    {
+                        services.AddSingleton<IUpdateSource>(sp =>
+                        {
+                            // todo: inject token
+                            return new GitHubReleasesUpdateSource(
+                                sp.GetRequiredService<HttpClient>(),
+                                new GitHubReleasesOptions
+                                {
+                                    Owner = "SHOEGAZEssb",
+                                    Repo = "Scrubbler-2",
+                                    UserAgent = "Scrubbler/2"
+                                });
+                        });
+                    }
+
+                    services.AddSingleton<IUpdateManagerService, UpdateManagerService>();
                     services.AddTransient<AccountsViewModel>();
                     services.AddTransient<PluginManagerViewModel>();
+                    services.AddTransient<SettingsViewModel>();
                 })
 
                 .UseNavigation(RegisterRoutes)
             );
         MainWindow = builder.Window;
+
+        var version = Package.Current.Id.Version;
+        var versionString =
+            $"{version.Major}.{version.Minor}.{version.Build}";
+        MainWindow.Title = $"Scrubbler 2 v{versionString}";
 
 #if DEBUG
         MainWindow.UseStudio();

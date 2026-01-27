@@ -1,0 +1,37 @@
+﻿<ContentDialog
+    x:Class="Scrubbler.Host.Presentation.Settings.UpdateDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Scrubbler.Host.Presentation.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="New version available"
+    Style="{ThemeResource DefaultContentDialogStyle}"
+    PrimaryButtonText="Update"
+    SecondaryButtonText="Later">
+
+	<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="Scrubbler version"/>
+                <TextBlock Text="{x:Bind ViewModel.NewVersion}" FontWeight="SemiBold"/> "
+                <TextBlock Text="is available."/> "
+            </StackPanel>
+
+            <TextBlock Text="Would you like to update now? (This will restart the Scrubbler)"/>
+        </StackPanel>
+
+        <ScrollViewer
+            Grid.Row="1"
+            Margin="0,12,0,0"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled"
+            MaxHeight="300">
+            <TextBlock Text="{x:Bind ViewModel.Notes}" TextWrapping="Wrap"/>
+        </ScrollViewer>
+    </Grid>
+</ContentDialog>

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Scrubbler.Plugin.Scrobbler.FileParseScrobbler.Parser.CSV;
 
 internal sealed record CsvScrobbleRow

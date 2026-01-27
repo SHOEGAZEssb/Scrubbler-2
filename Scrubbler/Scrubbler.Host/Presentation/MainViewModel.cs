@@ -6,6 +6,7 @@ using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Host.Presentation.Plugins;
+using Scrubbler.Host.Presentation.Settings;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation;
@@ -60,6 +61,7 @@ internal partial class MainViewModel : ObservableObject
         Items.Add(_pluginGroup);
 
         Items.Add(new MenuNavigationItemViewModel("Logs", new SymbolIconSource() { Symbol = Symbol.Document }, services.GetRequiredService<LogViewModel>()));
+        Items.Add(new MenuNavigationItemViewModel("Settings", new SymbolIconSource() { Symbol = Symbol.Setting }, services.GetRequiredService<SettingsViewModel>()));
 
         SelectedItem = Items.FirstOrDefault();
     }

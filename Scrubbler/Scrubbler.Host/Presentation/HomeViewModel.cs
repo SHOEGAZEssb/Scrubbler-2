@@ -1,4 +1,6 @@
 namespace Scrubbler.Host.Presentation;
-internal class HomeViewModel : ObservableObject
+
+internal partial class HomeViewModel : ObservableObject
 {
+
 }
