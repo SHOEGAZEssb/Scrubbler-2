@@ -136,4 +136,4 @@ jobs:
         shell: bash
         run: |
           tag="${{ github.event.release.tag_name }}"
-          gh release upload "$tag" dist/**/*.zip dist/checksums.txt --clobber
+          gh release upload "$tag" dist/**/*.zip dist/checksums.txt --clobber --repo "${{ github.repository }}"
