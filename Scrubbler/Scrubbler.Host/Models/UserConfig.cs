@@ -4,5 +4,5 @@ public record UserConfig
 {
     public string? AccountFunctionsPluginID { get; set; }
 
-    public bool CheckForUpdatesOnStartup { get; set; } = false;
+    public bool CheckForUpdatesOnStartup { get; set; }
 }

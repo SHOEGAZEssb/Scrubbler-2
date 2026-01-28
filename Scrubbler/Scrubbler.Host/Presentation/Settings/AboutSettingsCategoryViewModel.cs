@@ -1,4 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
+using Microsoft.UI.Dispatching;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
 
@@ -12,12 +14,12 @@ internal partial class AboutSettingsCategoryViewModel : SettingsCategoryViewMode
 
     public string CurrentVersion { get; }
 
-    public bool CheckForUpdatesOnStartup
+    public bool EnableStartupUpdateCheck
     {
         get => _config.Value.CheckForUpdatesOnStartup;
         set
         {
-            if (CheckForUpdatesOnStartup != value)
+            if (EnableStartupUpdateCheck != value)
             {
                 _config.UpdateAsync(current =>
                 {
@@ -86,17 +88,30 @@ internal partial class AboutSettingsCategoryViewModel : SettingsCategoryViewMode
                 return;
             }
 
-            // prompt
-            var d = new UpdateDialog(update);
-            if (await _dialogService.ShowDialogAsync(d) == ContentDialogResult.Primary)
+            var dispatcher = Window.Current?.DispatcherQueue;
+            if (dispatcher != null)
             {
-                var updateProgress = new UpdateInProgressDialog(_manager, update);
-                await _dialogService.ShowDialogAsync(updateProgress);
+                await dispatcher.EnqueueAsync(async () =>
+                {
+                    // prompt
+                    var d = new UpdateDialog(update);
+                    if (await _dialogService.ShowDialogAsync(d) == ContentDialogResult.Primary)
+                    {
+                        var updateProgress = new UpdateInProgressDialog(_manager, update);
+                        await _dialogService.ShowDialogAsync(updateProgress);
+                    }
+                });
             }
         }
         catch (Exception ex)
         {
-
+            var errorUpdate = new ContentDialog
+            {
+                Title = "Update Error",
+                Content = $"Error while updating:{Environment.NewLine}{ex.Message}",
+                CloseButtonText = "OK"
+            };
+            await _dialogService.ShowDialogAsync(errorUpdate);
         }
         finally
         {

@@ -22,13 +22,12 @@
                         <utu:CardContentControl Style="{StaticResource ElevatedCardContentControlStyle}">
                             <utu:CardContentControl.ContentTemplate>
                                 <DataTemplate x:DataType="local:SettingsCategoryViewModel">
-                                    <StackPanel Padding="32" Orientation="Vertical">
+                                    <StackPanel Padding="32" Orientation="Vertical" HorizontalAlignment="Center">
                                         <TextBlock Text="{x:Bind Name}"
-                                                   Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                   HorizontalTextAlignment="Center"/>
+                                                   Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalTextAlignment="Center"/>
 
                                         <ContentPresenter Content="{Binding}"
-                                                          ContentTemplateSelector="{StaticResource ViewLocatorSelector}"/>
+                                                          ContentTemplateSelector="{StaticResource ViewLocatorSelector}" HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </utu:CardContentControl.ContentTemplate>

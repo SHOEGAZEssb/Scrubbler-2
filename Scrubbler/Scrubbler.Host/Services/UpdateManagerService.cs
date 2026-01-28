@@ -56,7 +56,7 @@ public sealed class UpdateManagerService(HttpClient http, IUpdateSource source, 
         {
             FileName = stagedUpdaterExe,
             Arguments = args,
-            UseShellExecute = false,
+            UseShellExecute = true,
             WorkingDirectory = Path.GetDirectoryName(stagedUpdaterExe) ?? Path.GetTempPath()
         });
 

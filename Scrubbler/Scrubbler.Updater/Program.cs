@@ -1,4 +1,3 @@
-// Scrubbler.Updater (console app)
 using System.Diagnostics;
 using System.Globalization;
 
@@ -6,12 +5,16 @@ internal class Program
 {
     private static async Task<int> Main(string[] args)
     {
+        Console.WriteLine("Starting Scrubbler Updater");
+
         var pid = GetArgInt(args, "--pid");
         var appDir = GetArg(args, "--appDir");
         var package = GetArg(args, "--package");
         var entry = GetArg(args, "--entry");
 
+        Console.WriteLine("Waiting for the Scrubbler application to close...");
         WaitForExit(pid, TimeSpan.FromSeconds(30));
+        Console.WriteLine("Scrubbler was closed successfully");
 
         var parentDir = Directory.GetParent(appDir)!.FullName;
         var stagingDir = Path.Combine(parentDir, $".scrubbler_staging_{Guid.NewGuid():N}");
@@ -23,6 +26,8 @@ internal class Program
         // swap
         Directory.Move(appDir, backupDir);
         Directory.Move(stagingDir, appDir);
+
+        Console.WriteLine("Restarting the Scrubbler");
 
         // restart
         Process.Start(new ProcessStartInfo

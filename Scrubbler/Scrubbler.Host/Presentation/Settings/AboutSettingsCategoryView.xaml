@@ -9,21 +9,25 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="5"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <StackPanel>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Version:"/>
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding CurrentVersion}"/>
+        <!-- Version row -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock Text="Version:"/>
+            <TextBlock Text="{Binding CurrentVersion}" Margin="5,0,0,0"/>
+        </StackPanel>
 
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Check for Updates" Command="{Binding CheckForUpdatesCommand}" HorizontalAlignment="Center"/>
-    </Grid>
+        <!-- Spacer -->
+        <Border Height="5"/>
+
+        <!-- Startup update checkbox -->
+        <CheckBox Content="Check for Updates on start" IsChecked="{Binding EnableStartupUpdateCheck, Mode=TwoWay}"/>
+
+        <!-- Spacer -->
+        <Border Height="5"/>
+
+        <!-- Check updates button -->
+        <Button Content="Check for Updates" Command="{Binding CheckForUpdatesCommand}" HorizontalAlignment="Center"/>
+
+    </StackPanel>
 </UserControl>
