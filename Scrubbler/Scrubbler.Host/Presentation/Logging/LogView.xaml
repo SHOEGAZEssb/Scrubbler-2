@@ -43,6 +43,12 @@
             <Border Width="1" Margin="8,0" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
             <Button Content="Clear Logs" Command="{Binding ClearCommand}" HorizontalAlignment="Right"/>
+
+            <Button Command="{Binding SaveCommand}" HorizontalAlignment="Right">
+                <Button.Content>
+                    <SymbolIcon Symbol="Save"/>
+                </Button.Content>
+            </Button>
         </StackPanel>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">

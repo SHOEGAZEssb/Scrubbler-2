@@ -123,9 +123,7 @@ internal sealed partial class FileParseScrobbleViewModel : ScrobbleMultipleTimeV
                                                     { "Text file", _textFiles }
                                                 });
                     if (file != null)
-                    {
                         await _fileStorageService.WriteLinesAsync(file, result.Errors);
-                    }
                 }
             }
 

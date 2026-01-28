@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
+using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
+using Uno.UI.RemoteControl.Messaging.IdeChannel;
 
 namespace Scrubbler.Host.Presentation.Logging;
 
@@ -12,6 +14,8 @@ internal partial class LogViewModel : ObservableObject, IHostedService
     public ObservableCollection<LogMessage> Entries { get; } = [];
 
     public ObservableCollection<LogMessage> FilteredEntries { get; } = [];
+
+    public bool CanSave => FilteredEntries.Count > 0;
 
     public ObservableCollection<LogLevelFilterViewModel> LogLevelFilters { get; } = [];
 
@@ -24,17 +28,22 @@ internal partial class LogViewModel : ObservableObject, IHostedService
     private string _searchText = string.Empty;
 
     private readonly IUserFeedbackService _userFeedbackService;
+    private readonly IFilePickerService _filePickerService;
+    private readonly IFileStorageService _fileStorageService;
 
+    private static readonly string[] _textFiles = [".txt"];
     private const string ALLMODULE = "All";
 
     #endregion Properties
 
     #region Construction
 
-    public LogViewModel(HostLogService hostLogService, IUserFeedbackService userFeedbackService)
+    public LogViewModel(HostLogService hostLogService, IUserFeedbackService userFeedbackService, IFilePickerService filePickerService, IFileStorageService fileStorageService)
     {
         hostLogService.MessageLogged += Add;
         _userFeedbackService = userFeedbackService;
+        _filePickerService = filePickerService;
+        _fileStorageService = fileStorageService;
 
         foreach (LogLevel level in Enum.GetValues<LogLevel>())
         {
@@ -63,6 +72,20 @@ internal partial class LogViewModel : ObservableObject, IHostedService
         SelectedModule = ALLMODULE;
     }
 
+    [RelayCommand(CanExecute = nameof(CanSave))]
+    private async Task Save()
+    {
+        if (!CanSave)
+            return;
+
+        var file = await _filePickerService.SaveFileAsync("scrubbler_log", new Dictionary<string, IReadOnlyList<string>>
+                                                                           {
+                                                                               { "Text file", _textFiles }
+                                                                           });
+        if (file != null)
+            await _fileStorageService.WriteLinesAsync(file, FilteredEntries.Select(l => l.ToString()));
+    }
+
     private void RebuildFilteredEntries()
     {
         FilteredEntries.Clear();
@@ -71,6 +94,8 @@ internal partial class LogViewModel : ObservableObject, IHostedService
             if (MatchesFilter(entry))
                 FilteredEntries.Add(entry);
         }
+
+        SaveCommand.NotifyCanExecuteChanged();
     }
 
     private void RebuildModulesList()

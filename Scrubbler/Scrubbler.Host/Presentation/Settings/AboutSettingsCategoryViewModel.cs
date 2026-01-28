@@ -105,13 +105,16 @@ internal partial class AboutSettingsCategoryViewModel : SettingsCategoryViewMode
         }
         catch (Exception ex)
         {
-            var errorUpdate = new ContentDialog
+            if (!EnableStartupUpdateCheck)
             {
-                Title = "Update Error",
-                Content = $"Error while updating:{Environment.NewLine}{ex.Message}",
-                CloseButtonText = "OK"
-            };
-            await _dialogService.ShowDialogAsync(errorUpdate);
+                var errorUpdate = new ContentDialog
+                {
+                    Title = "Update Error",
+                    Content = $"Error while updating:{Environment.NewLine}{ex.Message}",
+                    CloseButtonText = "OK"
+                };
+                await _dialogService.ShowDialogAsync(errorUpdate);
+            }
         }
         finally
         {
