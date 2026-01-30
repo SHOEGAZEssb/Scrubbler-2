@@ -40,10 +40,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Test.ManualScrobb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobblers.DatabaseScrobbler", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobblers.DatabaseScrobbler\Scrubbler.Plugin.Scrobblers.DatabaseScrobbler.csproj", "{B6AAEFFB-6BEA-426B-A14B-D4E9390A271B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{28187F6D-1115-42F0-BF2C-40995EF8AA2A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Tests.AbstractionsTest", "Tests\Scrubbler.Tests.AbstractionsTest\Scrubbler.Tests.AbstractionsTest.csproj", "{E9DFAAA4-1B22-4BCF-B228-AFF035A3BD8B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobbler.Mock", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobbler.Mock\Scrubbler.Plugin.Scrobbler.Mock.csproj", "{50C3F4A9-C34F-48E4-A3CB-44CFE2E9C4FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Test.DatabaseScrobblerTest", "Plugins\Scrobblers\Tests\Scrubbler.Test.DatabaseScrobblerTest\Scrubbler.Test.DatabaseScrobblerTest.csproj", "{B4FDA5E9-34EF-4CEE-B53E-56DD3342CA3A}"
