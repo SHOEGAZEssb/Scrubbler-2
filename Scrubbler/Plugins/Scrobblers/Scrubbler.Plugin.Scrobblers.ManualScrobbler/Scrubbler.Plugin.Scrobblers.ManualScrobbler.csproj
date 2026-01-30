@@ -18,12 +18,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Include="icon.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Scrubbler.PluginBase" />
     </ItemGroup>
 </Project>

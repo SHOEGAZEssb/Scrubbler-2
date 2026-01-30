@@ -9,7 +9,7 @@ namespace Scrubbler.Plugin.Scrobblers.FriendScrobbler;
     Name = "Friend Scrobbler",
     Description = "Scrobble tracks from another last.fm user",
     SupportedPlatforms = PlatformSupport.All)]
-public class FriendScrobblePlugin : PluginBase, IScrobblePlugin
+public class FriendScrobblePlugin : Abstractions.Plugin.PluginBase, IScrobblePlugin
 {
     #region Properties
 

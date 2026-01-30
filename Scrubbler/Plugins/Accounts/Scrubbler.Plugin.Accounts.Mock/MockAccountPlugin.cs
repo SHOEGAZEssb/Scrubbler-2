@@ -9,7 +9,7 @@ namespace Scrubbler.Plugin.Accounts.Mock;
     Name = "Mock",
     Description = "A fake account plugin for testing",
     SupportedPlatforms = PlatformSupport.All)]
-public class MockAccountPlugin(IModuleLogServiceFactory logFactory) : PluginBase(logFactory), IAccountPlugin
+public class MockAccountPlugin(IModuleLogServiceFactory logFactory) : Abstractions.Plugin.PluginBase(logFactory), IAccountPlugin
 {
     public string? AccountId => IsAuthenticated ? "Fake User" : null;
 

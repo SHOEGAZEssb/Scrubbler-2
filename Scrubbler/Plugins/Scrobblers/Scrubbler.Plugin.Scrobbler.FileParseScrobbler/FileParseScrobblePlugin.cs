@@ -9,7 +9,7 @@ namespace Scrubbler.Plugin.Scrobbler.FileParseScrobbler;
     Name = "File Parse Scrobbler",
     Description = "Parses scrobbles from local files",
     SupportedPlatforms = PlatformSupport.All)]
-public sealed class FileParseScrobblePlugin : PluginBase, IScrobblePlugin, IPersistentPlugin
+public sealed class FileParseScrobblePlugin : Abstractions.Plugin.PluginBase, IScrobblePlugin, IPersistentPlugin
 {
     #region Properties
 

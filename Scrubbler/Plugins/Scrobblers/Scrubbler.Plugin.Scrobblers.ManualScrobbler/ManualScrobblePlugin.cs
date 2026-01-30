@@ -11,7 +11,7 @@ namespace Scrubbler.Plugin.Scrobblers.ManualScrobbler;
     Name = "Manual Scrobbler",
     Description = "Enter track details manually and scrobble them",
     SupportedPlatforms = PlatformSupport.All)]
-public class ManualScrobblePlugin(IModuleLogServiceFactory logFactory) : PluginBase(logFactory), IScrobblePlugin
+public class ManualScrobblePlugin(IModuleLogServiceFactory logFactory) : Abstractions.Plugin.PluginBase(logFactory), IScrobblePlugin
 {
     #region Properties
 

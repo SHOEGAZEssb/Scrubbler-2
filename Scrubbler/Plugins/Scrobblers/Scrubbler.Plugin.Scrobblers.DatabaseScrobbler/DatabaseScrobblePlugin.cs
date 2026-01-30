@@ -10,7 +10,7 @@ namespace Scrubbler.Plugin.Scrobblers.DatabaseScrobbler;
     Name = "Database Scrobbler",
     Description = "Search and scrobble from various online music databases",
     SupportedPlatforms = PlatformSupport.All)]
-public class DatabaseScrobblePlugin : PluginBase, IScrobblePlugin
+public class DatabaseScrobblePlugin : Abstractions.Plugin.PluginBase, IScrobblePlugin
 {
     #region Properties
 

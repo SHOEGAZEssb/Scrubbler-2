@@ -13,13 +13,10 @@
         <EnableDefaultXamlItems>true</EnableDefaultXamlItems>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Scrubbler.PluginBase" />
         <PackageReference Include="Shoegaze.LastFM" />
         <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.WinUI.Managed" />
         <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.Interactivity.WinUI" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

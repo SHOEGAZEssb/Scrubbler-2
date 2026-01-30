@@ -12,7 +12,7 @@ namespace Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler;
     Name = "Apple Music Scrobbler",
     Description = "Automatically scrobble tracks playing in the Apple Music desktop app",
     SupportedPlatforms = PlatformSupport.Windows)]
-public class AppleMusicScrobblePlugin : PluginBase, IAutoScrobblePlugin, IPersistentPlugin, IAcceptAccountFunctions
+public class AppleMusicScrobblePlugin : Abstractions.Plugin.PluginBase, IAutoScrobblePlugin, IPersistentPlugin, IAcceptAccountFunctions
 {
     #region Properties
 

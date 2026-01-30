@@ -11,6 +11,6 @@
     <FileVersion>2.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+    <PackageReference Include="Scrubbler.PluginBase" />
   </ItemGroup>
 </Project>

@@ -14,7 +14,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "SCRUBBLER_PLUGIN_MODE": "Debug",
-        "SCRUBBLER_UPDATE_MODE": "JSON"
+        "SCRUBBLER_UPDATE_MODE": "GITHUB"
       }
     }
   },

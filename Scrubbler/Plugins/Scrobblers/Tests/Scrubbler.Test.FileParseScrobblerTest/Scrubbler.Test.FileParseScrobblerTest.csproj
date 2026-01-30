@@ -15,10 +15,10 @@
         <PackageReference Include="NUnit" />
         <PackageReference Include="NUnit.Analyzers" />
         <PackageReference Include="NUnit3TestAdapter" />
+        <PackageReference Include="Scrubbler.PluginBase" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
       <ProjectReference Include="..\..\Scrubbler.Plugin.Scrobbler.FileParseScrobbler\Scrubbler.Plugin.Scrobbler.FileParseScrobbler.csproj" />
     </ItemGroup>
 

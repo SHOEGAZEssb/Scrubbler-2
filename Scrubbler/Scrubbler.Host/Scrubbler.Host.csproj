@@ -8,7 +8,7 @@
         <!-- Metadata -->
         <ApplicationTitle>Scrubbler 2</ApplicationTitle>
         <ApplicationId>Scrubbler.Host</ApplicationId>
-        <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+        <ApplicationDisplayVersion>0.0.1</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationPublisher>SHOEGAZEssb</ApplicationPublisher>
         <Description>Scrubbler 2 - Manual scrobbling for when a service (or you!) failed to scrobble.</Description>
@@ -33,11 +33,6 @@
         <Compile Remove="Presentation\Controls\**" />
         <EmbeddedResource Remove="Presentation\Controls\**" />
         <None Remove="Presentation\Controls\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <!-- Project references -->
-        <ProjectReference Include="..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -109,6 +104,7 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.WinUI.Extensions" />
         <PackageReference Include="Microsoft.Extensions.Http" />
+        <PackageReference Include="Scrubbler.PluginBase" />
         <PackageReference Include="SkiaSharp" />
     </ItemGroup>
     <ItemGroup>

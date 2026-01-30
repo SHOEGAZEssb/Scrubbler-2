@@ -16,7 +16,7 @@ namespace Scrubbler.Plugin.Accounts.LastFm;
     Name = "Last.fm",
     Description = "Scrobble to a Last.fm account",
     SupportedPlatforms = PlatformSupport.All)]
-public class LastFmAccountPlugin : PluginBase, IAccountPlugin, IHaveScrobbleLimit, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying, ICanOpenLinks
+public class LastFmAccountPlugin : Abstractions.Plugin.PluginBase, IAccountPlugin, IHaveScrobbleLimit, ICanLoveTracks, ICanFetchPlayCounts, ICanFetchTags, ICanUpdateNowPlaying, ICanOpenLinks
 {
     #region Properties
 

@@ -14,9 +14,7 @@
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="CsvHelper" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\Scrubbler.Abstractions\Scrubbler.Abstractions.csproj" />
+      <PackageReference Include="Scrubbler.PluginBase" />
     </ItemGroup>
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">

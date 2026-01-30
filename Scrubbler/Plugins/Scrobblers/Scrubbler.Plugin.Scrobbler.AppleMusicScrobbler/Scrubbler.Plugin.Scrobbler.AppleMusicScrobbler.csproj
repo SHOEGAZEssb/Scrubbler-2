@@ -14,6 +14,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="FlaUI.UIA3" />
+        <PackageReference Include="Scrubbler.PluginBase" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\MediaPlayerScrobblerBase\MediaPlayerScrobblerBase.csproj" />
