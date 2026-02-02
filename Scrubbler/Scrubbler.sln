@@ -20,8 +20,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Accounts", "Accounts", "{FD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scrobblers", "Scrobblers", "{4536D109-4649-4376-B775-F791CE753B4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobblers.FriendScrobbler", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobblers.FriendScrobbler\Scrubbler.Plugin.Scrobblers.FriendScrobbler.csproj", "{90433E59-7004-4F98-9E05-BCB43F15DBF4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler\Scrubbler.Plugin.Scrobbler.AppleMusicScrobbler.csproj", "{55A31E75-80DC-4F90-B79A-9CDB6840133D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayerScrobblerBase", "Plugins\Scrobblers\MediaPlayerScrobblerBase\MediaPlayerScrobblerBase.csproj", "{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3}"
@@ -56,10 +54,6 @@ Global
 		{B5837F93-8584-44CA-AD37-610D233160AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5837F93-8584-44CA-AD37-610D233160AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B5837F93-8584-44CA-AD37-610D233160AC}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{90433E59-7004-4F98-9E05-BCB43F15DBF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{90433E59-7004-4F98-9E05-BCB43F15DBF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{90433E59-7004-4F98-9E05-BCB43F15DBF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{90433E59-7004-4F98-9E05-BCB43F15DBF4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55A31E75-80DC-4F90-B79A-9CDB6840133D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55A31E75-80DC-4F90-B79A-9CDB6840133D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55A31E75-80DC-4F90-B79A-9CDB6840133D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -107,7 +101,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FD46BF08-594F-4224-BD15-2DB872961D54} = {797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}
 		{4536D109-4649-4376-B775-F791CE753B4A} = {797732E8-CD3E-4EE7-9965-44D0EEDDDE0F}
-		{90433E59-7004-4F98-9E05-BCB43F15DBF4} = {4536D109-4649-4376-B775-F791CE753B4A}
 		{55A31E75-80DC-4F90-B79A-9CDB6840133D} = {4536D109-4649-4376-B775-F791CE753B4A}
 		{EA2B92EC-57A1-44EF-98C2-3AA028F92FC3} = {4536D109-4649-4376-B775-F791CE753B4A}
 		{41889419-4A78-467F-A0C1-2BA6B78F72C5} = {FD46BF08-594F-4224-BD15-2DB872961D54}
