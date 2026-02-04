@@ -36,10 +36,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Test.DatabaseScro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Test.AppleMusicScrobblerTest", "Plugins\Scrobblers\Tests\Scrubbler.Test.AppleMusicScrobblerTest\Scrubbler.Test.AppleMusicScrobblerTest.csproj", "{988C6ED1-C393-4F27-B626-DC68B7EBFC2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Plugin.Scrobbler.FileParseScrobbler", "Plugins\Scrobblers\Scrubbler.Plugin.Scrobbler.FileParseScrobbler\Scrubbler.Plugin.Scrobbler.FileParseScrobbler.csproj", "{571184EB-2E98-4D15-B020-91BF51FFF4D7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Test.FileParseScrobblerTest", "Plugins\Scrobblers\Tests\Scrubbler.Test.FileParseScrobblerTest\Scrubbler.Test.FileParseScrobblerTest.csproj", "{B1D59C00-3710-465F-818C-AD629BD5CE46}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrubbler.Updater", "Scrubbler.Updater\Scrubbler.Updater.csproj", "{8122D28B-6F64-4ADC-BE82-9BC8E917893F}"
 EndProject
 Global
@@ -82,14 +78,6 @@ Global
 		{988C6ED1-C393-4F27-B626-DC68B7EBFC2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{988C6ED1-C393-4F27-B626-DC68B7EBFC2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{988C6ED1-C393-4F27-B626-DC68B7EBFC2D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{571184EB-2E98-4D15-B020-91BF51FFF4D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{571184EB-2E98-4D15-B020-91BF51FFF4D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{571184EB-2E98-4D15-B020-91BF51FFF4D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{571184EB-2E98-4D15-B020-91BF51FFF4D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B1D59C00-3710-465F-818C-AD629BD5CE46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1D59C00-3710-465F-818C-AD629BD5CE46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B1D59C00-3710-465F-818C-AD629BD5CE46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B1D59C00-3710-465F-818C-AD629BD5CE46}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8122D28B-6F64-4ADC-BE82-9BC8E917893F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8122D28B-6F64-4ADC-BE82-9BC8E917893F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8122D28B-6F64-4ADC-BE82-9BC8E917893F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -109,8 +97,6 @@ Global
 		{50C3F4A9-C34F-48E4-A3CB-44CFE2E9C4FC} = {4536D109-4649-4376-B775-F791CE753B4A}
 		{B4FDA5E9-34EF-4CEE-B53E-56DD3342CA3A} = {F0A72B37-6A77-4762-B7DF-44AD8478FA70}
 		{988C6ED1-C393-4F27-B626-DC68B7EBFC2D} = {F0A72B37-6A77-4762-B7DF-44AD8478FA70}
-		{571184EB-2E98-4D15-B020-91BF51FFF4D7} = {4536D109-4649-4376-B775-F791CE753B4A}
-		{B1D59C00-3710-465F-818C-AD629BD5CE46} = {F0A72B37-6A77-4762-B7DF-44AD8478FA70}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB28EE7E-5D57-4092-8B8A-1EE7C97A6790}
