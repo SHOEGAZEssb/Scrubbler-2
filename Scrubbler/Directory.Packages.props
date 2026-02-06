@@ -6,18 +6,11 @@
     See https://aka.platform.uno/using-uno-sdk#implicit-packages for more information regarding the Implicit Packages.
   -->
   <ItemGroup>
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageVersion Include="CommunityToolkit.WinUI.Extensions" Version="8.2.251219" />
-    <PackageVersion Include="FlaUI.UIA3" Version="5.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.2" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Scrubbler.PluginBase" Version="0.1.0-dev2" />
-    <PackageVersion Include="Shoegaze.LastFM" Version="1.1.0" />
     <PackageVersion Include="SkiaSharp" Version="3.119.1" />
-    <PackageVersion Include="Uno.CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.204" />
-    <PackageVersion Include="Uno.Microsoft.Xaml.Behaviors.Interactivity.WinUI" Version="3.0.3" />
-    <PackageVersion Include="Uno.Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.4.2" />
-    <PackageVersion Include="WinUI.TableView" Version="1.4.0-preview2" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="NUnit" Version="4.4.0" />
