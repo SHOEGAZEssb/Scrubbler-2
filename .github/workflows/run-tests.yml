@@ -8,69 +8,19 @@ on:
 
 jobs:
   run-tests:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup .NET with caching
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            10.0.x
-          cache: false # can be enabled in the future when packages.lock.json files are added
+          dotnet-version: 10.0.x
 
-      - name: Discover test projects
-        id: discover
-        shell: pwsh
-        run: |
-          # Find all csproj files that look like test projects
-          $projects = Get-ChildItem -Recurse -Filter *.csproj |
-            Where-Object {
-              $_.FullName -match 'test' -or $_.FullName -match 'Test'
-            } |
-            Select-Object -ExpandProperty FullName
+      - name: Build
+        run: dotnet build -c Release
 
-          if ($projects.Count -eq 0) {
-            Write-Error "No test projects found."
-            exit 1
-          }
-
-          # Join with ';;' so GitHub can store it as an output
-          $joined = $projects -join ';;'
-          Write-Host "Found test projects:"
-          $projects | ForEach-Object { Write-Host "  $_" }
-
-          echo "projects=$joined" >> $env:GITHUB_OUTPUT
-
-      - name: Restore all test projects (only test dependency graph)
-        shell: pwsh
-        run: |
-          $projects = "${{ steps.discover.outputs.projects }}".Split(';;')
-          foreach ($proj in $projects) {
-            Write-Host "Restoring $proj"
-            dotnet restore "$proj"
-          }
-
-      - name: Build all test projects
-        shell: pwsh
-        run: |
-          $projects = "${{ steps.discover.outputs.projects }}".Split(';;')
-          foreach ($proj in $projects) {
-            Write-Host "Building $proj"
-            dotnet build "$proj" --configuration Release --no-restore
-          }
-
-      - name: Run all tests
-        shell: pwsh
-        run: |
-          $projects = "${{ steps.discover.outputs.projects }}".Split(';;')
-
-          foreach ($proj in $projects) {
-            Write-Host "Running tests for $proj"
-            dotnet test "$proj" `
-              --configuration Release `
-              --no-build `
-              --logger "trx;LogFileName=test_results.trx"
-          }
+      - name: Test
+        run: dotnet test -c Release --no-build --verbosity normal
