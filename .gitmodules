@@ -1,0 +1,3 @@
+[submodule "Scrubbler/deps"]
+	path = Scrubbler/deps
+	url = https://github.com/Scrubbler-Dev/Scrubbler.Dependencies

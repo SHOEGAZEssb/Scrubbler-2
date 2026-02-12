@@ -1,0 +1,3 @@
+<Project>
+  <Import Project="deps/Scrubbler.Build.targets" />
+</Project>
