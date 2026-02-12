@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
-using Uno.UI.RemoteControl.Messaging.IdeChannel;
 
 namespace Scrubbler.Host.Presentation.Logging;
 

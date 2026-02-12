@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Dispatching;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
 
