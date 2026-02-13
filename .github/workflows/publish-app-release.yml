@@ -44,6 +44,10 @@ jobs:
           dotnet restore Scrubbler.Updater/Scrubbler.Updater.csproj -r ${{ matrix.rid }}
           dotnet restore Scrubbler.Host/Scrubbler.Host.csproj -r ${{ matrix.rid }}
 
+      - name: Test
+        run: dotnet test -c Release --verbosity normal
+        working-directory: Scrubbler
+
       - name: Publish updater
         working-directory: Scrubbler
         run: dotnet publish Scrubbler.Updater/Scrubbler.Updater.csproj -c Release -f net10.0 -r ${{ matrix.rid }} --no-restore
