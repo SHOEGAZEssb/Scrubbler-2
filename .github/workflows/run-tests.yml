@@ -1,10 +1,9 @@
 name: Run All Tests
 
 on:
+  pull_request:
   push:
     branches: [ main ]
-    paths:
-      - 'Scrubbler/**'
   workflow_dispatch:
 
 jobs:
