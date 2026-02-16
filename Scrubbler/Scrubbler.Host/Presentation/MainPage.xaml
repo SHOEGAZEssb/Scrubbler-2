@@ -7,11 +7,30 @@
 
     <Page.Resources>
         <DataTemplate x:Key="MenuItemTemplate" x:DataType="navigation:MenuNavigationItemViewModel">
-            <NavigationViewItem Content="{x:Bind Title}"
-                                         SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
+            <NavigationViewItem SelectsOnInvoked="{x:Bind HasChildren, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
                 <NavigationViewItem.Icon>
                     <IconSourceElement IconSource="{x:Bind Icon}" />
                 </NavigationViewItem.Icon>
+
+                <NavigationViewItem.Content>
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <TextBlock Text="{x:Bind Title}" VerticalAlignment="Center"/>
+
+                        <StackPanel Orientation="Horizontal" Spacing="4" Visibility="{x:Bind HasErrors, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <SymbolIcon Symbol="Cancel" Foreground="Red"/>
+                            <TextBlock Text="{x:Bind Errors, Mode=OneWay}" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="4" Visibility="{x:Bind HasWarnings, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <SymbolIcon Symbol="Important" Foreground="Yellow"/>
+                            <TextBlock Text="{x:Bind Warnings, Mode=OneWay}" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="4" Visibility="{x:Bind HasInfos, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <SymbolIcon Symbol="Caption" Foreground="LightBlue"/>
+                            <TextBlock Text="{x:Bind Infos, Mode=OneWay}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                </NavigationViewItem.Content>
+
                 <NavigationViewItem.MenuItemsSource>
                     <Binding Path="Children" />
                 </NavigationViewItem.MenuItemsSource>

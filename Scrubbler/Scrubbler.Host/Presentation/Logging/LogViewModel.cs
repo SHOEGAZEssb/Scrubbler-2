@@ -1,12 +1,13 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Services;
+using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
 
 namespace Scrubbler.Host.Presentation.Logging;
 
-internal partial class LogViewModel : ObservableObject, IHostedService
+internal partial class LogViewModel : ObservableObject, IHostedService, INavigationStatusInfo
 {
     #region Properties
 
@@ -32,6 +33,14 @@ internal partial class LogViewModel : ObservableObject, IHostedService
 
     private static readonly string[] _textFiles = [".txt"];
     private const string ALLMODULE = "All";
+
+    public event EventHandler<NavigationStatusEventArgs>? NavigationStatusChanged;
+
+    [ObservableProperty]
+    private bool _isSelected;
+
+    private int _recentErrors;
+    private int _recentWarnings;
 
     #endregion Properties
 
@@ -148,9 +157,25 @@ internal partial class LogViewModel : ObservableObject, IHostedService
             FilteredEntries.Add(entry);
 
         if (entry.Level == LogLevel.Error || entry.Level == LogLevel.Critical)
+        {
             _userFeedbackService.ShowError($"{entry.Message} | error: {entry.Exception?.Message ?? "Unknown Error"}");
+
+            if (!IsSelected)
+            {
+                _recentErrors++;
+                NavigationStatusChanged?.Invoke(this, new NavigationStatusEventArgs(_recentErrors, _recentWarnings, 0));
+            }
+        }
         else if (entry.Level == LogLevel.Warning)
+        {
             _userFeedbackService.ShowWarning(entry.Message);
+
+            if (!IsSelected)
+            {
+                _recentWarnings++;
+                NavigationStatusChanged?.Invoke(this, new NavigationStatusEventArgs(_recentErrors, _recentWarnings, 0));
+            }
+        }
     }
 
     partial void OnSelectedModuleChanged(string value)
@@ -161,5 +186,15 @@ internal partial class LogViewModel : ObservableObject, IHostedService
     partial void OnSearchTextChanged(string value)
     {
         RebuildFilteredEntries();
+    }
+
+    partial void OnIsSelectedChanged(bool value)
+    {
+        if (value)
+        {
+            _recentErrors = 0;
+            _recentWarnings = 0;
+            NavigationStatusChanged?.Invoke(this, new NavigationStatusEventArgs(_recentErrors, _recentWarnings, 0));
+        }
     }
 }

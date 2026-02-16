@@ -17,18 +17,8 @@ internal partial class MainViewModel : ObservableObject
 
     public ObservableCollection<NavigationItemViewModelBase> Items { get; } = [];
 
-    public NavigationItemViewModelBase? SelectedItem
-    {
-        get => _selectedItem;
-        set
-        {
-            if (SetProperty(ref _selectedItem, value))
-            {
-                // Whenever SelectedItem changes, notify dependent properties
-                OnPropertyChanged(nameof(CurrentViewModel));
-            }
-        }
-    }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentViewModel))]
     private NavigationItemViewModelBase? _selectedItem;
 
     public object? CurrentViewModel => SelectedItem?.Content;
@@ -86,5 +76,11 @@ internal partial class MainViewModel : ObservableObject
         {
             _pluginGroup.Children.Add(new PluginNavigationItemViewModel(plugin, _pluginManager, _userFeedbackService, _dialogService));
         }
+    }
+
+    partial void OnSelectedItemChanged(NavigationItemViewModelBase? oldValue, NavigationItemViewModelBase? newValue)
+    {
+        oldValue?.IsSelected = false;
+        newValue?.IsSelected = true;
     }
 }
