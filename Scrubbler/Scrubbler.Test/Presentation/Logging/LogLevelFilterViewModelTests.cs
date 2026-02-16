@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using Scrubbler.Host.Models;
 using Scrubbler.Host.Presentation.Logging;
 using Microsoft.Extensions.Logging;

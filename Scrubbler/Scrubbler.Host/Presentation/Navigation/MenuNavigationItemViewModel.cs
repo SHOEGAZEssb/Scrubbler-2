@@ -54,7 +54,7 @@ internal partial class MenuNavigationItemViewModel : NavigationItemViewModelBase
     public MenuNavigationItemViewModel(string title, IconSource? icon, object? content = null)
         : base(title, content)
     {
-        Icon = icon ?? new SymbolIconSource() { Symbol = Symbol.Placeholder };
+        Icon = icon;
 
         if (content is INavigationStatusInfo n)
             n.NavigationStatusChanged += Content_NavigationStatusChanged;

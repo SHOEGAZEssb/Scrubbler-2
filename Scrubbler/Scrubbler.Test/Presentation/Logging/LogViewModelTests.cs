@@ -1,6 +1,4 @@
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using Moq;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Models;
