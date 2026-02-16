@@ -1,8 +1,11 @@
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using Moq;
 using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Models;
 using Scrubbler.Host.Presentation.Logging;
+using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
 
@@ -44,6 +47,7 @@ public partial class LogViewModelTests
             // Modules should contain only the ALL sentinel initially
             Assert.That(vm.Modules, Is.Not.Null);
         }
+
         Assert.That(vm.Modules, Has.Count.EqualTo(1), "Modules should contain only the 'All' sentinel after construction when no entries exist.");
         using (Assert.EnterMultipleScope())
         {
@@ -239,5 +243,85 @@ public partial class LogViewModelTests
             Assert.That(vm.FilteredEntries, Is.Empty);
             Assert.That(vm.CanSave, Is.False);
         }
+    }
+
+    [Test]
+    public void NavigationStatusInfo_RaisesEventsWhenNotSelected()
+    {
+        // Arrange
+        var hostLogService = new HostLogService();
+        var userFeedbackMock = new Mock<IUserFeedbackService>(MockBehavior.Strict);
+        var filePickerMock = new Mock<IFilePickerService>(MockBehavior.Strict);
+        var fileStorageMock = new Mock<IFileStorageService>(MockBehavior.Strict);
+
+        // Allow expected feedback calls
+        userFeedbackMock.Setup(u => u.ShowWarning(It.IsAny<string>(), It.IsAny<TimeSpan?>()));
+        userFeedbackMock.Setup(u => u.ShowError(It.Is<string>(s => s.Contains("ExMsg")), It.IsAny<TimeSpan?>()));
+
+        var vm = new LogViewModel(hostLogService, userFeedbackMock.Object, filePickerMock.Object, fileStorageMock.Object);
+
+        var events = new List<NavigationStatusEventArgs>();
+        vm.NavigationStatusChanged += (s, e) => events.Add(e);
+
+        // Act - produce a warning and an error while not selected
+        hostLogService.Write(LogLevel.Warning, "ModuleA", "Warning1");
+        hostLogService.Write(LogLevel.Error, "ModuleA", "Error1", new Exception("ExMsg"));
+
+        // Assert - two events raised with accumulated counts
+        Assert.That(events, Has.Count.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(events[0].Warnings, Is.EqualTo(1));
+            Assert.That(events[0].Errors, Is.Zero);
+            Assert.That(events[1].Warnings, Is.EqualTo(1));
+            Assert.That(events[1].Errors, Is.EqualTo(1));
+        }
+
+        userFeedbackMock.Verify(u => u.ShowWarning(It.IsAny<string>(), It.IsAny<TimeSpan?>()), Times.Once);
+        userFeedbackMock.Verify(u => u.ShowError(It.Is<string>(s => s.Contains("ExMsg")), It.IsAny<TimeSpan?>()), Times.Once);
+    }
+
+    [Test]
+    public void NavigationStatusInfo_ResetsWhenSelectedAndSuppressesFurtherEvents()
+    {
+        // Arrange
+        var hostLogService = new HostLogService();
+        var userFeedbackMock = new Mock<IUserFeedbackService>(MockBehavior.Strict);
+        var filePickerMock = new Mock<IFilePickerService>(MockBehavior.Strict);
+        var fileStorageMock = new Mock<IFileStorageService>(MockBehavior.Strict);
+
+        // Allow expected feedback calls
+        userFeedbackMock.Setup(u => u.ShowWarning(It.IsAny<string>(), It.IsAny<TimeSpan?>()));
+        userFeedbackMock.Setup(u => u.ShowError(It.Is<string>(s => s.Contains("ExMsg")), It.IsAny<TimeSpan?>()));
+
+        var vm = new LogViewModel(hostLogService, userFeedbackMock.Object, filePickerMock.Object, fileStorageMock.Object);
+
+        var events = new List<NavigationStatusEventArgs>();
+        vm.NavigationStatusChanged += (s, e) => events.Add(e);
+
+        // Act - increment counts while not selected
+        hostLogService.Write(LogLevel.Warning, "ModuleA", "Warn1");
+        hostLogService.Write(LogLevel.Error, "ModuleA", "Err1", new Exception("ExMsg"));
+
+        Assert.That(events, Has.Count.EqualTo(2));
+
+        // Act - select the viewmodel which should reset counts and raise a zeroed event
+        vm.IsSelected = true;
+
+        Assert.That(events, Has.Count.EqualTo(3));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(events[2].Errors, Is.Zero);
+            Assert.That(events[2].Warnings, Is.Zero);
+        }
+
+        // Act - produce another warning while selected; should not raise NavigationStatusChanged
+        hostLogService.Write(LogLevel.Warning, "ModuleA", "Warn2");
+
+        Assert.That(events, Has.Count.EqualTo(3));
+
+        // Verify feedback calls: two warnings and one error
+        userFeedbackMock.Verify(u => u.ShowWarning(It.IsAny<string>(), It.IsAny<TimeSpan?>()), Times.Exactly(2));
+        userFeedbackMock.Verify(u => u.ShowError(It.Is<string>(s => s.Contains("ExMsg")), It.IsAny<TimeSpan?>()), Times.Once);
     }
 }
