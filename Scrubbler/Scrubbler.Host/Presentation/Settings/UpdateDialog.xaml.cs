@@ -8,7 +8,7 @@ public sealed partial class UpdateDialog : ContentDialog
 
     public UpdateDialog(UpdateInfo info)
     {
-        this.InitializeComponent();
+        InitializeComponent();
         ViewModel = new UpdateDialogViewModel(info);
     }
 }

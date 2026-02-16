@@ -7,7 +7,7 @@ public sealed partial class UpdateInProgressDialog : ContentDialog
 {
     public UpdateInProgressDialog(IUpdateManagerService manager, UpdateInfo info)
     {
-        this.InitializeComponent();
+        InitializeComponent();
         _ = RunUpdate(manager, info);
     }
 

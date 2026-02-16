@@ -1,15 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.ObjectModel;
-
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Controls;
 using Moq;
-using NUnit.Framework;
-using Scrubbler.Host.Presentation;
 using Scrubbler.Host.Presentation.Navigation;
 
-namespace Scrubbler.Host.Presentation.Navigation.UnitTests;
+namespace Scrubbler.Test.Presentation.Navigation;
 
 /// <summary>
 /// Tests for MenuNavigationItemViewModel constructor behavior.
@@ -76,8 +68,11 @@ public partial class MenuNavigationItemViewModelTests
         // Assert - change applied and content updated
         Assert.That(vm.IsSelected, Is.True, "IsSelected should reflect the newly assigned true value.");
         mockStatus.VerifySet(m => m.IsSelected = true, Times.Once, "Content.IsSelected should be set once to true.");
-        Assert.That(propertyChangedCount, Is.EqualTo(1), "PropertyChanged should be raised exactly once for the change.");
-        Assert.That(lastPropertyName, Is.EqualTo(nameof(vm.IsSelected)), "PropertyChanged should report the IsSelected property name.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(propertyChangedCount, Is.EqualTo(1), "PropertyChanged should be raised exactly once for the change.");
+            Assert.That(lastPropertyName, Is.EqualTo(nameof(vm.IsSelected)), "PropertyChanged should report the IsSelected property name.");
+        }
 
         // Act - assign same value again
         vm.IsSelected = true;
@@ -116,10 +111,13 @@ public partial class MenuNavigationItemViewModelTests
         // Act - change to true
         vm.IsSelected = true;
 
-        // Assert - change applied and PropertyChanged raised
-        Assert.That(vm.IsSelected, Is.True, "IsSelected should reflect the newly assigned true value.");
-        Assert.That(propertyChangedCount, Is.EqualTo(1), "PropertyChanged should be raised exactly once for the change.");
-        Assert.That(lastPropertyName, Is.EqualTo(nameof(vm.IsSelected)), "PropertyChanged should report the IsSelected property name.");
+        using (Assert.EnterMultipleScope())
+        {
+            // Assert - change applied and PropertyChanged raised
+            Assert.That(vm.IsSelected, Is.True, "IsSelected should reflect the newly assigned true value.");
+            Assert.That(propertyChangedCount, Is.EqualTo(1), "PropertyChanged should be raised exactly once for the change.");
+            Assert.That(lastPropertyName, Is.EqualTo(nameof(vm.IsSelected)), "PropertyChanged should report the IsSelected property name.");
+        }
 
         // Act - assign same value again
         vm.IsSelected = true;
@@ -171,24 +169,33 @@ public partial class MenuNavigationItemViewModelTests
         var vm = new MenuNavigationItemViewModel("title", icon: null, content: null);
         var mockChild = new Mock<NavigationItemViewModelBase>("child", null!);
 
-        // Precondition
-        Assert.That(vm.Children.Count, Is.EqualTo(0));
-        Assert.That(vm.HasChildren, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            // Precondition
+            Assert.That(vm.Children, Is.Empty);
+            Assert.That(vm.HasChildren, Is.False);
+        }
 
         // Act - add
         vm.Children.Add(mockChild.Object);
 
-        // Assert - after adding
-        Assert.That(vm.Children.Count, Is.EqualTo(1));
-        Assert.That(vm.HasChildren, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            // Assert - after adding
+            Assert.That(vm.Children, Has.Count.EqualTo(1));
+            Assert.That(vm.HasChildren, Is.True);
+        }
 
         // Act - remove
         bool removed = vm.Children.Remove(mockChild.Object);
 
-        // Assert - after removing
-        Assert.That(removed, Is.True, "Expected the previously added child to be removed successfully.");
-        Assert.That(vm.Children.Count, Is.EqualTo(0));
-        Assert.That(vm.HasChildren, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            // Assert - after removing
+            Assert.That(removed, Is.True, "Expected the previously added child to be removed successfully.");
+            Assert.That(vm.Children, Is.Empty);
+            Assert.That(vm.HasChildren, Is.False);
+        }
     }
 
     /// <summary>
@@ -206,10 +213,11 @@ public partial class MenuNavigationItemViewModelTests
     public void HasInfos_SetInfosValue_ReturnsExpected(int infosValue, bool expected)
     {
         // Arrange
-        var vm = new MenuNavigationItemViewModel("title", null);
-
-        // Act
-        vm.Infos = infosValue;
+        var vm = new MenuNavigationItemViewModel("title", null)
+        {
+            // Act
+            Infos = infosValue
+        };
 
         // Assert
         Assert.That(vm.HasInfos, Is.EqualTo(expected));

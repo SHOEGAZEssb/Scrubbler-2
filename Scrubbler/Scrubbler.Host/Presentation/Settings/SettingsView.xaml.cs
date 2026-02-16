@@ -6,6 +6,6 @@ public sealed partial class SettingsView : UserControl
 {
     public SettingsView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }

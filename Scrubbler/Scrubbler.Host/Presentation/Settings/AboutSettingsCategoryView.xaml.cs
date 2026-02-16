@@ -6,6 +6,6 @@ public sealed partial class AboutSettingsCategoryView : UserControl
 {
     public AboutSettingsCategoryView()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 }
