@@ -32,7 +32,7 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="Scrubbler.Test" />
-        <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -109,6 +109,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.WinUI.Extensions" />
+        <PackageReference Include="DiscordRichPresence" />
         <PackageReference Include="Microsoft.Extensions.Http" />
         <PackageReference Include="Scrubbler.PluginBase" />
         <PackageReference Include="SkiaSharp" />

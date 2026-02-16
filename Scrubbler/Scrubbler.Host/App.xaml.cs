@@ -8,6 +8,7 @@ using Scrubbler.Host.Presentation.Settings;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
 using Scrubbler.Host.Updates;
+using Scrubbler.PluginBase.Discord;
 
 namespace Scrubbler.Host;
 
@@ -84,6 +85,7 @@ public partial class App : Application
                     services.AddSingleton<IWindowHandleProvider, WindowHandleProvider>();
                     services.AddSingleton<IFilePickerService, FilePickerService>();
                     services.AddSingleton<IFileStorageService, FileStorageService>();
+                    services.AddSingleton<IDiscordRichPresence, DiscordRichPresence>();
 
                     if (Environment.GetEnvironmentVariable("SCRUBBLER_UPDATE_MODE") == "JSON")
                     {
