@@ -1,10 +1,13 @@
 using System.ComponentModel;
+
+#nullable enable
 using Moq;
 using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Host.Models;
 using Scrubbler.Host.Presentation.Accounts;
 
 namespace Scrubbler.Test.Presentation.Accounts;
+
 
 [TestFixture]
 public class AccountPluginViewModelTests
@@ -490,6 +493,160 @@ public class AccountPluginViewModelTests
         // Verify mock expectations where strict behavior applies.
         pluginMock.VerifyGet(p => p.IsScrobblingEnabled, Times.AtLeastOnce);
         pluginMock.VerifySet(p => p.IsScrobblingEnabled = It.IsAny<bool>(), Times.Exactly(expectedSetCalls));
+    }
+
+
+    /// <summary>
+    /// Provides a set of scrobble-limit values including extremes and null to validate forwarding.
+    /// </summary>
+    private static IEnumerable<int?> ScrobbleLimitValues()
+    {
+        yield return int.MinValue;
+        yield return -1;
+        yield return 0;
+        yield return 1;
+        yield return int.MaxValue;
+        yield return null;
+    }
+
+    /// <summary>
+    /// Provides test cases for AccountId including null, empty, whitespace-only, special characters, and a very long string.
+    /// </summary>
+    private static IEnumerable<string?> AccountIdTestCases()
+    {
+        yield return null; // null case
+        yield return string.Empty; // empty string
+        yield return "   "; // whitespace-only
+        yield return "normal-id"; // normal case
+        yield return "id-with-special-chars-!@#$%^&*()\n\t"; // special/control characters
+        yield return new string('x', 10000); // very long string
+    }
+
+    /// <summary>
+    /// Test cases for CurrentScrobbleCount: include null, int.MinValue, 0, int.MaxValue to exercise boundary conditions.
+    /// </summary>
+    private static IEnumerable<int?> CurrentScrobbleCountCases()
+    {
+        yield return null;
+        yield return int.MinValue;
+        yield return 0;
+        yield return int.MaxValue;
+    }
+
+    /// <summary>
+    /// Tests that the Icon property returns exactly what the underlying plugin provides.
+    /// Input conditions:
+    /// - The IAccountPlugin.IconUri getter returns the provided Uri (including null).
+    /// Expected result:
+    /// - AccountPluginViewModel.Icon equals the plugin-provided Uri (or null when plugin returns null).
+    /// </summary>
+    /// <param name="pluginIconUri">The value the mock plugin will return for IconUri (nullable).</param>
+    [TestCaseSource(nameof(IconUriCases))]
+    public void Icon_ReturnsUnderlyingPluginIconUri_ForVariousUris(Uri? pluginIconUri)
+    {
+        // Arrange
+        var pluginMock = new Mock<IAccountPlugin>(MockBehavior.Strict);
+        pluginMock.SetupGet(p => p.IconUri).Returns(pluginIconUri);
+
+        var configMock = new Mock<IWritableOptions<UserConfig>>(MockBehavior.Strict);
+
+        var vm = new AccountPluginViewModel(pluginMock.Object, configMock.Object);
+
+        // Act
+        var result = vm.Icon;
+
+        // Assert
+        Assert.That(result, Is.EqualTo(pluginIconUri));
+    }
+
+    /// <summary>
+    /// Verifies that the Icon getter reflects dynamic changes from the underlying plugin's getter when implemented with a backing value.
+    /// Input conditions:
+    /// - The mock plugin's IconUri getter returns a captured variable via Returns(() => backing).
+    /// Expected result:
+    /// - After changing the backing variable, subsequent reads of AccountPluginViewModel.Icon reflect the updated value.
+    /// </summary>
+    [Test]
+    public void Icon_ReflectsDynamicPluginIconChange_ReturnsUpdatedValue()
+    {
+        // Arrange
+        Uri? backing = new("https://example.com/initial.png");
+        var pluginMock = new Mock<IAccountPlugin>(MockBehavior.Strict);
+        pluginMock.SetupGet(p => p.IconUri).Returns(() => backing);
+
+        var configMock = new Mock<IWritableOptions<UserConfig>>(MockBehavior.Strict);
+
+        var vm = new AccountPluginViewModel(pluginMock.Object, configMock.Object);
+
+        // Act & Assert - initial value observed
+        Assert.That(vm.Icon, Is.EqualTo(backing));
+
+        // Act - change backing to null
+        backing = null;
+
+        // Assert - new value observed as null
+        Assert.That(vm.Icon, Is.Null);
+
+        // Act - change backing to a different Uri
+        var newUri = new Uri("https://example.com/updated.png");
+        backing = newUri;
+
+        // Assert - new Uri observed
+        Assert.That(vm.Icon, Is.EqualTo(newUri));
+    }
+
+    /// <summary>
+    /// Verifies that PluginId returns the exact value provided by the underlying plugin.
+    /// Input conditions:
+    /// - The underlying IAccountPlugin.Id returns various non-null string values (empty, whitespace, special chars, long).
+    /// Expected result:
+    /// - AccountPluginViewModel.PluginId equals the plugin's Id for each provided input.
+    /// </summary>
+    [TestCaseSource(nameof(IdTestCases))]
+    public void PluginId_ReturnsUnderlyingPluginId_ForVariousIds(string pluginId)
+    {
+        // Arrange
+        var pluginMock = new Mock<IAccountPlugin>(MockBehavior.Strict);
+        pluginMock.SetupGet(p => p.Id).Returns(pluginId);
+
+        var configMock = new Mock<IWritableOptions<UserConfig>>(MockBehavior.Strict);
+
+        var vm = new AccountPluginViewModel(pluginMock.Object, configMock.Object);
+
+        // Act
+        var result = vm.PluginId;
+
+        // Assert
+        Assert.That(result, Is.EqualTo(pluginId));
+    }
+
+    /// <summary>
+    /// Verifies that PluginId reflects dynamic changes from the underlying plugin's getter.
+    /// Input conditions:
+    /// - The plugin mock's Id getter uses a backing variable which is changed after ViewModel construction.
+    /// Expected result:
+    /// - AccountPluginViewModel.PluginId reflects both the initial and updated values.
+    /// </summary>
+    [Test]
+    public void PluginId_ReflectsUnderlyingPluginIdChanges()
+    {
+        // Arrange
+        string backingId = "initial-id";
+        var pluginMock = new Mock<IAccountPlugin>(MockBehavior.Strict);
+        pluginMock.SetupGet(p => p.Id).Returns(() => backingId);
+
+        var configMock = new Mock<IWritableOptions<UserConfig>>(MockBehavior.Strict);
+
+        var vm = new AccountPluginViewModel(pluginMock.Object, configMock.Object);
+
+        // Act & Assert - initial
+        Assert.That(vm.PluginId, Is.EqualTo("initial-id"));
+
+        // Act - change underlying value
+        backingId = "updated-id";
+
+        // Assert - reflected
+        Assert.That(vm.PluginId, Is.EqualTo("updated-id"));
     }
 
 }
