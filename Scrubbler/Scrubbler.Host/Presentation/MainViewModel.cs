@@ -58,7 +58,7 @@ internal partial class MainViewModel : ObservableObject
 
     private void PluginManager_PluginUnloading(object? sender, IPlugin e)
     {
-        var nav = _pluginGroup.Children.Where(n => n .Title == e.Name).FirstOrDefault();
+        var nav = _pluginGroup.Children.FirstOrDefault(n => n .Title == e.Name);
         if (nav != null)
             _pluginGroup.Children.Remove(nav);
     }

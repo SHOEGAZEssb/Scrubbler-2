@@ -4,18 +4,27 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal class AvailablePluginsViewModel : ObservableObject
+internal partial class AvailablePluginsViewModel : ObservableObject
 {
+    #region Properties
+
     public ObservableCollection<PluginMetadataViewModel> Plugins { get; } = [];
 
-    public bool IsFetchingPlugins => _manager.IsFetchingPlugins;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBusy))]
+    private bool _isInstalling;
+
+    public bool IsBusy => _manager.IsFetchingPlugins || IsInstalling;
 
     private readonly IPluginManager _manager;
+
+    #endregion Properties
 
     public AvailablePluginsViewModel(IPluginManager manager)
     {
         _manager = manager;
         _manager.IsFetchingPluginsChanged += Manager_IsFetchingPluginsChanged;
+        _manager.PluginUninstalled += Manager_PluginUninstalled;
         Refresh();
     }
 
@@ -40,13 +49,30 @@ internal class AvailablePluginsViewModel : ObservableObject
 
     private async void OnInstallRequested(object? sender, PluginManifestEntry meta)
     {
-        await _manager.InstallAsync(meta);
-        Refresh();
+        if (IsInstalling)
+            return;
+
+        IsInstalling = true;
+        try
+        {
+            await _manager.InstallAsync(meta);
+            Refresh();
+        }
+        finally
+        {
+            IsInstalling = false;
+        }
     }
 
     private void Manager_IsFetchingPluginsChanged(object? sender, bool e)
     {
-        OnPropertyChanged(nameof(IsFetchingPlugins));
+        OnPropertyChanged(nameof(IsBusy));
+        if (!e)
+            Refresh();
+    }
+
+    private void Manager_PluginUninstalled(object? sender, EventArgs e)
+    {
         Refresh();
     }
 }

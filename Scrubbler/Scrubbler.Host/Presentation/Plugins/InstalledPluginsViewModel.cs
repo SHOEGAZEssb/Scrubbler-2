@@ -4,11 +4,27 @@ using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal class InstalledPluginsViewModel : ObservableObject
+internal partial class InstalledPluginsViewModel : ObservableObject
 {
+    #region Properties
+
     public ObservableCollection<InstalledPluginViewModel> Plugins { get; } = [];
 
+    public event EventHandler? IsBusyChanged;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBusy))]
+    private bool _isUninstalling;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBusy))]
+    private bool _isUpdating;
+
+    public bool IsBusy => IsUninstalling || IsUpdating;
+
     private readonly IPluginManager _manager;
+
+    #endregion Properties
 
     public InstalledPluginsViewModel(IPluginManager manager)
     {
@@ -49,7 +65,7 @@ internal class InstalledPluginsViewModel : ObservableObject
 
     private bool HasPluginUpdate(IPlugin plugin)
     {
-        var pluginManifest = _manager.AvailablePlugins.Where(p => p.Name == plugin.Name).FirstOrDefault();
+        var pluginManifest = _manager.AvailablePlugins.FirstOrDefault(p => p.Name == plugin.Name);
         if (pluginManifest == null)
             return false;
 
@@ -58,33 +74,55 @@ internal class InstalledPluginsViewModel : ObservableObject
 
     private async void OnUninstallRequested(object? sender, string pluginID)
     {
-        await _manager.UninstallAsync(_manager.InstalledPlugins.Where(p => p.Id == pluginID).First());
-        Refresh();
+        if (IsUninstalling)
+            return;
+
+        IsUninstalling = true;
+        try
+        {
+            await _manager.UninstallAsync(_manager.InstalledPlugins.First(p => p.Id == pluginID));
+            Refresh();
+        }
+        finally
+        {
+            IsUninstalling = false;
+        }
     }
 
     private async void OnUpdateRequested(object? sender, string pluginID)
     {
-        var pluginManifest = _manager.AvailablePlugins.Where(p => p.Id == pluginID).FirstOrDefault();
+        if (IsUpdating)
+            return;
+
+        var pluginManifest = _manager.AvailablePlugins.FirstOrDefault(p => p.Id == pluginID);
         if (pluginManifest == null)
             return;
 
-        if (sender is InstalledPluginViewModel vm)
+        IsUpdating = true;
+        try
         {
-            vm.Dispose();
-            Plugins.Remove(vm);
+            if (sender is InstalledPluginViewModel vm)
+            {
+                vm.Dispose();
+                Plugins.Remove(vm);
+            }
+
+            var pluginFolder = await _manager.UpdateAsync(pluginManifest);
+            if (pluginFolder == null)
+                return;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+
+            Directory.Delete(pluginFolder, recursive: true);
+            await _manager.InstallAsync(pluginManifest);
+
+            Refresh();
         }
-
-        var pluginFolder = await _manager.UpdateAsync(pluginManifest);
-        if (pluginFolder == null)
-            return;
-
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-
-        Directory.Delete(pluginFolder, recursive: true);
-        await _manager.InstallAsync(pluginManifest);
-
-        Refresh();
+        finally
+        {
+            IsUpdating = false;
+        }
     }
 }

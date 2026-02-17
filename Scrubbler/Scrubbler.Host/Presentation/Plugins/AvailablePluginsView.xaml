@@ -28,12 +28,19 @@
 
                         <!-- Action -->
                         <Button Grid.Column="2"
-                                Content="Install"
                                 Command="{x:Bind InstallCommand}"
-                                VerticalAlignment="Center"/>
+                                VerticalAlignment="Center">
+                            <Button.Content>
+                                <SymbolIcon Symbol="Add"/>
+                            </Button.Content>
+                        </Button>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <Grid Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" Background="#80000000" IsHitTestVisible="True">
+            <ProgressRing IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Grid>
     </Grid>
 </UserControl>

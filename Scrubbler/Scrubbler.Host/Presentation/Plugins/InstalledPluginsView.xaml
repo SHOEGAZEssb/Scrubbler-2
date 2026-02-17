@@ -28,18 +28,28 @@
 
                         <!-- Action -->
                         <Button Grid.Column="2"
-                                Content="Uninstall"
                                 Command="{x:Bind UninstallCommand}"
-                                VerticalAlignment="Center"/>
+                                VerticalAlignment="Center">
+                            <Button.Content>
+                                <SymbolIcon Symbol="Delete"/>
+                            </Button.Content>
+                        </Button>
 
                         <Button Grid.Column="3"
-                                Content="Update"
                                 Command="{x:Bind UpdateCommand}"
                                 VerticalAlignment="Center"
-                                Visibility="{Binding CanBeUpdated, Converter={StaticResource BoolToVis}}"/>
+                                Visibility="{Binding CanBeUpdated, Converter={StaticResource BoolToVis}}">
+                            <Button.Content>
+                                <SymbolIcon Symbol="PostUpdate"/>
+                            </Button.Content>
+                        </Button>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <Grid Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" Background="#80000000" IsHitTestVisible="True">
+            <ProgressRing IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Grid>
     </Grid>
 </UserControl>
