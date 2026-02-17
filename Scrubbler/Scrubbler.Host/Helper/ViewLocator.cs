@@ -1,4 +1,4 @@
-namespace Scrubbler.Host;
+namespace Scrubbler.Host.Helper;
 
 internal static class ViewLocator
 {

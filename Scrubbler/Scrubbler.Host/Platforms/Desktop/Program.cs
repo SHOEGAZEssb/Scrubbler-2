@@ -1,6 +1,6 @@
 using Uno.UI.Hosting;
 
-namespace Scrubbler.Host;
+namespace Scrubbler.Host.Platforms.Desktop;
 internal class Program
 {
     [STAThread]

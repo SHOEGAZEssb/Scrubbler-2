@@ -117,7 +117,7 @@ public class AccountPluginViewModelTests
             eventCount++;
         };
 
-        var changedProperties = new System.Collections.Generic.List<string>();
+        var changedProperties = new List<string>();
         ((INotifyPropertyChanged)vm).PropertyChanged += (s, e) =>
         {
             // PropertyName may be null in some implementations; guard against that.

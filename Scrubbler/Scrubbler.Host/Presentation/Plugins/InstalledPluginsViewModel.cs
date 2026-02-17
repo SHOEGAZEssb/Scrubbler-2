@@ -10,8 +10,6 @@ internal partial class InstalledPluginsViewModel : ObservableObject
 
     public ObservableCollection<InstalledPluginViewModel> Plugins { get; } = [];
 
-    public event EventHandler? IsBusyChanged;
-
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy))]
     private bool _isUninstalling;
