@@ -1,9 +1,31 @@
+using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal class PluginManagerViewModel(IPluginManager manager)
+internal class PluginManagerViewModel : ObservableObject, INavigationStatusInfo
 {
-    public InstalledPluginsViewModel Installed { get; } = new InstalledPluginsViewModel(manager);
-    public AvailablePluginsViewModel Available { get; } = new AvailablePluginsViewModel(manager);
+    #region Properties
+
+    public InstalledPluginsViewModel Installed { get; }
+
+    public AvailablePluginsViewModel Available { get; }
+
+    public bool IsSelected { get; set; }
+
+    public event EventHandler<NavigationStatusEventArgs>? NavigationStatusChanged;
+
+    #endregion Properties
+
+    public PluginManagerViewModel(IPluginManager manager)
+    {
+        Installed = new InstalledPluginsViewModel(manager);
+        Installed.NavigationStatusChanged += Installed_NavigationStatusChanged;
+        Available = new AvailablePluginsViewModel(manager);
+    }
+
+    private void Installed_NavigationStatusChanged(object? sender, NavigationStatusEventArgs e)
+    {
+        NavigationStatusChanged?.Invoke(this, e);
+    }
 }

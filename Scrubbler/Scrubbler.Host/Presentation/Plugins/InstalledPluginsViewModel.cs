@@ -1,10 +1,11 @@
 using System.Collections.ObjectModel;
 using Scrubbler.Abstractions.Plugin;
+using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Host.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
-internal partial class InstalledPluginsViewModel : ObservableObject
+internal partial class InstalledPluginsViewModel : ObservableObject, INavigationStatusInfo
 {
     #region Properties
 
@@ -19,6 +20,10 @@ internal partial class InstalledPluginsViewModel : ObservableObject
     private bool _isUpdating;
 
     public bool IsBusy => IsUninstalling || IsUpdating;
+
+    public bool IsSelected { get; set; }
+
+    public event EventHandler<NavigationStatusEventArgs>? NavigationStatusChanged;
 
     private readonly IPluginManager _manager;
 
@@ -45,9 +50,9 @@ internal partial class InstalledPluginsViewModel : ObservableObject
 
     public void Refresh()
     {
-        foreach (var plugin in Plugins)
+        foreach (var pluginVM in Plugins)
         {
-            plugin.Dispose();
+            pluginVM.Dispose();
         }
 
         Plugins.Clear();
@@ -59,11 +64,13 @@ internal partial class InstalledPluginsViewModel : ObservableObject
             vm.UpdateRequested += OnUpdateRequested;
             Plugins.Add(vm);
         }
+
+        NavigationStatusChanged?.Invoke(this, new NavigationStatusEventArgs(0, 0, Plugins.Count(p => p.CanBeUpdated)));
     }
 
     private bool HasPluginUpdate(IPlugin plugin)
     {
-        var pluginManifest = _manager.AvailablePlugins.FirstOrDefault(p => p.Name == plugin.Name);
+        var pluginManifest = _manager.AvailablePlugins.FirstOrDefault(p => p.Id == plugin.Id);
         if (pluginManifest == null)
             return false;
 
