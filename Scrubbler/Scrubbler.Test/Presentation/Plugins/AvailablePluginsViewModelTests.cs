@@ -169,12 +169,13 @@ public partial class AvailablePluginsViewModelTests
 
         // Create a mock installed plugin. We'll make one available plugin whose Id equals the runtime type full name of this mock
         // so it should be considered 'installed' and therefore skipped by Refresh.
-        var installedPluginMock = new Mock<Scrubbler.Abstractions.Plugin.IPlugin>(MockBehavior.Strict);
+        var installedPluginMock = new Mock<IPlugin>(MockBehavior.Strict);
+        installedPluginMock.SetupGet(p => p.Id).Returns(installedPluginMock.Object.GetType().FullName!);
 
         // Create two manifests: one that corresponds to the installed plugin (Id == installedPlugin.GetType().FullName)
         // and one that represents an uninstalled plugin.
         var metaInstalled = new PluginManifestEntry(
-            installedPluginMock.Object.GetType().FullName!,
+            installedPluginMock.Object.Id,
             "InstalledPlugin",
             "1.0.0",
             "Installed plugin",
