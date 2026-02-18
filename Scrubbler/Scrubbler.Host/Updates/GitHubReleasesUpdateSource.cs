@@ -146,7 +146,4 @@ internal sealed class GitHubReleasesOptions
     // your asset naming
     public string AssetNamePrefix { get; init; } = "Scrubbler";
     public string AssetFileExtension { get; init; } = ".zip";
-
-    // checksums asset name you upload alongside zips
-    public string ChecksumsAssetName { get; init; } = "checksums.txt";
 }
