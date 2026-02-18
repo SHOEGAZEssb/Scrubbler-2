@@ -4,8 +4,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:Scrubbler.Host.Presentation.Plugins">
 
-    <Grid Padding="12">
-        <ListView ItemsSource="{Binding Plugins, Mode=OneWay}">
+    <Grid Padding="12" RowDefinitions="Auto,3,*">
+        <Grid Grid.Row="0" Padding="8" ColumnDefinitions="Auto,Auto,*,Auto">
+            <TextBox Grid.Column="0" Header="Search plugins..." MinWidth="300" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <CheckBox Grid.Column="1" Content="Only show compatible" IsChecked="{Binding ShowOnlyCompatible, Mode=TwoWay}"/>
+            <Button Grid.Column="3" Command="{Binding RefreshCommand}" HorizontalAlignment="Right">
+                <Button.Content>
+                    <SymbolIcon Symbol="Refresh"/>
+                </Button.Content>
+            </Button>
+        </Grid>
+
+        <Border Grid.Row="1" Height="1" Margin="8,0" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+        <ListView Grid.Row="2" ItemsSource="{Binding FilteredPlugins, Mode=OneWay}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="vm:PluginMetadataViewModel">
                     <Grid ColumnDefinitions="Auto,*,Auto" Padding="8" Margin="0,0,0,8">
@@ -39,7 +51,7 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <Grid Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" Background="#80000000" IsHitTestVisible="True">
+        <Grid Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" Background="#80000000" IsHitTestVisible="True">
             <ProgressRing IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
     </Grid>

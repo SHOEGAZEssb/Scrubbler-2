@@ -3,8 +3,10 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Scrubbler.Abstractions.Plugin;
 
 namespace Scrubbler.Host.Presentation.Plugins;
-internal class PluginMetadataViewModel : ObservableObject
+internal partial class PluginMetadataViewModel(PluginManifestEntry meta) : ObservableObject
 {
+    #region Properties
+
     public event EventHandler<PluginManifestEntry>? InstallRequested;
 
     public string Name => _meta.Name;
@@ -13,16 +15,34 @@ internal class PluginMetadataViewModel : ObservableObject
     public ImageSource? Icon => _icon ??= new BitmapImage(_meta.IconUri);
     private ImageSource? _icon;
     public string PluginType => _meta.PluginType;
+    public IEnumerable<string> SupportedPlatforms => _meta.SupportedPlatforms;
+    public bool IsCompatible => IsCompatibleWithCurrentPlatform(_meta);
 
-    public ICommand InstallCommand { get; }
+    private readonly PluginManifestEntry _meta = meta;
 
-    private readonly PluginManifestEntry _meta;
+    #endregion Properties
 
-    public PluginMetadataViewModel(PluginManifestEntry meta)
+    [RelayCommand]
+    private void Install()
     {
-        _meta = meta;
-        InstallCommand = new RelayCommand(() =>
-            InstallRequested?.Invoke(this, _meta));
+        if (!IsCompatible)
+            return;
+
+        InstallRequested?.Invoke(this, _meta);
+    }
+
+    private static bool IsCompatibleWithCurrentPlatform(PluginManifestEntry meta)
+    {
+        if (meta.SupportedPlatforms.Contains("All"))
+            return true;
+
+        // todo: check if we can move away from strings and use an enum or something more robust for platform identifiers
+        foreach (var platform in meta.SupportedPlatforms)
+        {
+            if (OperatingSystem.IsOSPlatform(platform))
+                return true;
+        }
+
+        return false;
     }
 }
-

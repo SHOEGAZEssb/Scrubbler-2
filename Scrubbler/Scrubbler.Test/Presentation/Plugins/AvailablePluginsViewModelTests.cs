@@ -47,6 +47,101 @@ public partial class AvailablePluginsViewModelTests
         managerMock.VerifyAdd(m => m.PluginUninstalled += It.IsAny<EventHandler>(), Times.Once);
     }
 
+    [Test]
+    public void FilteredPlugins_SearchText_FiltersByNameAndDescription_CaseInsensitive()
+    {
+        // Arrange
+        var managerMock = new Mock<IPluginManager>(MockBehavior.Strict);
+
+        var metaA = new PluginManifestEntry(
+            "A.Plugin.Type",
+            "AlphaPlugin",
+            "1.0.0",
+            "Second plugin",
+            "Type",
+            ["All"],
+            new Uri("http://example.com/a.zip"),
+            null);
+
+        var metaB = new PluginManifestEntry(
+            "B.Plugin.Type",
+            "BetaPlugin",
+            "1.0.0",
+            "Contains Alpha in description",
+            "Type",
+            ["All"],
+            new Uri("http://example.com/b.zip"),
+            null);
+        managerMock.SetupGet(m => m.AvailablePlugins).Returns([metaA, metaB]);
+        managerMock.SetupGet(m => m.InstalledPlugins).Returns([]);
+        managerMock.SetupGet(m => m.IsFetchingPlugins).Returns(false);
+        managerMock.SetupAdd(m => m.IsFetchingPluginsChanged += It.IsAny<EventHandler<bool>>()).Verifiable();
+        managerMock.SetupAdd(m => m.PluginUninstalled += It.IsAny<EventHandler>()).Verifiable();
+
+        // Act
+        var vm = new AvailablePluginsViewModel(managerMock.Object)
+        {
+            // search is case-insensitive and matches both by name and description
+            SearchText = "alpha"
+        };
+
+        var filtered = vm.FilteredPlugins.ToList();
+
+        // Assert
+        Assert.That(filtered, Has.Count.EqualTo(2), "Both items should match 'alpha' in name or description.");
+
+        // Now restrict to a term that only matches metaA's description
+        vm.SearchText = "second";
+        filtered = [.. vm.FilteredPlugins];
+        Assert.That(filtered, Has.Count.EqualTo(1));
+        Assert.That(filtered[0].Name, Is.EqualTo(metaA.Name));
+    }
+
+    [Test]
+    public void FilteredPlugins_ShowOnlyCompatible_FiltersByCompatibilityFlag()
+    {
+        // Arrange
+        var managerMock = new Mock<IPluginManager>(MockBehavior.Strict);
+
+        var metaCompatible = new PluginManifestEntry(
+            "C.Plugin.Type",
+            "CompatiblePlugin",
+            "1.0.0",
+            "Compatible",
+            "Type",
+            ["All"],
+            new Uri("http://example.com/c.zip"),
+            null);
+
+        var metaIncompatible = new PluginManifestEntry(
+            "D.Plugin.Type",
+            "IncompatiblePlugin",
+            "1.0.0",
+            "Incompatible",
+            "Type",
+            ["NonExistentPlatform"],
+            new Uri("http://example.com/d.zip"),
+            null);
+        managerMock.SetupGet(m => m.AvailablePlugins).Returns([metaCompatible, metaIncompatible]);
+        managerMock.SetupGet(m => m.InstalledPlugins).Returns([]);
+        managerMock.SetupGet(m => m.IsFetchingPlugins).Returns(false);
+        managerMock.SetupAdd(m => m.IsFetchingPluginsChanged += It.IsAny<EventHandler<bool>>()).Verifiable();
+        managerMock.SetupAdd(m => m.PluginUninstalled += It.IsAny<EventHandler>()).Verifiable();
+
+        // Act
+        var vm = new AvailablePluginsViewModel(managerMock.Object);
+
+        // By default ShowOnlyCompatible == true, so only the compatible plugin should be visible in FilteredPlugins
+        var filtered = vm.FilteredPlugins.ToList();
+        Assert.That(filtered, Has.Count.EqualTo(1));
+        Assert.That(filtered[0].Name, Is.EqualTo(metaCompatible.Name));
+
+        // When we disable the compatibility filter, both plugins should be visible
+        vm.ShowOnlyCompatible = false;
+        filtered = [.. vm.FilteredPlugins];
+        Assert.That(filtered, Has.Count.EqualTo(2));
+    }
+
     /// <summary>
     /// Partial test placeholder: verifies behavior when AvailablePlugins contains entries and some are installed.
     /// Purpose: exercise the branch that skips already-installed plugins and adds not-installed ones,
@@ -94,7 +189,7 @@ public partial class AvailablePluginsViewModelTests
             "1.2.3",
             "Not installed plugin",
             "Type",
-            ["Any"],
+            ["All"],
             new Uri("http://example.com/uninstalled.zip"),
             null);
 

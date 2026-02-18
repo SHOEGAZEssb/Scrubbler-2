@@ -58,6 +58,15 @@ public interface IPluginManager
     event EventHandler? IsAnyAccountPluginScrobblingChanged;
 
     /// <summary>
+    /// Asynchronously refreshes the list of available plugins from the server.
+    /// </summary>
+    /// <remarks>Call this method to update the local cache of available plugins, such as when the application
+    /// starts or when a user requests a refresh. The method retrieves the latest plugin information from the server and
+    /// updates the local state accordingly.</remarks>
+    /// <returns>A task that represents the asynchronous refresh operation.</returns>
+    Task RefreshAvailablePluginsAsync();
+
+    /// <summary>
     /// Installs a plugin from its manifest entry.
     /// </summary>
     /// <param name="plugin">The <see cref="PluginManifestEntry"/> describing the plugin to install.</param>

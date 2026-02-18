@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Input;
 using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Services;
 
@@ -9,6 +10,18 @@ internal partial class AvailablePluginsViewModel : ObservableObject
     #region Properties
 
     public ObservableCollection<PluginMetadataViewModel> Plugins { get; } = [];
+
+    public IEnumerable<PluginMetadataViewModel> FilteredPlugins => Plugins
+        .Where(p => (p.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) || (p.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
+        .Where(p => !ShowOnlyCompatible || p.IsCompatible);
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilteredPlugins))]
+    private string _searchText = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilteredPlugins))]
+    private bool _showOnlyCompatible = true;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy))]
@@ -25,10 +38,10 @@ internal partial class AvailablePluginsViewModel : ObservableObject
         _manager = manager;
         _manager.IsFetchingPluginsChanged += Manager_IsFetchingPluginsChanged;
         _manager.PluginUninstalled += Manager_PluginUninstalled;
-        Refresh();
+        RefreshList();
     }
 
-    public void Refresh()
+    private void RefreshList()
     {
         Plugins.Clear();
 
@@ -47,6 +60,15 @@ internal partial class AvailablePluginsViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private async Task Refresh()
+    {
+        if (IsBusy)
+            return;
+
+        await _manager.RefreshAvailablePluginsAsync();
+    }
+
     private async void OnInstallRequested(object? sender, PluginManifestEntry meta)
     {
         if (IsInstalling)
@@ -56,7 +78,7 @@ internal partial class AvailablePluginsViewModel : ObservableObject
         try
         {
             await _manager.InstallAsync(meta);
-            Refresh();
+            RefreshList();
         }
         finally
         {
@@ -68,11 +90,11 @@ internal partial class AvailablePluginsViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(IsBusy));
         if (!e)
-            Refresh();
+            RefreshList();
     }
 
     private void Manager_PluginUninstalled(object? sender, EventArgs e)
     {
-        Refresh();
+        RefreshList();
     }
 }
