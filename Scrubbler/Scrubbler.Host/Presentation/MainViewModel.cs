@@ -33,7 +33,7 @@ internal partial class MainViewModel : ObservableObject
     public MainViewModel(IServiceProvider services)
     {
         // static pages
-        Items.Add(new MenuNavigationItemViewModel("Home", new SymbolIconSource() { Symbol = Symbol.Home }, new HomeViewModel()));
+        //Items.Add(new MenuNavigationItemViewModel("Home", new SymbolIconSource() { Symbol = Symbol.Home }, new HomeViewModel()));
         Items.Add(new MenuNavigationItemViewModel("Accounts", new SymbolIconSource() { Symbol = Symbol.Account }, services.GetRequiredService<AccountsViewModel>()));
         Items.Add(new MenuNavigationItemViewModel("Plugin Manager", new SymbolIconSource() { Symbol = Symbol.Admin }, services.GetRequiredService<PluginManagerViewModel>()));
 

@@ -48,7 +48,7 @@ internal partial class AvailablePluginsViewModel : ObservableObject
         foreach (var meta in _manager.AvailablePlugins)
         {
             var installed = _manager.InstalledPlugins
-                .Any(p => string.Equals(p.GetType().FullName, meta.Id, StringComparison.OrdinalIgnoreCase));
+                .Any(p => string.Equals(p.Id, meta.Id, StringComparison.OrdinalIgnoreCase));
 
             if (!installed)
             {
@@ -58,6 +58,8 @@ internal partial class AvailablePluginsViewModel : ObservableObject
             }
             // if installed → skip (updates handled elsewhere)
         }
+
+        OnPropertyChanged(nameof(FilteredPlugins));
     }
 
     [RelayCommand]

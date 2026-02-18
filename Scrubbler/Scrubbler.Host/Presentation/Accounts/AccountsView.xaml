@@ -10,70 +10,82 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     d:DataContext="{d:DesignInstance Type=local:AccountsViewModel}">
 
-    <ScrollViewer Padding="12">
-        <ItemsRepeater ItemsSource="{Binding Accounts}">
-            <ItemsRepeater.Layout>
-                <FlowLayout Orientation="Horizontal"/>
-            </ItemsRepeater.Layout>
+    <Grid>
+        <TextBlock x:Name="NoAccountsTextBlock" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"
+                   Text="No account plugins installed. Use the plugin manager to install one.">
+            <beh:Interaction.Behaviors>
+                <beh:DataTriggerBehavior Binding="{Binding Accounts.Count}" Value="0">
+                    <actions:ChangePropertyAction TargetObject="{Binding ElementName=NoAccountsTextBlock}"
+                                                      PropertyName="Visibility" Value="Visible"/>
+                </beh:DataTriggerBehavior>
+            </beh:Interaction.Behaviors>
+        </TextBlock>
 
-            <ItemsRepeater.ItemTemplate>
-                <DataTemplate x:DataType="local:AccountPluginViewModel">
-                    <utu:CardContentControl Style="{StaticResource ElevatedCardContentControlStyle}">
-                        <utu:CardContentControl.ContentTemplate>
-                            <DataTemplate x:DataType="local:AccountPluginViewModel">
-                                <Grid Padding="32">
-                                    <!-- Main content -->
-                                    <StackPanel Spacing="8" HorizontalAlignment="Center">
-                                        <Image Width="64"
+        <ScrollViewer Padding="12">
+            <ItemsRepeater ItemsSource="{Binding Accounts}">
+                <ItemsRepeater.Layout>
+                    <FlowLayout Orientation="Horizontal"/>
+                </ItemsRepeater.Layout>
+
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="local:AccountPluginViewModel">
+                        <utu:CardContentControl Style="{StaticResource ElevatedCardContentControlStyle}">
+                            <utu:CardContentControl.ContentTemplate>
+                                <DataTemplate x:DataType="local:AccountPluginViewModel">
+                                    <Grid Padding="32">
+                                        <!-- Main content -->
+                                        <StackPanel Spacing="8" HorizontalAlignment="Center">
+                                            <Image Width="64"
                                                Height="64"
                                                Source="{Binding Icon}"
                                                HorizontalAlignment="Center" />
-                                        <TextBlock Text="{x:Bind Name}"
+                                            <TextBlock Text="{x:Bind Name}"
                                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                                    HorizontalTextAlignment="Center"/>
 
-                                        <StackPanel Spacing="8" Orientation="Vertical" Visibility="{x:Bind IsAuthenticated, Mode=OneWay,Converter={StaticResource BoolToVis}}">
-                                            <TextBlock Text="Logged in as:" HorizontalTextAlignment="Center"/>
-                                            <TextBlock Text="{x:Bind AccountId, Mode=OneWay}"
+                                            <StackPanel Spacing="8" Orientation="Vertical" Visibility="{x:Bind IsAuthenticated, Mode=OneWay,Converter={StaticResource BoolToVis}}">
+                                                <TextBlock Text="Logged in as:" HorizontalTextAlignment="Center"/>
+                                                <TextBlock Text="{x:Bind AccountId, Mode=OneWay}"
                                                    Style="{ThemeResource CaptionTextBlockStyle}"
                                                    HorizontalTextAlignment="Center"
                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                                            <CheckBox Content="Scrobble" HorizontalAlignment="Center" IsEnabled="{x:Bind IsAuthenticated, Mode=OneWay}"
+                                                <CheckBox Content="Scrobble" HorizontalAlignment="Center" IsEnabled="{x:Bind IsAuthenticated, Mode=OneWay}"
                                                   IsChecked="{x:Bind IsScrobblingEnabled, Mode=TwoWay}"/>
-                                            <CheckBox Content="Use Account Functions" HorizontalAlignment="Center" IsChecked="{x:Bind IsUsingAccountFunctions, Mode=TwoWay}"
+                                                <CheckBox Content="Use Account Functions" HorizontalAlignment="Center" IsChecked="{x:Bind IsUsingAccountFunctions, Mode=TwoWay}"
                                                       Visibility="{Binding HasAccountFunctions, Converter={StaticResource BoolToVis}}"/>
-                                            <StackPanel x:Name="ScrobbleLimitPanel" Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center"
+                                                <StackPanel x:Name="ScrobbleLimitPanel" Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center"
                                                         Visibility="{Binding HasScrobbleLimit, Converter={StaticResource BoolToVis}}">
-                                                <TextBlock Text="Scrobble Limit:"/>
-                                                <TextBlock Text="{x:Bind CurrentScrobbleCount}"/>
-                                                <TextBlock Text=" / "/>
-                                                <TextBlock Text="{x:Bind ScrobbleLimit}"/>
+                                                    <TextBlock Text="Scrobble Limit:"/>
+                                                    <TextBlock Text="{x:Bind CurrentScrobbleCount}"/>
+                                                    <TextBlock Text=" / "/>
+                                                    <TextBlock Text="{x:Bind ScrobbleLimit}"/>
+                                                </StackPanel>
                                             </StackPanel>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                                            <Button Content="Login"
+                                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                                <Button Content="Login"
                                                     Command="{x:Bind AuthenticateCommand}"
                                                     Visibility="{x:Bind IsAuthenticated, Mode=OneWay, Converter={StaticResource NotBoolToVis}}"/>
-                                            <Button Content="Logout"
+                                                <Button Content="Logout"
                                                     Command="{x:Bind LogoutCommand}"
                                                     Visibility="{x:Bind IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
+                                            </StackPanel>
                                         </StackPanel>
-                                    </StackPanel>
 
-                                    <!-- Busy overlay (dims + blocks input) -->
-                                    <Grid Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                        <!-- Busy overlay (dims + blocks input) -->
+                                        <Grid Background="{ThemeResource LayerFillColorDefaultBrush}"
                                           Opacity="0.8"
                                           Visibility="{x:Bind IsBusy, Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
-                                    <ProgressRing IsActive="{x:Bind IsBusy, Mode=OneWay}"
+                                        <ProgressRing IsActive="{x:Bind IsBusy, Mode=OneWay}"
                                                   Width="32" Height="32"
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"/>
-                                </Grid>
-                            </DataTemplate>
-                        </utu:CardContentControl.ContentTemplate>
-                    </utu:CardContentControl>
-                </DataTemplate>
-            </ItemsRepeater.ItemTemplate>
-        </ItemsRepeater>
-    </ScrollViewer>
+                                    </Grid>
+                                </DataTemplate>
+                            </utu:CardContentControl.ContentTemplate>
+                        </utu:CardContentControl>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
+    </Grid>
 </UserControl>
