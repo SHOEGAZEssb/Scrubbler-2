@@ -1,4 +1,4 @@
-using Scrubbler.Abstractions.Services;
+using Scrubbler.PluginBase.Services;
 
 namespace Scrubbler.Host.Services;
 

@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
-using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Services;
+using Scrubbler.PluginBase.Plugin;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 

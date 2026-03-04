@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Scrubbler.Abstractions.Plugin;
+using Scrubbler.PluginBase.Plugin;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 internal partial class PluginMetadataViewModel(PluginManifestEntry meta) : ObservableObject

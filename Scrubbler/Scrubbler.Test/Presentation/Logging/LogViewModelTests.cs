@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Models;
 using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
+using Scrubbler.PluginBase.Services;
 
 namespace Scrubbler.Test.Presentation.Logging;
 

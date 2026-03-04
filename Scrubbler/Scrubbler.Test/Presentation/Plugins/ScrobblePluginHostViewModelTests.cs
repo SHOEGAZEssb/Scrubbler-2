@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using Moq;
-using Scrubbler.Abstractions.Plugin;
-using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Presentation.Plugins;
 using Scrubbler.Host.Services;
+using Scrubbler.PluginBase.Plugin;
+using Scrubbler.PluginBase.Services;
 
 namespace Scrubbler.Test.Presentation.Plugins;
 

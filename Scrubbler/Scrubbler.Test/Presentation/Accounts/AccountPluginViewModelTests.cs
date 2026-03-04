@@ -2,9 +2,9 @@ using System.ComponentModel;
 
 #nullable enable
 using Moq;
-using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Host.Models;
 using Scrubbler.Host.Presentation.Accounts;
+using Scrubbler.PluginBase.Plugin.Account;
 
 namespace Scrubbler.Test.Presentation.Accounts;
 

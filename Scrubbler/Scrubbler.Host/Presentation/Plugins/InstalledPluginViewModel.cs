@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
-using Scrubbler.Abstractions.Plugin;
+using Scrubbler.PluginBase.Plugin;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 

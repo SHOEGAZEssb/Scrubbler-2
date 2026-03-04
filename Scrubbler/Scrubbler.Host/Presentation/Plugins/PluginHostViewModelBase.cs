@@ -1,8 +1,8 @@
-using Scrubbler.Abstractions;
-using Scrubbler.Abstractions.Plugin;
-using Scrubbler.Abstractions.Plugin.Account;
-using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
+using Scrubbler.PluginBase;
+using Scrubbler.PluginBase.Plugin;
+using Scrubbler.PluginBase.Plugin.Account;
+using Scrubbler.PluginBase.Services;
 
 namespace Scrubbler.Host.Presentation.Plugins;
 
