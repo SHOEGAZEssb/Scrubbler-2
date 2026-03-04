@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
-using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
+using Scrubbler.PluginBase.Services;
 
 namespace Scrubbler.Host.Presentation.Settings;
 

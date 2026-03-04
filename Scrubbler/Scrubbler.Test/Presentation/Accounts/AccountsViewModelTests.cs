@@ -1,9 +1,9 @@
 using Moq;
-using Scrubbler.Abstractions.Plugin;
-using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Host.Models;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Services;
+using Scrubbler.PluginBase.Plugin;
+using Scrubbler.PluginBase.Plugin.Account;
 
 
 namespace Scrubbler.Test.Presentation.Accounts;

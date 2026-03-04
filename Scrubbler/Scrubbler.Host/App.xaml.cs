@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Scrubbler.Abstractions.Services;
-using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Presentation.Accounts;
 using Scrubbler.Host.Presentation.Logging;
 using Scrubbler.Host.Presentation.Plugins;
@@ -9,6 +7,8 @@ using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
 using Scrubbler.Host.Updates;
 using Scrubbler.PluginBase.Discord;
+using Scrubbler.PluginBase.Services;
+using Scrubbler.PluginBase.Settings;
 
 namespace Scrubbler.Host;
 

@@ -1,7 +1,7 @@
 using Moq;
-using Scrubbler.Abstractions.Plugin;
 using Scrubbler.Host.Presentation.Plugins;
 using Scrubbler.Host.Services;
+using Scrubbler.PluginBase.Plugin;
 
 namespace Scrubbler.Test.Presentation.Plugins;
 

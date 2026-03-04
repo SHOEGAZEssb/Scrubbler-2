@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
-using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Services;
+using Scrubbler.PluginBase.Services;
 
 namespace Scrubbler.Host.Presentation.Settings;
 

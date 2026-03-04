@@ -3,7 +3,7 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
        xmlns:utum="using:Uno.Toolkit.UI.Material"
        xmlns:helper="using:Scrubbler.Host.Helper"
-       xmlns:conv="using:Scrubbler.Abstractions.Converter">
+       xmlns:conv="using:Scrubbler.PluginBase.Converter">
 
     <Application.Resources>
         <ResourceDictionary>

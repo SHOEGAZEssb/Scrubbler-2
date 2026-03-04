@@ -1,11 +1,11 @@
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
-using Scrubbler.Abstractions.Plugin;
-using Scrubbler.Abstractions.Plugin.Account;
-using Scrubbler.Abstractions.Services;
-using Scrubbler.Abstractions.Settings;
 using Scrubbler.Host.Helper;
+using Scrubbler.PluginBase.Plugin;
+using Scrubbler.PluginBase.Plugin.Account;
+using Scrubbler.PluginBase.Services;
+using Scrubbler.PluginBase.Settings;
 
 namespace Scrubbler.Host.Services;
 

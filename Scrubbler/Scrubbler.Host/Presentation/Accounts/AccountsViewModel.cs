@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Scrubbler.Abstractions.Plugin.Account;
 using Scrubbler.Host.Services;
+using Scrubbler.PluginBase.Plugin.Account;
 
 namespace Scrubbler.Host.Presentation.Accounts;
 

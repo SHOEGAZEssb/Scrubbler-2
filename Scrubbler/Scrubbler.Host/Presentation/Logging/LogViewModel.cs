@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
-using Scrubbler.Abstractions.Services;
 using Scrubbler.Host.Presentation.Navigation;
 using Scrubbler.Host.Services;
 using Scrubbler.Host.Services.Logging;
+using Scrubbler.PluginBase.Services;
 
 namespace Scrubbler.Host.Presentation.Logging;
 
